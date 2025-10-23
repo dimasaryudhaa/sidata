@@ -1,0 +1,112 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h1>Tambah Dokumen PTK</h1>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('dokumen-ptk.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="mb-3">
+                    <label>Nama PTK</label>
+                    <input type="text" class="form-control" value="{{ $ptk->nama_lengkap ?? '-' }}" readonly>
+                    <input type="hidden" name="ptk_id" value="{{ $ptkId }}">
+                </div>
+
+                <div class="mb-3">
+                    <label>Akte Kelahiran</label>
+                    <input type="file" name="akte_kelahiran" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                    @error('akte_kelahiran')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Kartu Keluarga</label>
+                    <input type="file" name="kartu_keluarga" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                    @error('kartu_keluarga')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>KTP</label>
+                    <input type="file" name="ktp" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                    @error('ktp')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Ijazah SD</label>
+                    <input type="file" name="ijazah_sd" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                    @error('ijazah_sd')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="mb-3">
+                    <label>Ijazah SMP</label>
+                    <input type="file" name="ijazah_smp" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                    @error('ijazah_smp')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Ijazah SMA</label>
+                    <input type="file" name="ijazah_sma" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                    @error('ijazah_sma')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Ijazah S1</label>
+                    <input type="file" name="ijazah_s1" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                    @error('ijazah_s1')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Ijazah S2</label>
+                    <input type="file" name="ijazah_s2" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                    @error('ijazah_s2')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Ijazah S3</label>
+                    <input type="file" name="ijazah_s3" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                    @error('ijazah_s3')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{{ route('dokumen-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <button type="submit" class="btn btn-success">Simpan</button>
+        </div>
+    </form>
+</div>
+@endsection
