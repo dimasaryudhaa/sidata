@@ -8,7 +8,6 @@
         @csrf
 
         <div class="row">
-            <!-- Kolom Kiri -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama PTK</label>
@@ -21,12 +20,11 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Email (Username)</label>
+                    <label>Email</label>
                     <input type="email" name="email" class="form-control" required placeholder="contoh: guru@email.com">
                 </div>
             </div>
 
-            <!-- Kolom Kanan -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Password</label>

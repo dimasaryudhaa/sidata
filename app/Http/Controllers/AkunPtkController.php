@@ -87,9 +87,11 @@ class AkunPtkController extends Controller
 
     public function update(Request $request, AkunPtk $akun_ptk)
     {
+        $oldEmail = $akun_ptk->email;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
-            'email' => 'required|email|unique:akun_ptk,email,' . $akun_ptk->id . '|unique:users,email,' . $akun_ptk->email . ',email',
+            'email' => 'required|email|unique:akun_ptk,email,' . $akun_ptk->id . '|unique:users,email,' . $oldEmail . ',email',
             'password' => 'nullable|min:6',
         ]);
 
@@ -103,14 +105,19 @@ class AkunPtkController extends Controller
 
         $ptk = Ptk::find($validated['ptk_id']);
 
+        $updateData = [
+            'name' => $ptk->nama_lengkap,
+            'email' => $validated['email'],
+            'updated_at' => now(),
+        ];
+
+        if (isset($validated['password'])) {
+            $updateData['password'] = $validated['password'];
+        }
+
         DB::table('users')
-            ->where('email', $akun_ptk->email)
-            ->update([
-                'name' => $ptk->nama_lengkap,
-                'email' => $validated['email'],
-                'password' => $validated['password'] ?? DB::raw('password'),
-                'updated_at' => now(),
-            ]);
+            ->where('email', $oldEmail)
+            ->update($updateData);
 
         return redirect()->route('akun-ptk.index')->with('success', 'Akun PTK dan user berhasil diperbarui.');
     }
@@ -125,5 +132,4 @@ class AkunPtkController extends Controller
 
         return redirect()->route('akun-ptk.index')->with('success', 'Akun PTK dan user berhasil dihapus.');
     }
-
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AkunPtkController;
+use App\Http\Controllers\AkunSiswaController;
 use App\Http\Controllers\AnakPtkController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,8 @@ use App\Http\Controllers\KeluargaPtkController;
 use App\Http\Controllers\KepegawaianPtkController;
 use App\Http\Controllers\BeasiswaPtkController;
 use App\Http\Controllers\DiklatController;
+use App\Http\Controllers\DokumenPtkController;
+use App\Http\Controllers\DokumenSiswaController;
 use App\Http\Controllers\KesejahteraanPtkController;
 use App\Http\Controllers\KesejahteraanSiswaController;
 use App\Http\Controllers\KompetensiKhususPtkController;
@@ -55,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
 
     // siswa
     Route::resource('siswa', SiswaController::class);
+    Route::resource('akun-siswa', AkunSiswaController::class);
+    Route::resource('dokumen-siswa', DokumenSiswaController::class);
     Route::resource('kontak-siswa', KontakSiswaController::class);
     Route::resource('periodik', PeriodikSiswaController::class);
     Route::resource('ptk', PtkController::class);
@@ -74,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     // ptk
     Route::resource('pendidikan-ptk', PendidikanPtkController::class);
     Route::resource('kontak-ptk', KontakPtkController::class);
+    Route::resource('dokumen-ptk', DokumenPtkController::class);
     Route::resource('keluarga-ptk', KeluargaPtkController::class);
     Route::resource('tunjangan', TunjanganController::class);
     Route::resource('kepegawaian-ptk', KepegawaianPtkController::class);

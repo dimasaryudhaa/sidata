@@ -163,11 +163,13 @@
                     </li>
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu(event)">
-                            <i class="bi bi-people me-2"></i>Siswa
+                            <i class="bi bi-people me-2"></i>Data Siswa
                         </a>
                         <ul class="submenu">
-                            <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Data Siswa</a></li>
-                            <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Data Periodik</a></li>
+                            <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
+                            <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Akun</a></li>
+                            <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Dokumen</a></li>
+                            <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
                             <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
                             <li><a href="{{ route('prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
                             <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
@@ -195,6 +197,7 @@
                         <ul class="submenu">
                             <li><a href="{{ route('ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
                             <li><a href="{{ route('akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                            <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-key me-2"></i>Dokumen</a></li>
                             <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
                             <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
                             <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
