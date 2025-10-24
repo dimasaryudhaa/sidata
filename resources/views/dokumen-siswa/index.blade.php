@@ -16,14 +16,13 @@
     box-shadow: none !important;
     background: transparent !important;
     padding: 0;
+    cursor: pointer;
 }
 
-.btn-no-border:focus,
-.btn-no-border:active,
-.btn-no-border:hover {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
+.btn-no-border.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 </style>
 
@@ -90,18 +89,32 @@
                     </td>
 
                     <td>
-                        <a href="{{ route('dokumen-siswa.show', $d->peserta_didik_id) }}" class="btn btn-sm btn-no-border" title="Lihat Dokumen">
+                        <a href="{{ route('dokumen-siswa.show', $d->peserta_didik_id) }}"
+                           class="btn btn-sm btn-no-border"
+                           title="Lihat Dokumen">
                             <img src="{{ asset('images/view.png') }}" alt="Lihat Dokumen" style="width:20px; height:20px;">
                         </a>
 
-                        @if($d->jumlah_dokumen > 0)
-                            <a href="{{ route('dokumen-siswa.edit', $d->peserta_didik_id) }}" class="btn btn-sm btn-no-border" title="Edit Dokumen">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit Dokumen" style="width:20px; height:20px;">
-                            </a>
+                        @if(auth()->user()->role === 'admin')
+                            @if($d->jumlah_dokumen > 0)
+                                <button class="btn btn-sm btn-no-border disabled" title="Edit Dinonaktifkan untuk Admin">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px; opacity:0.5;">
+                                </button>
+                            @else
+                                <button class="btn btn-sm btn-no-border disabled" title="Upload Dinonaktifkan untuk Admin">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Upload" style="width:20px; height:20px; opacity:0.5;">
+                                </button>
+                            @endif
                         @else
-                            <a href="{{ route('dokumen-siswa.create', ['peserta_didik_id' => $d->peserta_didik_id]) }}" class="btn btn-sm btn-no-border" title="Upload Dokumen">
-                                <img src="{{ asset('images/tambah2.png') }}" alt="Upload Dokumen" style="width:20px; height:20px;">
-                            </a>
+                            @if($d->jumlah_dokumen > 0)
+                                <a href="{{ route('dokumen-siswa.edit', $d->peserta_didik_id) }}" class="btn btn-sm btn-no-border" title="Edit Dokumen">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit Dokumen" style="width:20px; height:20px;">
+                                </a>
+                            @else
+                                <a href="{{ route('dokumen-siswa.create', ['peserta_didik_id' => $d->peserta_didik_id]) }}" class="btn btn-sm btn-no-border" title="Upload Dokumen">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Upload Dokumen" style="width:20px; height:20px;">
+                                </a>
+                            @endif
                         @endif
                     </td>
 

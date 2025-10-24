@@ -153,88 +153,116 @@
                         <li><a href="{{ route('register') }}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
                     @endif
                 @else
-                    <li class="brand-item">
-                        Sidata
-                    </li>
+                    <li class="brand-item">Sidata</li>
+
                     <li style="margin-top: 1rem;">
                         <a href="{{ route('home') }}">
                             <i class="bi bi-speedometer2 me-2"></i>Dashboard
                         </a>
                     </li>
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu(event)">
-                            <i class="bi bi-people me-2"></i>Data Siswa
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
-                            <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Akun</a></li>
-                            <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Dokumen</a></li>
-                            <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
-                            <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                            <li><a href="{{ route('prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
-                            <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
-                            <li><a href="{{ route('registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
-                            <li><a href="{{ route('kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
-                            <li><a href="{{ route('kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
-                            <li><a href="{{ route('pendaftaran-keluar.index') }}"><i class="bi bi-box-arrow-right me-2"></i>Pendaftaran Keluar Siswa</a></li>
-                        </ul>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu(event)">
-                            <i class="bi bi-book me-2"></i>Akademik
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="{{ route('semester.index') }}"><i class="bi bi-building me-2"></i>Semester</a></li>
-                            <li><a href="{{ route('jurusan.index') }}"><i class="bi bi-building me-2"></i>Jurusan</a></li>
-                            <li><a href="{{ route('rombel.index') }}"><i class="bi bi-people me-2"></i>Rombel</a></li>
-                            <li><a href="{{ route('rayon.index') }}"><i class="bi bi-geo me-2"></i>Rayon</a></li>
-                        </ul>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu(event)">
-                            <i class="bi bi-person-badge me-2"></i>Data Ptk
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="{{ route('ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
-                            <li><a href="{{ route('akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
-                            <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-key me-2"></i>Dokumen</a></li>
-                            <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
-                            <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
-                            <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
-                            <li><a href="{{ route('tunjangan.index') }}"><i class="bi bi-house me-2"></i>Tunjangan</a></li>
-                            <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-house me-2"></i>Kesejahteraan</a></li>
-                        </ul>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu(event)">
-                            <i class="bi bi-clock-history me-2"></i>Riwayat & Karir Ptk
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="{{ route('penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
-                            <li><a href="{{ route('kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
-                            <li><a href="{{ route('tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
-                            <li><a href="{{ route('riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
-                            <li><a href="{{ route('riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
-                            <li><a href="{{ route('riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
-                            <li><a href="{{ route('riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
-                            <li><a href="{{ route('riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Riwayat Jabatan Fungsional</a></li>
-                        </ul>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu(event)">
-                            <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi Ptk
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="{{ route('diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
-                            <li><a href="{{ route('nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
-                            <li><a href="{{ route('pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
-                            <li><a href="{{ route('sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
-                            <li><a href="{{ route('beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                            <li><a href="{{ route('penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
-                            <li><a href="{{ route('kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
-                            <li><a href="{{ route('kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
-                        </ul>
-                    </li>
+
+                    @if (auth()->user()->role === 'admin')
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-people me-2"></i>Data Siswa
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
+                                <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
+                                <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
+                                <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
+                                <li><a href="{{ route('registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
+                                <li><a href="{{ route('kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
+                                <li><a href="{{ route('kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
+                                <li><a href="{{ route('pendaftaran-keluar.index') }}"><i class="bi bi-box-arrow-right me-2"></i>Pendaftaran Keluar</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-book me-2"></i>Akademik
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('semester.index') }}"><i class="bi bi-building me-2"></i>Semester</a></li>
+                                <li><a href="{{ route('jurusan.index') }}"><i class="bi bi-building me-2"></i>Jurusan</a></li>
+                                <li><a href="{{ route('rombel.index') }}"><i class="bi bi-people me-2"></i>Rombel</a></li>
+                                <li><a href="{{ route('rayon.index') }}"><i class="bi bi-geo me-2"></i>Rayon</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-person-badge me-2"></i>Data PTK
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
+                                <li><a href="{{ route('akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
+                                <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
+                                <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
+                                <li><a href="{{ route('tunjangan.index') }}"><i class="bi bi-house me-2"></i>Tunjangan</a></li>
+                                <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-clock-history me-2"></i>Riwayat & Karir Ptk
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
+                                <li><a href="{{ route('kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
+                                <li><a href="{{ route('tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
+                                <li><a href="{{ route('riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
+                                <li><a href="{{ route('riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
+                                <li><a href="{{ route('riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
+                                <li><a href="{{ route('riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
+                                <li><a href="{{ route('riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi Ptk
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
+                                <li><a href="{{ route('nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
+                                <li><a href="{{ route('pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
+                                <li><a href="{{ route('sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
+                                <li><a href="{{ route('beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
+                                <li><a href="{{ route('kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
+                                <li><a href="{{ route('kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
+                            </ul>
+                        </li>
+                    @endif
+
+                    @if (auth()->user()->role === 'ptk')
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-person-badge me-2"></i>Data PTK
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen PTK</a></li>
+                            </ul>
+                        </li>
+                    @endif
+
+                    @if (auth()->user()->role === 'siswa')
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-person-badge me-2"></i>Data Siswa
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen Siswa</a></li>
+                            </ul>
+                        </li>
+                    @endif
                 @endguest
             </ul>
         </div>

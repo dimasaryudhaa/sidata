@@ -7,13 +7,17 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DokumenSiswaController extends Controller
 {
     public function index()
     {
-        $dokumen = DB::table('peserta_didik')
+        $user = Auth::user();
+
+        $query = DB::table('peserta_didik')
             ->leftJoin('dokumen_siswa', 'peserta_didik.id', '=', 'dokumen_siswa.peserta_didik_id')
+            ->leftJoin('akun_siswa', 'akun_siswa.peserta_didik_id', '=', 'peserta_didik.id')
             ->select(
                 'peserta_didik.id as peserta_didik_id',
                 'peserta_didik.nama_lengkap',
@@ -21,10 +25,18 @@ class DokumenSiswaController extends Controller
                 DB::raw('COUNT(dokumen_siswa.id) as jumlah_dokumen')
             )
             ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+            ->orderBy('peserta_didik.nama_lengkap', 'asc');
 
-        $rombels = DB::table('rombel')->select('id', 'nama_rombel')->orderBy('nama_rombel')->get();
+        if ($user->role === 'siswa') {
+            $query->where('akun_siswa.email', $user->email);
+        }
+
+        $dokumen = $query->paginate(12);
+
+        $rombels = DB::table('rombel')
+            ->select('id', 'nama_rombel')
+            ->orderBy('nama_rombel')
+            ->get();
 
         return view('dokumen-siswa.index', compact('dokumen', 'rombels'));
     }

@@ -7,21 +7,30 @@ use App\Models\Ptk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DokumenPtkController extends Controller
 {
     public function index()
     {
-        $dokumen = DB::table('ptk')
+        $user = Auth::user();
+
+        $query = DB::table('ptk')
             ->leftJoin('dokumen_ptk', 'ptk.id', '=', 'dokumen_ptk.ptk_id')
+            ->leftJoin('akun_ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
             ->select(
                 'ptk.id as ptk_id',
                 'ptk.nama_lengkap',
                 DB::raw('COUNT(dokumen_ptk.id) as jumlah_dokumen')
             )
             ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+            ->orderBy('ptk.nama_lengkap', 'asc');
+
+        if ($user->role === 'ptk') {
+            $query->where('akun_ptk.email', $user->email);
+        }
+
+        $dokumen = $query->paginate(12);
 
         return view('dokumen-ptk.index', compact('dokumen'));
     }

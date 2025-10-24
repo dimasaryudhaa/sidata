@@ -32,7 +32,7 @@ class PenugasanPtkController extends Controller
     public function create()
     {
         $ptks = Ptk::all();
-        $data = new PenugasanPtk(); // untuk form create
+        $data = new PenugasanPtk();
         return view('penugasan-ptk.edit', compact('data', 'ptks'));
     }
 

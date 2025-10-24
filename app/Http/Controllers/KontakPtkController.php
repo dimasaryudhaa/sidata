@@ -33,7 +33,7 @@ class KontakPtkController extends Controller
     public function create()
     {
         $ptks = Ptk::all();
-        $data = new KontakPtk(); // untuk form create
+        $data = new KontakPtk(); 
         return view('kontak-ptk.edit', compact('data', 'ptks'));
     }
 

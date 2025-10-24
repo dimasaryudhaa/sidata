@@ -25,6 +25,13 @@
     box-shadow: none !important;
     background: transparent !important;
 }
+
+/* Tambahan: gaya tombol nonaktif */
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 </style>
 
 <div class="container">
@@ -87,17 +94,28 @@
                             <img src="{{ asset('images/view.png') }}" alt="Lihat Dokumen" style="width:20px; height:20px;">
                         </a>
 
-                        @if($d->jumlah_dokumen > 0)
-                            <a href="{{ route('dokumen-ptk.edit', $d->ptk_id) }}" class="btn btn-sm btn-no-border" title="Edit Dokumen">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit Dokumen" style="width:20px; height:20px;">
-                            </a>
+                        @if(Auth::user()->role === 'admin')
+                            @if($d->jumlah_dokumen > 0)
+                                <button class="btn btn-sm btn-no-border btn-disabled" title="Admin tidak dapat mengedit dokumen">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit Dokumen" style="width:20px; height:20px;">
+                                </button>
+                            @else
+                                <button class="btn btn-sm btn-no-border btn-disabled" title="Admin tidak dapat menambah dokumen">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Upload Dokumen" style="width:20px; height:20px;">
+                                </button>
+                            @endif
                         @else
-                            <a href="{{ route('dokumen-ptk.create', ['ptk_id' => $d->ptk_id]) }}" class="btn btn-sm btn-no-border" title="Upload Dokumen">
-                                <img src="{{ asset('images/tambah2.png') }}" alt="Upload Dokumen" style="width:20px; height:20px;">
-                            </a>
+                            @if($d->jumlah_dokumen > 0)
+                                <a href="{{ route('dokumen-ptk.edit', $d->ptk_id) }}" class="btn btn-sm btn-no-border" title="Edit Dokumen">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit Dokumen" style="width:20px; height:20px;">
+                                </a>
+                            @else
+                                <a href="{{ route('dokumen-ptk.create', ['ptk_id' => $d->ptk_id]) }}" class="btn btn-sm btn-no-border" title="Upload Dokumen">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Upload Dokumen" style="width:20px; height:20px;">
+                                </a>
+                            @endif
                         @endif
                     </td>
-
                 </tr>
                 @endforeach
             </tbody>

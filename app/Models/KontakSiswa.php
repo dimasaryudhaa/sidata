@@ -10,7 +10,7 @@ class KontakSiswa extends Model
     use HasFactory;
 
     protected $table = 'kontak_peserta_didik';
-    // protected $primaryKey = 'id';
+
     protected $fillable = [
         'peserta_didik_id',
         'no_hp',

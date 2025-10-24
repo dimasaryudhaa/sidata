@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\AkunPtk;
 use App\Models\Ptk;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AkunPtkController extends Controller

@@ -19,14 +19,14 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Email (Username)</label>
+                    <label>Email</label>
                     <input type="email" name="email" class="form-control" value="{{ $data->email }}" required>
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label>Password Baru (Opsional)</label>
+                    <label>Password Baru</label>
                     <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ingin diubah">
                 </div>
             </div>
