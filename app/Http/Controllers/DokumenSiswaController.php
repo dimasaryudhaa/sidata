@@ -27,7 +27,9 @@ class DokumenSiswaController extends Controller
             ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
             ->orderBy('peserta_didik.nama_lengkap', 'asc');
 
-        if ($user->role === 'siswa') {
+        $isSiswa = $user->role === 'siswa';
+
+        if ($isSiswa) {
             $query->where('akun_siswa.email', $user->email);
         }
 
@@ -38,7 +40,14 @@ class DokumenSiswaController extends Controller
             ->orderBy('nama_rombel')
             ->get();
 
-        return view('dokumen-siswa.index', compact('dokumen', 'rombels'));
+        $dokumenSiswa = null;
+        $siswa = null;
+        if ($isSiswa && $dokumen->first()) {
+            $siswa = DB::table('peserta_didik')->find($dokumen->first()->peserta_didik_id);
+            $dokumenSiswa = DB::table('dokumen_siswa')->where('peserta_didik_id', $siswa->id)->first();
+        }
+
+        return view('dokumen-siswa.index', compact('dokumen', 'rombels', 'isSiswa', 'dokumenSiswa', 'siswa'));
     }
 
     public function create(Request $request)

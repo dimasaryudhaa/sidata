@@ -6,29 +6,54 @@ use App\Models\OrangTua;
 use Illuminate\Http\Request;
 use App\Models\Siswa;
 use App\Models\Rombel;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class OrangTuaController extends Controller
 {
     public function index()
     {
-        $data = DB::table('peserta_didik')
-            ->leftJoin('orang_tua', 'peserta_didik.id', '=', 'orang_tua.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as siswa_id',
-                'peserta_didik.nama_lengkap',
-                'orang_tua.id as orang_tua_id',
-                'orang_tua.nama_ayah',
-                'orang_tua.nama_ibu',
-                'orang_tua.nama_wali',
-                'peserta_didik.rombel_id'
-            )
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        $rombels = collect();
 
-        return view('orang-tua.index', compact('data', 'rombels'));
+        if ($isSiswa) {
+            $data = DB::table('orang_tua')
+                ->join('peserta_didik', 'orang_tua.peserta_didik_id', '=', 'peserta_didik.id')
+                ->join('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->where('akun_siswa.email', $user->email)
+                ->select(
+                    'orang_tua.id as orang_tua_id',
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'orang_tua.nama_ayah',
+                    'orang_tua.nama_ibu',
+                    'orang_tua.nama_wali'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('orang-tua.index', compact('data', 'isSiswa'));
+        } else {
+            $data = DB::table('peserta_didik')
+                ->leftJoin('orang_tua', 'peserta_didik.id', '=', 'orang_tua.peserta_didik_id')
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'orang_tua.id as orang_tua_id',
+                    'orang_tua.nama_ayah',
+                    'orang_tua.nama_ibu',
+                    'orang_tua.nama_wali',
+                    'peserta_didik.rombel_id'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('orang-tua.index', compact('data', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create()

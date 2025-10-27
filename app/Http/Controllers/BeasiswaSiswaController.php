@@ -6,26 +6,41 @@ use App\Models\Siswa;
 use App\Models\Rombel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class BeasiswaSiswaController extends Controller
 {
+
     public function index()
     {
-        $beasiswa = DB::table('peserta_didik')
-            ->leftJoin('beasiswa', 'peserta_didik.id', '=', 'beasiswa.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as siswa_id',
-                'peserta_didik.nama_lengkap',
-                'peserta_didik.rombel_id',
-                DB::raw('COUNT(beasiswa.id) as jumlah_beasiswa')
-            )
-            ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap')
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        if ($isSiswa) {
+            $beasiswa = BeasiswaSiswa::join('akun_siswa', 'beasiswa.peserta_didik_id', '=', 'akun_siswa.peserta_didik_id')
+                ->where('akun_siswa.email', $user->email)
+                ->select('beasiswa.*')
+                ->paginate(12);
 
-        return view('beasiswa.index', compact('beasiswa', 'rombels'));
+            return view('beasiswa.index', compact('beasiswa', 'isSiswa'));
+        } else {
+            $query = DB::table('peserta_didik')
+                ->leftJoin('beasiswa', 'peserta_didik.id', '=', 'beasiswa.peserta_didik_id')
+                ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.rombel_id',
+                    DB::raw('COUNT(beasiswa.id) as jumlah_beasiswa')
+                )
+                ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
+                ->orderBy('peserta_didik.nama_lengkap', 'asc');
+
+            $beasiswa = $query->paginate(12);
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('beasiswa.index', compact('beasiswa', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create(Request $request)
@@ -58,21 +73,15 @@ class BeasiswaSiswaController extends Controller
 
     public function show($siswa_id)
     {
-        $beasiswa = BeasiswaSiswa::where('peserta_didik_id', $siswa_id)->get(); 
+        $beasiswa = BeasiswaSiswa::where('peserta_didik_id', $siswa_id)->get();
         $siswa = Siswa::findOrFail($siswa_id);
 
         return view('beasiswa.show', compact('beasiswa', 'siswa'));
     }
 
-    public function edit($siswa_id)
+    public function edit($id)
     {
-        $beasiswa = BeasiswaSiswa::where('peserta_didik_id', $siswa_id)->first();
-
-        if (!$beasiswa) {
-            $beasiswa = new BeasiswaSiswa();
-            $beasiswa->peserta_didik_id = $siswa_id;
-        }
-
+        $beasiswa = BeasiswaSiswa::findOrFail($id);
         $siswa = Siswa::all();
         return view('beasiswa.edit', compact('beasiswa', 'siswa'));
     }

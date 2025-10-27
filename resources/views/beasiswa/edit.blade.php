@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Edit Beasiswa Siswa</h1>
-    <form action="{{ route('beasiswa.update', $beasiswa->id) }}" method="POST">
+        <form action="{{ $beasiswa->id ? route('beasiswa.update', $beasiswa->id) : route('beasiswa.store') }}" method="POST">
         @csrf
         @method('PUT')
 

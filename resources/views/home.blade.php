@@ -7,20 +7,6 @@
     $isAdmin = $user->role === 'admin';
 @endphp
 
-<style>
-    .disabled-card {
-        pointer-events: none;
-        opacity: 1 !important;
-        cursor: default !important;
-    }
-
-    .hoverable:hover {
-        transform: translateY(-3px);
-        transition: 0.2s;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-</style>
-
 <div class="container dashboard-containerr">
     <div class="row">
 

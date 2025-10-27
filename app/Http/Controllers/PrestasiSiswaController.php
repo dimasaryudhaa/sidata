@@ -7,26 +7,41 @@ use App\Models\PrestasiSiswa;
 use App\Models\Siswa;
 use App\Models\Rombel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PrestasiSiswaController extends Controller
 {
+
     public function index()
     {
-        $prestasi = DB::table('peserta_didik')
-            ->leftJoin('prestasi', 'peserta_didik.id', '=', 'prestasi.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as siswa_id',
-                'peserta_didik.nama_lengkap',
-                'peserta_didik.rombel_id',
-                DB::raw('COUNT(prestasi.id) as jumlah_prestasi')
-            )
-            ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap')
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        if ($isSiswa) {
+            $prestasi = PrestasiSiswa::join('akun_siswa', 'prestasi.peserta_didik_id', '=', 'akun_siswa.peserta_didik_id')
+                ->where('akun_siswa.email', $user->email)
+                ->select('prestasi.*')
+                ->paginate(12);
 
-        return view('prestasi.index', compact('prestasi', 'rombels'));
+            return view('prestasi.index', compact('prestasi', 'isSiswa'));
+        } else {
+            $query = DB::table('peserta_didik')
+                ->leftJoin('prestasi', 'peserta_didik.id', '=', 'prestasi.peserta_didik_id')
+                ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.rombel_id',
+                    DB::raw('COUNT(prestasi.id) as jumlah_prestasi')
+                )
+                ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
+                ->orderBy('peserta_didik.nama_lengkap', 'asc');
+
+            $prestasi = $query->paginate(12);
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('prestasi.index', compact('prestasi', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create(Request $request)

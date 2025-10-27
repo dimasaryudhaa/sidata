@@ -27,11 +27,16 @@
 }
 </style>
 
+@php
+    $user = Auth::user();
+    $isSiswa = $user->role === 'siswa';
+@endphp
+
 <div class="container">
 
+    @if(!$isSiswa)
     <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
         <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
-
         <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
             <option value="">Semua Rombel</option>
             @foreach($rombels as $rombel)
@@ -39,6 +44,7 @@
             @endforeach
         </select>
     </div>
+    @endif
 
     @if(session('success'))
         <div id="successAlert"
@@ -71,7 +77,9 @@
             <thead class="text-white">
                 <tr>
                     <th style="width:50px;">No</th>
-                    <th>Nama Siswa</th>
+                    @if(!$isSiswa)
+                        <th>Nama Siswa</th>
+                    @endif
                     <th>Nama Ayah</th>
                     <th>Nama Ibu</th>
                     <th>Nama Wali</th>
@@ -79,29 +87,41 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($data as $item)
-                <tr data-rombel="{{ $item->rombel_id }}">
-                    <td>{{ $loop->iteration }}</td>
-                    <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $item->nama_ayah ?? '-' }}</td>
-                    <td>{{ $item->nama_ibu ?? '-' }}</td>
-                    <td>{{ $item->nama_wali ?? '-' }}</td>
-                    <td>
-                        <a href="{{ route('orang-tua.edit', ['orang_tua' => $item->siswa_id]) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/edit.png') }}" alt="Tambah/Edit Orang Tua" style="width:20px; height:20px;">
-                        </a>
-                        @if($item->orang_tua_id)
-                            <form action="{{ route('orang-tua.destroy', $item->orang_tua_id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-no-border"
-                                    onclick="return confirm('Yakin ingin menghapus semua data orang tua siswa ini?')">
-                                    <img src="{{ asset('images/delete.png') }}" alt="Hapus Orang Tua" style="width:20px; height:20px;">
-                                </button>
-                            </form>
+                @foreach($data as $index => $item)
+                    <tr @if(!$isSiswa) data-rombel="{{ $item->rombel_id }}" @endif>
+                        <td>{{ $data->firstItem() + $index }}</td>
+
+                        @if(!$isSiswa)
+                            <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
                         @endif
-                    </td>
-                </tr>
+
+                        <td>{{ $item->nama_ayah ?? '-' }}</td>
+                        <td>{{ $item->nama_ibu ?? '-' }}</td>
+                        <td>{{ $item->nama_wali ?? '-' }}</td>
+
+                        <td>
+                            <a href="{{ route('orang-tua.edit', ['orang_tua' => $item->siswa_id]) }}" class="btn btn-sm btn-no-border">
+                                <img src="{{ asset('images/edit.png') }}" alt="Tambah/Edit Orang Tua" style="width:20px; height:20px;">
+                            </a>
+
+                            @if(!$isSiswa)
+                                @if($item->orang_tua_id)
+                                    <form action="{{ route('orang-tua.destroy', $item->orang_tua_id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-no-border"
+                                            onclick="return confirm('Yakin ingin menghapus semua data orang tua siswa ini?')">
+                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus Orang Tua" style="width:20px; height:20px;">
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="btn btn-sm btn-no-border" disabled>
+                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
+                                    </button>
+                                @endif
+                            @endif
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -109,8 +129,8 @@
 
 </div>
 
+@if(!$isSiswa)
 <script>
-
 const searchInput = document.getElementById('search');
 const rombelSelect = document.getElementById('rombelFilter');
 const rows = document.querySelectorAll('#orangTuaTable tbody tr');
@@ -132,7 +152,7 @@ function filterTable() {
 
 searchInput.addEventListener('keyup', filterTable);
 rombelSelect.addEventListener('change', filterTable);
-
 </script>
+@endif
 
 @endsection

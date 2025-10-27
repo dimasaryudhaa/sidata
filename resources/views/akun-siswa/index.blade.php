@@ -3,36 +3,36 @@
 @section('content')
 
 <style>
-    .table thead th {
-        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-        color: white !important;
-        border: none !important;
-        vertical-align: middle !important;
-        font-weight: 600;
-    }
+.table thead th {
+    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+    color: white !important;
+    border: none !important;
+    vertical-align: middle !important;
+    font-weight: 600;
+}
 
-    .btn-no-border {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        padding: 0;
-    }
+.btn-no-border {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0;
+}
 
-    .btn-no-border:focus,
-    .btn-no-border:active,
-    .btn-no-border:hover {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-    }
+.btn-no-border:focus,
+.btn-no-border:active,
+.btn-no-border:hover {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
 </style>
 
 <div class="container">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <form class="d-flex mb-3" style="gap:0.5rem;">
+    <div class="d-flex justify-content-start mb-3" style="gap:0.5rem;">
+        @if(!$isSiswa)
             <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa..." style="max-width: 250px;">
-        </form>
+        @endif
     </div>
 
     @if(session('success'))
@@ -48,7 +48,6 @@
             <h5 class="fw-bold mb-1">Success</h5>
             <p class="text-muted mb-0">{{ session('success') }}</p>
         </div>
-
         <script>
             setTimeout(() => {
                 const alertBox = document.getElementById('successAlert');
@@ -66,35 +65,43 @@
             <thead class="text-white">
                 <tr>
                     <th style="width: 50px;">No</th>
-                    <th>Nama Siswa</th>
+                    @if(!$isSiswa)
+                        <th>Nama Siswa</th>
+                    @endif
                     <th>Email</th>
                     <th style="width: 80px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($data as $item)
+                @foreach($data as $index => $item)
                     <tr>
-                        <td>{{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}</td>
-                        <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
+                        <td>{{ $data->firstItem() + $index }}</td>
+
+                        @if(!$isSiswa)
+                            <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
+                        @endif
+
                         <td>{{ $item->email ?? '-' }}</td>
                         <td>
                             <a href="{{ route('akun-siswa.edit', ['akun_siswa' => $item->peserta_didik_id]) }}" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/edit.png') }}" alt="Tambah/Edit Akun" style="width:20px; height:20px;">
+                                <img src="{{ asset('images/edit.png') }}" alt="Edit Akun" style="width:20px; height:20px;">
                             </a>
 
-                            @if($item->akun_id)
-                                <form action="{{ route('akun-siswa.destroy', $item->akun_id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-no-border"
-                                        onclick="return confirm('Yakin ingin menghapus akun siswa ini?')">
-                                        <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
+                            @if(!$isSiswa)
+                                @if($item->akun_id)
+                                    <form action="{{ route('akun-siswa.destroy', $item->akun_id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-no-border"
+                                            onclick="return confirm('Yakin ingin menghapus akun siswa ini?')">
+                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="btn btn-sm btn-no-border" disabled>
+                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
                                     </button>
-                                </form>
-                            @else
-                                <button class="btn btn-sm btn-no-border" disabled>
-                                    <img src="{{ asset('images/delete.png') }}" alt="Hapus Nonaktif" style="width:20px; height:20px; opacity:0.5;">
-                                </button>
+                                @endif
                             @endif
                         </td>
                     </tr>
@@ -108,6 +115,7 @@
     </div>
 </div>
 
+@if(!$isSiswa)
 <script>
 document.getElementById('search').addEventListener('keyup', function() {
     let filter = this.value.toLowerCase();
@@ -119,5 +127,6 @@ document.getElementById('search').addEventListener('keyup', function() {
     });
 });
 </script>
+@endif
 
 @endsection

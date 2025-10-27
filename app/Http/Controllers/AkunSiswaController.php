@@ -6,25 +6,44 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\AkunSiswa;
 use App\Models\Siswa;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AkunSiswaController extends Controller
 {
     public function index()
     {
-        $data = DB::table('peserta_didik')
-            ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as peserta_didik_id',
-                'peserta_didik.nama_lengkap',
-                'akun_siswa.id as akun_id',
-                'akun_siswa.email'
-            )
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        return view('akun-siswa.index', compact('data'));
+        if ($isSiswa) {
+            $data = DB::table('akun_siswa')
+                ->join('peserta_didik', 'akun_siswa.peserta_didik_id', '=', 'peserta_didik.id')
+                ->where('akun_siswa.email', $user->email)
+                ->select(
+                    'akun_siswa.id as akun_id',
+                    'akun_siswa.email',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.id as peserta_didik_id'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('akun-siswa.index', compact('data', 'isSiswa'));
+        } else {
+            $data = DB::table('peserta_didik')
+                ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->select(
+                    'peserta_didik.id as peserta_didik_id',
+                    'peserta_didik.nama_lengkap',
+                    'akun_siswa.id as akun_id',
+                    'akun_siswa.email'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('akun-siswa.index', compact('data', 'isSiswa'));
+        }
     }
 
     public function create()

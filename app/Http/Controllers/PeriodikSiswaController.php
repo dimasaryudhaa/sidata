@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PeriodikSiswa;
 use App\Models\Siswa;
 use App\Models\Rombel;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PeriodikSiswaController extends Controller
@@ -13,23 +14,53 @@ class PeriodikSiswaController extends Controller
 
     public function index()
     {
-        $periodik = Siswa::leftJoin('data_periodik', 'peserta_didik.id', '=', 'data_periodik.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as siswa_id',
-                'peserta_didik.nama_lengkap',
-                'data_periodik.id as periodik_id',
-                'data_periodik.tinggi_badan_cm',
-                'data_periodik.berat_badan_kg',
-                'data_periodik.lingkar_kepala_cm',
-                'data_periodik.jarak_sebenarnya_km',
-                'peserta_didik.rombel_id'
-            )
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        if ($isSiswa) {
+            $periodik = DB::table('data_periodik')
+                ->join('akun_siswa', 'data_periodik.peserta_didik_id', '=', 'akun_siswa.peserta_didik_id')
+                ->join('peserta_didik', 'data_periodik.peserta_didik_id', '=', 'peserta_didik.id')
+                ->where('akun_siswa.email', $user->email)
+                ->select(
+                    'data_periodik.*',
+                    'peserta_didik.nama_lengkap'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
 
-        return view('periodik.index', compact('periodik', 'rombels'));
+            return view('periodik.index', compact('periodik', 'isSiswa'));
+        } else {
+            $query = DB::table('peserta_didik')
+                ->leftJoin('data_periodik', 'peserta_didik.id', '=', 'data_periodik.peserta_didik_id')
+                ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.rombel_id',
+                    'data_periodik.id as periodik_id',
+                    'data_periodik.tinggi_badan_cm',
+                    'data_periodik.berat_badan_kg',
+                    'data_periodik.lingkar_kepala_cm',
+                    'data_periodik.jarak_sebenarnya_km'
+                )
+                ->groupBy(
+                    'peserta_didik.id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.rombel_id',
+                    'data_periodik.id',
+                    'data_periodik.tinggi_badan_cm',
+                    'data_periodik.berat_badan_kg',
+                    'data_periodik.lingkar_kepala_cm',
+                    'data_periodik.jarak_sebenarnya_km'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc');
+
+            $periodik = $query->paginate(12);
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('periodik.index', compact('periodik', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create()
@@ -88,7 +119,7 @@ class PeriodikSiswaController extends Controller
     public function update(Request $request, PeriodikSiswa $periodik)
     {
         $request->validate([
-            'peserta_didik_id' => 'required|exists:siswa,id',
+            'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'tinggi_badan_cm' => 'nullable|numeric',
             'berat_badan_kg' => 'nullable|numeric',
             'lingkar_kepala_cm' => 'nullable|numeric',

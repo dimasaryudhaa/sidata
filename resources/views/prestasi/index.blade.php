@@ -27,11 +27,16 @@
 }
 </style>
 
+@php
+    $user = Auth::user();
+    $isSiswa = $user->role === 'siswa';
+@endphp
+
 <div class="container">
 
+    @if(!$isSiswa)
     <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
         <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
-
         <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
             <option value="">Semua Rombel</option>
             @foreach($rombels as $rombel)
@@ -39,6 +44,7 @@
             @endforeach
         </select>
     </div>
+    @endif
 
     @if(session('success'))
         <div id="successAlert"
@@ -53,7 +59,6 @@
             <h5 class="fw-bold mb-1">Success</h5>
             <p class="text-muted mb-0">{{ session('success') }}</p>
         </div>
-
         <script>
             setTimeout(() => {
                 const alertBox = document.getElementById('successAlert');
@@ -70,35 +75,65 @@
         <table class="table table-bordered" id="prestasiTable">
             <thead class="text-white">
                 <tr>
-                    <th style="width: 50px;">No</th>
-                    <th>Nama Siswa</th>
-                    <th>Jumlah Prestasi</th>
-                    <th style="width: 80px;">Aksi</th>
+                    <th style="width:50px;">No</th>
+                    @if($isSiswa)
+                        <th>Jenis Prestasi</th>
+                        <th>Tingkat</th>
+                        <th>Nama Prestasi</th>
+                        <th>Tahun</th>
+                        <th>Penyelenggara</th>
+                        <th>Peringkat</th>
+                        <th style="width:80px;">Aksi</th>
+                    @else
+                        <th>Nama Siswa</th>
+                        <th>Jumlah Prestasi</th>
+                        <th style="width:80px;">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
                 @foreach($prestasi as $index => $p)
-                <tr data-rombel="{{ $p->rombel_id }}">
+                <tr @if(!$isSiswa) data-rombel="{{ $p->rombel_id }}" @endif>
                     <td>{{ $prestasi->firstItem() + $index }}</td>
-                    <td class="nama_siswa">{{ $p->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $p->jumlah_prestasi }}</td>
-                    <td>
-                        <a href="{{ route('prestasi.show', $p->siswa_id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/view.png') }}" alt="Lihat Prestasi" style="width:20px; height:20px;">
-                        </a>
-                        <a href="{{ route('prestasi.create', ['siswa_id' => $p->siswa_id]) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Prestasi" style="width:20px; height:20px;">
-                        </a>
-                    </td>
+
+                    @if($isSiswa)
+                        <td>{{ $p->jenis_prestasi }}</td>
+                        <td>{{ $p->tingkat_prestasi }}</td>
+                        <td>{{ $p->nama_prestasi }}</td>
+                        <td>{{ $p->tahun_prestasi }}</td>
+                        <td>{{ $p->penyelenggara }}</td>
+                        <td>{{ $p->peringkat ?? '-' }}</td>
+                        <td>
+                            <a href="{{ route('prestasi.edit', $p->id) }}" class="btn btn-sm btn-no-border">
+                                <img src="{{ asset('images/edit.png') }}" alt="Edit Prestasi" style="width:20px; height:20px;">
+                            </a>
+                        </td>
+                    @else
+                        <td class="nama_siswa">{{ $p->nama_lengkap ?? '-' }}</td>
+                        <td>{{ $p->jumlah_prestasi }}</td>
+                        <td>
+                            <a href="{{ route('prestasi.show', $p->siswa_id) }}" class="btn btn-sm btn-no-border">
+                                <img src="{{ asset('images/view.png') }}" alt="Lihat Prestasi" style="width:20px; height:20px;">
+                            </a>
+                            <a href="{{ route('prestasi.create', ['siswa_id' => $p->siswa_id]) }}" class="btn btn-sm btn-no-border">
+                                <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Prestasi" style="width:20px; height:20px;">
+                            </a>
+                        </td>
+                    @endif
                 </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 
-</div>
-<script>
+    <div class="mt-3">
+        {{ $prestasi->links('pagination::bootstrap-5') }}
+    </div>
 
+</div>
+
+@if(!$isSiswa)
+<script>
 const searchInput = document.getElementById('search');
 const rombelSelect = document.getElementById('rombelFilter');
 const rows = document.querySelectorAll('#prestasiTable tbody tr');
@@ -120,7 +155,7 @@ function filterTable() {
 
 searchInput.addEventListener('keyup', filterTable);
 rombelSelect.addEventListener('change', filterTable);
-
 </script>
+@endif
 
 @endsection

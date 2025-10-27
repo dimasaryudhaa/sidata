@@ -22,20 +22,20 @@
 
                 <div class="mb-3">
                     <label>Tinggi Badan (cm)</label>
-                    <input type="number" step="0.01" name="tinggi_badan_cm" class="form-control"
-                        value="{{ old('tinggi_badan_cm', $periodik->tinggi_badan_cm) }}">
+                    <input type="number" step="1" name="tinggi_badan_cm" class="form-control"
+                    value="{{ old('tinggi_badan_cm', intval($periodik->tinggi_badan_cm)) }}">
                 </div>
 
                 <div class="mb-3">
                     <label>Berat Badan (kg)</label>
-                    <input type="number" step="0.01" name="berat_badan_kg" class="form-control"
-                        value="{{ old('berat_badan_kg', $periodik->berat_badan_kg) }}">
+                    <input type="number" step="1" name="berat_badan_kg" class="form-control"
+                    value="{{ old('berat_badan_kg', intval($periodik->berat_badan_kg)) }}">
                 </div>
 
                 <div class="mb-3">
                     <label>Lingkar Kepala (cm)</label>
-                    <input type="number" step="0.01" name="lingkar_kepala_cm" class="form-control"
-                        value="{{ old('lingkar_kepala_cm', $periodik->lingkar_kepala_cm) }}">
+                    <input type="number" step="1" name="lingkar_kepala_cm" class="form-control"
+                        value="{{ old('lingkar_kepala_cm', intval($periodik->lingkar_kepala_cm)) }}">
                 </div>
             </div>
 
@@ -55,8 +55,8 @@
 
                 <div class="mb-3">
                     <label>Jarak Sebenarnya (km)</label>
-                    <input type="number" step="0.01" name="jarak_sebenarnya_km" class="form-control"
-                        value="{{ old('jarak_sebenarnya_km', $periodik->jarak_sebenarnya_km) }}">
+                    <input type="number" step="1" name="jarak_sebenarnya_km" class="form-control"
+                        value="{{ old('jarak_sebenarnya_km', intval($periodik->jarak_sebenarnya_km)) }}">
                 </div>
 
                 <div class="mb-3">
