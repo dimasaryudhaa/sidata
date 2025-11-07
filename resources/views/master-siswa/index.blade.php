@@ -24,7 +24,7 @@
 
     <div class="text-end mb-3">
         <a href="{{ route('master-siswa.cetak', $siswa->id) }}"
-           class="btn btn-danger" target="_blank">
+           class="btn btn-success" target="_blank">
             <i class="bi bi-file-earmark-pdf"></i> Cetak PDF
         </a>
     </div>
