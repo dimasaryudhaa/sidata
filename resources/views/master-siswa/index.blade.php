@@ -28,31 +28,32 @@
             <i class="bi bi-file-earmark-pdf"></i> Cetak PDF
         </a>
     </div>
-    
+
     @if($siswa)
 
     <div class="table-responsive overflow-hidden mt-3">
         <div class="bg-primary text-white fw-bold fs-5 ps-2 py-1">Data Pribadi</div>
-        <table class="table table-bordered">
-            <tr><th>Nama Lengkap</th><td>{{ $siswa->nama_lengkap }}</td></tr>
-            <tr><th>Jenis Kelamin</th><td>{{ $siswa->jenis_kelamin }}</td></tr>
-            <tr><th>NIS</th><td>{{ $siswa->nis }}</td></tr>
-            <tr><th>NISN</th><td>{{ $siswa->nisn }}</td></tr>
-            <tr><th>NIK</th><td>{{ $siswa->nik }}</td></tr>
-            <tr><th>No KK</th><td>{{ $siswa->no_kk }}</td></tr>
-            <tr><th>Tempat, Tanggal Lahir</th><td>{{ $siswa->tempat_lahir }}, {{ $siswa->tanggal_lahir }}</td></tr>
-            <tr><th>Agama</th><td>{{ $siswa->agama }}</td></tr>
-            <tr><th>Kewarganegaraan</th><td>{{ $siswa->kewarganegaraan }}</td></tr>
-            <tr><th>Negara Asal</th><td>{{ $siswa->negara_asal }}</td></tr>
-            <tr><th>Berkebutuhan Khusus</th><td>{{ $siswa->berkebutuhan_khusus }}</td></tr>
-        </table>
+            <table class="table table-bordered">
+                <tr><th>Nama Lengkap</th><td>{{ $siswa->nama_lengkap }}</td></tr>
+                <tr><th>Jenis Kelamin</th><td>{{ $siswa->jenis_kelamin }}</td></tr>
+                <tr><th>NIS</th><td>{{ $siswa->nis }}</td></tr>
+                <tr><th>NISN</th><td>{{ $siswa->nisn }}</td></tr>
+                <tr><th>Rayon</th><td>{{ $siswa->nama_rayon }}</td></tr>
+                <tr><th>Rombel</th><td>{{ $siswa->nama_rombel }}</td></tr>
+                <tr><th>NIK</th><td>{{ $siswa->nik }}</td></tr>
+                <tr><th>No KK</th><td>{{ $siswa->no_kk }}</td></tr>
+                <tr><th>Tempat, Tanggal Lahir</th><td>{{ $siswa->tempat_lahir }}, {{ $siswa->tanggal_lahir }}</td></tr>
+                <tr><th>Agama</th><td>{{ $siswa->agama }}</td></tr>
+                <tr><th>Kewarganegaraan</th><td>{{ $siswa->kewarganegaraan }}</td></tr>
+                <tr><th>Negara Asal</th><td>{{ $siswa->negara_asal }}</td></tr>
+                <tr><th>Berkebutuhan Khusus</th><td>{{ $siswa->berkebutuhan_khusus }}</td></tr>
+            </table>
     </div>
 
     <div class="table-responsive overflow-hidden mt-3">
         <div class="bg-primary text-white fw-bold fs-5 ps-2 py-1">Akun Siswa</div>
         <table class="table table-bordered table-sm">
             <tr><th>Email</th><td>{{ $siswa->akun_email }}</td></tr>
-            <tr><th>Password (terenkripsi)</th><td>{{ $siswa->akun_password }}</td></tr>
         </table>
     </div>
 

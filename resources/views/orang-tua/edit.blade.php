@@ -1,32 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    .scroll-container {
-        max-height: calc(100vh - 150px);
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding-right: 10px;
-    }
-
-    .scroll-container::-webkit-scrollbar {
-        width: 8px;
-    }
-    .scroll-container::-webkit-scrollbar-thumb {
-        background-color: rgba(0,0,0,0.2);
-        border-radius: 4px;
-    }
-    .scroll-container::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(0,0,0,0.4);
-    }
-</style>
 
 <div class="container">
 
-    <div class="scroll-container p-3 shadow-sm rounded">
-        <form action="{{ route('orang-tua.update', $data->id) }}" method="POST">
+    <div class="scroll-container p-5 rounded">
+        <form
+            action="{{ isset($data->id) ? route('orang-tua.update', $data->id) : route('orang-tua.store') }}"
+            method="POST"
+        >
             @csrf
-            @method('PUT')
+            @if(isset($data->id))
+                @method('PUT')
+            @endif
 
             <div class="row">
                 <div class="col-md-6">

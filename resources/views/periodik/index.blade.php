@@ -38,9 +38,9 @@
     @if($isSiswa)
         <div class="d-flex justify-start-end mb-3">
             <a href="{{ route('periodik.edit', $periodik->first()->id ?? 0) }}"
-               class="btn btn-primary btn-sm"
-               style="background:linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border:none;">
-                <i class="bi bi-pencil-square"></i> Edit
+            class="btn btn-primary px-4"
+            style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                <i class="bi bi-pencil-square me-2"></i> Edit
             </a>
         </div>
     @else

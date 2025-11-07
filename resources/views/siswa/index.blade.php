@@ -46,17 +46,20 @@
                 @foreach($rombels as $rombel)
                     <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
                 @endforeach
-            </select>
+            </select>  
         </div>
         @else
             @php
                 $dataSiswa = $siswa->first();
             @endphp
-
             @if($dataSiswa)
-                <a href="{{ route('siswa.edit', $dataSiswa->id) }}" class="btn btn-primary px-4">
-                    <i class="bi bi-pencil-square me-2"></i> Edit
-                </a>
+                <div class="d-flex justify-content-start align-items-center mb-3">
+                    <a href="{{ route('siswa.edit', ['siswa' => $dataSiswa->id ?? Auth::user()->siswa->id]) }}"
+                    class="btn btn-primary px-4"
+                    style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                        <i class="bi bi-pencil-square me-2"></i> Edit
+                    </a>
+                </div>
             @endif
         @endif
     </div>

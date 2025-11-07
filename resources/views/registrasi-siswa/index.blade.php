@@ -23,15 +23,7 @@
 @endphp
 
 <div class="container">
-
-    @if($isSiswa)
-        <div class="d-flex justify-start-end mb-3">
-            <a href="{{ route('registrasi-siswa.edit', ['registrasi_siswa' => $data->first()->siswa_id ?? '']) }}"
-               class="btn btn-primary shadow-sm">
-                <i class="bi bi-pencil-square me-1"></i> Edit
-            </a>
-        </div>
-    @else
+    @if(!$isSiswa)
         <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
             <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
             <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
@@ -40,6 +32,14 @@
                     <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
                 @endforeach
             </select>
+        </div>
+    @else
+        <div class="d-flex justify-content-start align-items-center mb-3">
+            <a href="{{ route('registrasi-siswa.edit', ['registrasi_siswa' => $data[0]->siswa_id ?? Auth::user()->id]) }}"
+               class="btn btn-primary px-4"
+               style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                <i class="bi bi-pencil-square me-2"></i> Edit
+            </a>
         </div>
     @endif
 

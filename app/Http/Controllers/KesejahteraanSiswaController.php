@@ -26,7 +26,7 @@ class KesejahteraanSiswaController extends Controller
                 ->select(
                     'kesejahteraan.id as kesejahteraan_id',
                     'peserta_didik.id as siswa_id',
-                    'kesejahteraan.jenis_kesejahteraan', 
+                    'kesejahteraan.jenis_kesejahteraan',
                     'kesejahteraan.no_kartu',
                     'kesejahteraan.nama_di_kartu'
                 )

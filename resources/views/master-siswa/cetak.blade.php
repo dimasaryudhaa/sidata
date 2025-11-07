@@ -31,7 +31,6 @@
 
         th {
             width: 35%;
-            background: #f2f2f2;
         }
 
         img {
@@ -73,7 +72,6 @@
     <div class="section-title">Akun Siswa</div>
     <table>
         <tr><th>Email</th><td>{{ $siswa->akun_email }}</td></tr>
-        <tr><th>Password (terenkripsi)</th><td>{{ $siswa->akun_password }}</td></tr>
     </table>
 
     <div class="section-title">Data Periodik</div>

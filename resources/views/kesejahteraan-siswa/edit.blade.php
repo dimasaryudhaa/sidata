@@ -4,9 +4,14 @@
 <div class="container">
     <h1 class="mb-4">Edit Kesejahteraan Siswa</h1>
 
-    <form action="{{ route('kesejahteraan-siswa.update', $kesejahteraan->id) }}" method="POST">
+    <form
+        action="{{ isset($data) && $data->id ? route('registrasi-siswa.update', $data->id) : route('registrasi-siswa.store') }}"
+        method="POST"
+    >
         @csrf
-        @method('PUT')
+        @if(isset($data) && $data->id)
+            @method('PUT')
+        @endif
 
         <div class="row">
             <div class="col-md-6">

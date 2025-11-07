@@ -22,9 +22,11 @@ class MasterSiswaController extends Controller
             ->leftJoin('registrasi_peserta_didik', 'peserta_didik.id', '=', 'registrasi_peserta_didik.peserta_didik_id')
             ->leftJoin('kesejahteraan', 'peserta_didik.id', '=', 'kesejahteraan.peserta_didik_id')
             ->leftJoin('kontak_peserta_didik', 'peserta_didik.id', '=', 'kontak_peserta_didik.peserta_didik_id')
+            ->leftJoin('rayon', 'peserta_didik.rayon_id', '=', 'rayon.id')
+            ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
             ->where('akun_siswa.email', $user->email)
             ->select(
-
+                
                 // siswa
                 'peserta_didik.id',
                 'peserta_didik.nama_lengkap',
@@ -36,11 +38,11 @@ class MasterSiswaController extends Controller
                 'peserta_didik.tempat_lahir',
                 'peserta_didik.tanggal_lahir',
                 'peserta_didik.agama',
-                'peserta_didik.rayon_id',
-                'peserta_didik.rombel_id',
                 'peserta_didik.kewarganegaraan',
                 'peserta_didik.negara_asal',
                 'peserta_didik.berkebutuhan_khusus',
+                'rayon.nama_rayon as nama_rayon',
+                'rombel.nama_rombel as nama_rombel',
 
                 // dokumen
                 'dokumen_siswa.akte_kelahiran',
@@ -143,6 +145,8 @@ class MasterSiswaController extends Controller
         ->leftJoin('registrasi_peserta_didik', 'peserta_didik.id', '=', 'registrasi_peserta_didik.peserta_didik_id')
         ->leftJoin('kesejahteraan', 'peserta_didik.id', '=', 'kesejahteraan.peserta_didik_id')
         ->leftJoin('kontak_peserta_didik', 'peserta_didik.id', '=', 'kontak_peserta_didik.peserta_didik_id')
+        ->leftJoin('rayon', 'peserta_didik.rayon_id', '=', 'rayon.id')
+        ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
         ->where('peserta_didik.id', $id)
         ->select(
             // siswa
@@ -156,12 +160,12 @@ class MasterSiswaController extends Controller
             'peserta_didik.tempat_lahir',
             'peserta_didik.tanggal_lahir',
             'peserta_didik.agama',
-            'peserta_didik.rayon_id',
-            'peserta_didik.rombel_id',
+            'rayon.nama_rayon',
+            'rombel.nama_rombel',
             'peserta_didik.kewarganegaraan',
             'peserta_didik.negara_asal',
             'peserta_didik.berkebutuhan_khusus',
-    
+
             // dokumen
             'dokumen_siswa.akte_kelahiran',
             'dokumen_siswa.kartu_keluarga',
@@ -169,11 +173,11 @@ class MasterSiswaController extends Controller
             'dokumen_siswa.ktp_ibu',
             'dokumen_siswa.ijazah_sd',
             'dokumen_siswa.ijazah_smp',
-    
+
             // akun
             'akun_siswa.email as akun_email',
             'akun_siswa.password as akun_password',
-    
+
             // periodik
             'data_periodik.tinggi_badan_cm',
             'data_periodik.berat_badan_kg',
@@ -183,13 +187,13 @@ class MasterSiswaController extends Controller
             'data_periodik.waktu_tempuh_jam',
             'data_periodik.waktu_tempuh_menit',
             'data_periodik.jumlah_saudara',
-    
+
             // beasiswa
             'beasiswa.jenis_beasiswa',
             'beasiswa.keterangan as beasiswa_keterangan',
             'beasiswa.tahun_mulai as beasiswa_tahun_mulai',
             'beasiswa.tahun_selesai as beasiswa_tahun_selesai',
-    
+
             // prestasi
             'prestasi.jenis_prestasi',
             'prestasi.tingkat_prestasi',
@@ -197,7 +201,7 @@ class MasterSiswaController extends Controller
             'prestasi.tahun_prestasi',
             'prestasi.penyelenggara',
             'prestasi.peringkat',
-    
+
             // orang tua
             'orang_tua.nama_ayah',
             'orang_tua.nik_ayah',
@@ -219,7 +223,7 @@ class MasterSiswaController extends Controller
             'orang_tua.pendidikan_wali',
             'orang_tua.pekerjaan_wali',
             'orang_tua.penghasilan_wali',
-    
+
             // registrasi
             'registrasi_peserta_didik.jenis_pendaftaran',
             'registrasi_peserta_didik.tanggal_masuk',
@@ -227,12 +231,12 @@ class MasterSiswaController extends Controller
             'registrasi_peserta_didik.no_peserta_un',
             'registrasi_peserta_didik.no_seri_ijazah',
             'registrasi_peserta_didik.no_skhun',
-    
+
             // kesejahteraan
             'kesejahteraan.jenis_kesejahteraan',
             'kesejahteraan.no_kartu',
             'kesejahteraan.nama_di_kartu',
-    
+
             // kontak
             'kontak_peserta_didik.no_hp',
             'kontak_peserta_didik.email as kontak_email',
@@ -246,17 +250,17 @@ class MasterSiswaController extends Controller
             'kontak_peserta_didik.moda_transportasi',
             'kontak_peserta_didik.anak_ke'
         )
-        ->first();    
-    
+        ->first();
+
         if (!$siswa) {
             abort(404, 'Data siswa tidak ditemukan.');
         }
-    
+
         $pdf = Pdf::loadView('master-siswa.cetak', compact('siswa'))
                   ->setPaper('a4', 'portrait');
-    
+
         return $pdf->stream('data-siswa.pdf');
     }
-    
-    
+
+
 }

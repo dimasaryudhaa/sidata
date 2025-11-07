@@ -37,23 +37,50 @@
 }
 </style>
 
+@if(session('success'))
+    <div id="successAlert"
+         class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
+         style="z-index:1050; min-width:320px;">
+        <div class="d-flex justify-content-center mb-3">
+            <div class="d-flex justify-content-center align-items-center"
+                 style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
+                <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
+            </div>
+        </div>
+        <h5 class="fw-bold mb-1">Success</h5>
+        <p class="text-muted mb-0">{{ session('success') }}</p>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const alertBox = document.getElementById('successAlert');
+            if (alertBox) {
+                alertBox.style.transition = 'opacity 0.5s ease';
+                alertBox.style.opacity = '0';
+                setTimeout(() => alertBox.remove(), 500);
+            }
+        }, 5000);
+    </script>
+@endif
+
 <div class="container">
 
     @if($isSiswa && isset($siswa))
         <div class="mb-3">
             @if($dokumenSiswa)
-                <a href="{{ route('dokumen-siswa.edit', $siswa->id) }}" class="btn btn-primary">
-                    <i class="bi bi-pencil"></i> Edit
+                <a href="{{ route('dokumen-siswa.edit', $siswa->id) }}" class="btn btn-primary px-4"
+               style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                    <i class="bi bi-pencil-square me-2"></i> Edit
                 </a>
             @else
                 <a href="{{ route('dokumen-siswa.create', ['peserta_didik_id' => $siswa->id]) }}" class="btn btn-success">
-                    <i class="bi bi-upload"></i> Upload
+                    <i class="bi bi-upload me-2"></i> Upload
                 </a>
             @endif
         </div>
 
-        <div class="table-responsive rounded-3 overflow-auto" style="max-height: 550px;">
-            <table class="table table-bordered mt-0">
+        <div class="table-responsive rounded-3">
+            <table class="table table-bordered mt-3">
                 <thead class="text-white" style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8);">
                     <tr>
                         <th style="width: 50px;">No</th>

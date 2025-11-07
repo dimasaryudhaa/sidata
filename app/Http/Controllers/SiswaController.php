@@ -94,9 +94,13 @@ class SiswaController extends Controller
         return view('siswa.show', compact('siswa'));
     }
 
-    public function edit(Siswa $siswa)
+    public function edit($id)
     {
-        return view('siswa.edit', compact('siswa'));
+        $siswa = Siswa::findOrFail($id);
+        $rombels = Rombel::all();
+        $rayons = Rayon::all();
+
+        return view('siswa.edit', compact('siswa', 'rombels', 'rayons'));
     }
 
     public function update(Request $request, Siswa $siswa)
