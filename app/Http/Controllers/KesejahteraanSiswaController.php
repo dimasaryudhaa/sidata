@@ -7,26 +7,50 @@ use App\Models\Siswa;
 use App\Models\Rombel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class KesejahteraanSiswaController extends Controller
 {
     public function index()
     {
-        $kesejahteraan = DB::table('peserta_didik')
-            ->leftJoin('kesejahteraan', 'peserta_didik.id', '=', 'kesejahteraan.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as siswa_id',
-                'peserta_didik.nama_lengkap',
-                'peserta_didik.rombel_id',
-                DB::raw('COUNT(kesejahteraan.id) as jumlah_kesejahteraan')
-            )
-            ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap')
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        $rombels = collect();
 
-        return view('kesejahteraan-siswa.index', compact('kesejahteraan', 'rombels'));
+        if ($isSiswa) {
+            $kesejahteraan = DB::table('kesejahteraan')
+                ->join('peserta_didik', 'kesejahteraan.peserta_didik_id', '=', 'peserta_didik.id')
+                ->join('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->where('akun_siswa.email', $user->email)
+                ->select(
+                    'kesejahteraan.id as kesejahteraan_id',
+                    'peserta_didik.id as siswa_id',
+                    'kesejahteraan.jenis_kesejahteraan', 
+                    'kesejahteraan.no_kartu',
+                    'kesejahteraan.nama_di_kartu'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kesejahteraan-siswa.index', compact('kesejahteraan', 'isSiswa'));
+        } else {
+            $kesejahteraan = DB::table('peserta_didik')
+                ->leftJoin('kesejahteraan', 'peserta_didik.id', '=', 'kesejahteraan.peserta_didik_id')
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.rombel_id',
+                    DB::raw('COUNT(kesejahteraan.id) as jumlah_kesejahteraan')
+                )
+                ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('kesejahteraan-siswa.index', compact('kesejahteraan', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create(Request $request)

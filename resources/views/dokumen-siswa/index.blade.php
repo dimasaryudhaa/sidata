@@ -43,11 +43,11 @@
         <div class="mb-3">
             @if($dokumenSiswa)
                 <a href="{{ route('dokumen-siswa.edit', $siswa->id) }}" class="btn btn-primary">
-                    <i class="bi bi-pencil"></i> Edit Dokumen
+                    <i class="bi bi-pencil"></i> Edit
                 </a>
             @else
                 <a href="{{ route('dokumen-siswa.create', ['peserta_didik_id' => $siswa->id]) }}" class="btn btn-success">
-                    <i class="bi bi-upload"></i> Upload Dokumen
+                    <i class="bi bi-upload"></i> Upload
                 </a>
             @endif
         </div>

@@ -27,9 +27,14 @@ class OrangTuaController extends Controller
                     'orang_tua.id as orang_tua_id',
                     'peserta_didik.id as siswa_id',
                     'peserta_didik.nama_lengkap',
-                    'orang_tua.nama_ayah',
-                    'orang_tua.nama_ibu',
-                    'orang_tua.nama_wali'
+                    'orang_tua.nama_ayah', 'orang_tua.nik_ayah', 'orang_tua.tahun_lahir_ayah',
+                    'orang_tua.pendidikan_ayah', 'orang_tua.pekerjaan_ayah', 'orang_tua.penghasilan_ayah',
+                    'orang_tua.kebutuhan_khusus_ayah',
+                    'orang_tua.nama_ibu', 'orang_tua.nik_ibu', 'orang_tua.tahun_lahir_ibu',
+                    'orang_tua.pendidikan_ibu', 'orang_tua.pekerjaan_ibu', 'orang_tua.penghasilan_ibu',
+                    'orang_tua.kebutuhan_khusus_ibu',
+                    'orang_tua.nama_wali', 'orang_tua.nik_wali', 'orang_tua.tahun_lahir_wali',
+                    'orang_tua.pendidikan_wali', 'orang_tua.pekerjaan_wali', 'orang_tua.penghasilan_wali'
                 )
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
@@ -38,8 +43,10 @@ class OrangTuaController extends Controller
         } else {
             $data = DB::table('peserta_didik')
                 ->leftJoin('orang_tua', 'peserta_didik.id', '=', 'orang_tua.peserta_didik_id')
+                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
                 ->select(
                     'peserta_didik.id as siswa_id',
+                    'peserta_didik.rombel_id',
                     'peserta_didik.nama_lengkap',
                     'orang_tua.id as orang_tua_id',
                     'orang_tua.nama_ayah',

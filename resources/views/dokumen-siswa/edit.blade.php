@@ -72,7 +72,7 @@
 
         <div class="d-flex justify-content-start mt-3">
             <a href="{{ route('dokumen-siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
-            <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+            <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
     </form>
 </div>

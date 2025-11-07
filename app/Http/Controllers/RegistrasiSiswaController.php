@@ -7,28 +7,58 @@ use App\Models\Siswa;
 use App\Models\Rombel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrasiSiswaController extends Controller
 {
     public function index()
     {
-        $data = DB::table('peserta_didik')
-            ->leftJoin('registrasi_peserta_didik', 'peserta_didik.id', '=', 'registrasi_peserta_didik.peserta_didik_id')
-            ->select(
-                'peserta_didik.id as siswa_id',
-                'peserta_didik.nama_lengkap',
-                'registrasi_peserta_didik.id as registrasi_id',
-                'registrasi_peserta_didik.jenis_pendaftaran',
-                'registrasi_peserta_didik.tanggal_masuk',
-                'registrasi_peserta_didik.sekolah_asal',
-                'peserta_didik.rombel_id'
-            )
-            ->orderBy('peserta_didik.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        $rombels = collect();
 
-        return view('registrasi-siswa.index', compact('data', 'rombels'));
+        if ($isSiswa) {
+            $data = DB::table('registrasi_peserta_didik')
+                ->join('peserta_didik', 'registrasi_peserta_didik.peserta_didik_id', '=', 'peserta_didik.id')
+                ->join('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->where('akun_siswa.email', $user->email)
+                ->select(
+                    'registrasi_peserta_didik.id as registrasi_id',
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'registrasi_peserta_didik.jenis_pendaftaran',
+                    'registrasi_peserta_didik.tanggal_masuk',
+                    'registrasi_peserta_didik.sekolah_asal',
+                    'registrasi_peserta_didik.no_peserta_un',
+                    'registrasi_peserta_didik.no_seri_ijazah',
+                    'registrasi_peserta_didik.no_skhun'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('registrasi-siswa.index', compact('data', 'isSiswa'));
+        } else {
+            $data = DB::table('peserta_didik')
+                ->leftJoin('registrasi_peserta_didik', 'peserta_didik.id', '=', 'registrasi_peserta_didik.peserta_didik_id')
+                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.rombel_id',
+                    'peserta_didik.nama_lengkap',
+                    'registrasi_peserta_didik.id as registrasi_id',
+                    'registrasi_peserta_didik.jenis_pendaftaran',
+                    'registrasi_peserta_didik.tanggal_masuk',
+                    'registrasi_peserta_didik.sekolah_asal',
+                    'peserta_didik.rombel_id'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('registrasi-siswa.index', compact('data', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create()

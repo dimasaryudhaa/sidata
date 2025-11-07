@@ -23,32 +23,30 @@ class PeriodikSiswaController extends Controller
                 ->join('peserta_didik', 'data_periodik.peserta_didik_id', '=', 'peserta_didik.id')
                 ->where('akun_siswa.email', $user->email)
                 ->select(
-                    'data_periodik.*',
-                    'peserta_didik.nama_lengkap'
+                    'data_periodik.id',
+                    'peserta_didik.nama_lengkap',
+                    'data_periodik.tinggi_badan_cm',
+                    'data_periodik.berat_badan_kg',
+                    'data_periodik.lingkar_kepala_cm',
+                    'data_periodik.jarak_ke_sekolah',
+                    'data_periodik.jarak_sebenarnya_km',
+                    'data_periodik.waktu_tempuh_jam',
+                    'data_periodik.waktu_tempuh_menit',
+                    'data_periodik.jumlah_saudara'
                 )
-                ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
 
             return view('periodik.index', compact('periodik', 'isSiswa'));
         } else {
             $query = DB::table('peserta_didik')
                 ->leftJoin('data_periodik', 'peserta_didik.id', '=', 'data_periodik.peserta_didik_id')
-                ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
+                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
                 ->select(
                     'peserta_didik.id as siswa_id',
+                    'peserta_didik.rombel_id',
                     'peserta_didik.nama_lengkap',
                     'peserta_didik.rombel_id',
                     'data_periodik.id as periodik_id',
-                    'data_periodik.tinggi_badan_cm',
-                    'data_periodik.berat_badan_kg',
-                    'data_periodik.lingkar_kepala_cm',
-                    'data_periodik.jarak_sebenarnya_km'
-                )
-                ->groupBy(
-                    'peserta_didik.id',
-                    'peserta_didik.nama_lengkap',
-                    'peserta_didik.rombel_id',
-                    'data_periodik.id',
                     'data_periodik.tinggi_badan_cm',
                     'data_periodik.berat_badan_kg',
                     'data_periodik.lingkar_kepala_cm',

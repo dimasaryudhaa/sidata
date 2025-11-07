@@ -9,7 +9,6 @@
         @method('PUT')
 
         <div class="row">
-            <!-- Kolom Kiri -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama Siswa</label>
@@ -29,7 +28,6 @@
                 </div>
             </div>
 
-            <!-- Kolom Kanan -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>No Kartu</label>

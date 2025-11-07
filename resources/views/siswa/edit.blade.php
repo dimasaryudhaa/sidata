@@ -89,7 +89,7 @@
 
         <div class="d-flex justify-content-start mt-3">
             <a href="{{ route('siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
-            <button type="submit" class="btn btn-success">Update</button>
+            <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
 
     </form>

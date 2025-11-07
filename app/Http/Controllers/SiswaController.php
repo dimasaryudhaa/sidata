@@ -6,17 +6,66 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use App\Models\Rayon;
 use App\Models\Rombel;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SiswaController extends Controller
 {
     public function index()
     {
-        $siswa = Siswa::orderBy('nama_lengkap')
-        ->paginate(12);
+        $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
+        $rombels = collect();
 
-        $rombels = Rombel::orderBy('nama_rombel')->get();
+        if ($isSiswa) {
 
-        return view('siswa.index', compact('siswa', 'rombels'));
+            $siswa = DB::table('akun_siswa')
+                ->join('peserta_didik', 'akun_siswa.peserta_didik_id', '=', 'peserta_didik.id')
+                ->leftJoin('rayon', 'peserta_didik.rayon_id', '=', 'rayon.id')
+                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+                ->where('akun_siswa.email', $user->email)
+                ->select(
+                    'peserta_didik.id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.jenis_kelamin',
+                    'peserta_didik.nis',
+                    'peserta_didik.nisn',
+                    'peserta_didik.nik',
+                    'peserta_didik.no_kk',
+                    'peserta_didik.tempat_lahir',
+                    'peserta_didik.tanggal_lahir',
+                    'peserta_didik.agama',
+                    'rayon.nama_rayon',
+                    'rombel.nama_rombel',
+                    'peserta_didik.kewarganegaraan',
+                    'peserta_didik.negara_asal',
+                    'peserta_didik.berkebutuhan_khusus'
+                )
+                ->paginate(1);
+
+            return view('siswa.index', compact('siswa', 'isSiswa'));
+        } else {
+
+            $siswa = DB::table('peserta_didik')
+                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+                ->leftJoin('rayon', 'peserta_didik.rayon_id', '=', 'rayon.id')
+                ->select(
+                    'peserta_didik.id',
+                    'peserta_didik.nama_lengkap',
+                    'peserta_didik.jenis_kelamin',
+                    'peserta_didik.nis',
+                    'peserta_didik.nisn',
+                    'peserta_didik.rombel_id',
+                    'rayon.nama_rayon',
+                    'rombel.nama_rombel',
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('siswa.index', compact('siswa', 'rombels', 'isSiswa'));
+        }
     }
 
     public function create()

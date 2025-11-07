@@ -33,17 +33,23 @@
 @endphp
 
 <div class="container">
-
-    @if(!$isSiswa)
-    <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
-        <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
-        <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
-            <option value="">Semua Rombel</option>
-            @foreach($rombels as $rombel)
-                <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
-            @endforeach
-        </select>
-    </div>
+    @if($isSiswa)
+        <div class="d-flex justify-start-end mb-3">
+            <a href="{{ route('orang-tua.edit', ['orang_tua' => $data->first()->siswa_id ?? '']) }}"
+               class="btn btn-primary shadow-sm">
+                <i class="bi bi-pencil-square me-1"></i> Edit
+            </a>
+        </div>
+    @else
+        <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
+            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
+            <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
+                <option value="">Semua Rombel</option>
+                @foreach($rombels as $rombel)
+                    <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
+                @endforeach
+            </select>
+        </div>
     @endif
 
     @if(session('success'))
@@ -74,54 +80,89 @@
 
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
         <table class="table table-bordered" id="orangTuaTable">
-            <thead class="text-white">
+            <thead class="text-white" style="background:linear-gradient(180deg,#0770d3,#007efd,#55a6f8);">
                 <tr>
-                    <th style="width:50px;">No</th>
                     @if(!$isSiswa)
+                        <th style="width:50px;">No</th>
                         <th>Nama Siswa</th>
+                        <th>Nama Ayah</th>
+                        <th>Nama Ibu</th>
+                        <th>Nama Wali</th>
+                        <th style="width:80px;">Aksi</th>
+                    @else
+                        <th style="width:50px;">No</th>
+                        <th>Orang Tua</th>
+                        <th>Keterangan</th>
                     @endif
-                    <th>Nama Ayah</th>
-                    <th>Nama Ibu</th>
-                    <th>Nama Wali</th>
-                    <th style="width:80px;">Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
                 @foreach($data as $index => $item)
-                    <tr @if(!$isSiswa) data-rombel="{{ $item->rombel_id }}" @endif>
-                        <td>{{ $data->firstItem() + $index }}</td>
-
-                        @if(!$isSiswa)
+                    @if(!$isSiswa)
+                        <tr data-rombel="{{ $item->rombel_id ?? '' }}">
+                            <td>{{ $data->firstItem() + $index }}</td>
                             <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
-                        @endif
+                            <td>{{ $item->nama_ayah ?? '-' }}</td>
+                            <td>{{ $item->nama_ibu ?? '-' }}</td>
+                            <td>{{ $item->nama_wali ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('orang-tua.edit', ['orang_tua' => $item->siswa_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
 
-                        <td>{{ $item->nama_ayah ?? '-' }}</td>
-                        <td>{{ $item->nama_ibu ?? '-' }}</td>
-                        <td>{{ $item->nama_wali ?? '-' }}</td>
-
-                        <td>
-                            <a href="{{ route('orang-tua.edit', ['orang_tua' => $item->siswa_id]) }}" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/edit.png') }}" alt="Tambah/Edit Orang Tua" style="width:20px; height:20px;">
-                            </a>
-
-                            @if(!$isSiswa)
                                 @if($item->orang_tua_id)
                                     <form action="{{ route('orang-tua.destroy', $item->orang_tua_id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
-                                            onclick="return confirm('Yakin ingin menghapus semua data orang tua siswa ini?')">
-                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus Orang Tua" style="width:20px; height:20px;">
+                                            onclick="return confirm('Yakin ingin menghapus data orang tua ini?')">
+                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                                         </button>
                                     </form>
-                                @else
-                                    <button class="btn btn-sm btn-no-border" disabled>
-                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
-                                    </button>
                                 @endif
-                            @endif
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td>{{ $index * 3 + 1 }}</td>
+                            <td>Ayah</td>
+                            <td>
+                                <strong>Nama:</strong> {{ $item->nama_ayah ?? '-' }}<br>
+                                <strong>NIK:</strong> {{ $item->nik_ayah ?? '-' }}<br>
+                                <strong>Tahun Lahir:</strong> {{ $item->tahun_lahir_ayah ?? '-' }}<br>
+                                <strong>Pendidikan:</strong> {{ $item->pendidikan_ayah ?? '-' }}<br>
+                                <strong>Pekerjaan:</strong> {{ $item->pekerjaan_ayah ?? '-' }}<br>
+                                <strong>Penghasilan:</strong> {{ $item->penghasilan_ayah ?? '-' }}<br>
+                                <strong>Kebutuhan Khusus:</strong> {{ $item->kebutuhan_khusus_ayah ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 3 + 2 }}</td>
+                            <td>Ibu</td>
+                            <td>
+                                <strong>Nama:</strong> {{ $item->nama_ibu ?? '-' }}<br>
+                                <strong>NIK:</strong> {{ $item->nik_ibu ?? '-' }}<br>
+                                <strong>Tahun Lahir:</strong> {{ $item->tahun_lahir_ibu ?? '-' }}<br>
+                                <strong>Pendidikan:</strong> {{ $item->pendidikan_ibu ?? '-' }}<br>
+                                <strong>Pekerjaan:</strong> {{ $item->pekerjaan_ibu ?? '-' }}<br>
+                                <strong>Penghasilan:</strong> {{ $item->penghasilan_ibu ?? '-' }}<br>
+                                <strong>Kebutuhan Khusus:</strong> {{ $item->kebutuhan_khusus_ibu ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 3 + 3 }}</td>
+                            <td>Wali</td>
+                            <td>
+                                <strong>Nama:</strong> {{ $item->nama_wali ?? '-' }}<br>
+                                <strong>NIK:</strong> {{ $item->nik_wali ?? '-' }}<br>
+                                <strong>Tahun Lahir:</strong> {{ $item->tahun_lahir_wali ?? '-' }}<br>
+                                <strong>Pendidikan:</strong> {{ $item->pendidikan_wali ?? '-' }}<br>
+                                <strong>Pekerjaan:</strong> {{ $item->pekerjaan_wali ?? '-' }}<br>
+                                <strong>Penghasilan:</strong> {{ $item->penghasilan_wali ?? '-' }}
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>

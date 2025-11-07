@@ -27,11 +27,16 @@
 }
 </style>
 
+@php
+    $user = Auth::user();
+    $isSiswa = $user->role === 'siswa';
+@endphp
+
 <div class="container">
 
+    @if(!$isSiswa)
     <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
         <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
-
         <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
             <option value="">Semua Rombel</option>
             @foreach($rombels as $rombel)
@@ -39,6 +44,7 @@
             @endforeach
         </select>
     </div>
+    @endif
 
     @if(session('success'))
         <div id="successAlert"
@@ -68,33 +74,53 @@
 
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
         <table class="table table-bordered" id="kesejahteraanTable">
-            <thead class="text-white">
+            <thead class="text-white" style="background:linear-gradient(180deg, #0770d3, #007efd, #55a6f8);">
                 <tr>
                     <th style="width: 60px;">No</th>
-                    <th>Nama Siswa</th>
-                    <th>Jumlah Kesejahteraan</th>
-                    <th style="width: 180px;">Aksi</th>
+                    @if(!$isSiswa)
+                        <th>Nama Siswa</th>
+                        <th>Jumlah Kesejahteraan</th>
+                        <th style="width: 150px;">Aksi</th>
+                    @else
+                        <th>Jenis Kesejahteraan</th>
+                        <th>No. Kartu</th>
+                        <th>Nama</th>
+                        <th style="width: 80px;">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
                 @foreach($kesejahteraan as $index => $k)
-                <tr data-rombel="{{ $k->rombel_id }}">
-                    <td>{{ $kesejahteraan->firstItem() + $index }}</td>
-                    <td class="nama_siswa">{{ $k->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $k->jumlah_kesejahteraan }}</td>
-                    <td>
-                        <a href="{{ route('kesejahteraan-siswa.show', $k->siswa_id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/view.png') }}" alt="Lihat Kesejahteraan" style="width:20px; height:20px;">
-                        </a>
-                        <a href="{{ route('kesejahteraan-siswa.create', ['siswa_id' => $k->siswa_id]) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Kesejahteraan" style="width:20px; height:20px;">
-                        </a>
-                    </td>
-                </tr>
+                    <tr @if(!$isSiswa) data-rombel="{{ $k->rombel_id }}" @endif>
+                        <td>{{ $kesejahteraan->firstItem() + $index }}</td>
+
+                        @if($isSiswa)
+                            <td>{{ $k->jenis_kesejahteraan ?? '-' }}</td>
+                            <td>{{ $k->no_kartu?? '-' }}</td>
+                            <td>{{ $k->nama_di_kartu ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('kesejahteraan-siswa.edit', ['kesejahteraan_siswa' => $k->kesejahteraan_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        @else
+                            <td class="nama_siswa">{{ $k->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $k->jumlah_kesejahteraan ?? 0 }}</td>
+                            <td>
+                                <a href="{{ route('kesejahteraan-siswa.show', $k->siswa_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat" style="width:20px; height:20px;">
+                                </a>
+                                <a href="{{ route('kesejahteraan-siswa.create', ['siswa_id' => $k->siswa_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        @endif
+                    </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
+
     <div class="d-flex justify-content-center mt-3">
         {{ $kesejahteraan->links() }}
     </div>

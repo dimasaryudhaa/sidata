@@ -25,6 +25,7 @@
             font-family: "Roboto", sans-serif;
         }
 
+        /* === SIDEBAR === */
         .sidebar {
             width: 260px;
             background-color: #0770d3;
@@ -62,6 +63,19 @@
             transition: 0.2s;
         }
 
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .submenu {
+            display: none;
+            background-color: #0770d3;
+        }
+
+        .submenu a {
+            padding-left: 2.5rem;
+        }
+
         .sidebar::-webkit-scrollbar {
             width: 6px;
         }
@@ -75,27 +89,22 @@
             background: transparent;
         }
 
-        .submenu {
-            display: none;
-            background-color: #0770d3;
-        }
-
-        .submenu a {
-            padding-left: 2.5rem;
-        }
-
         .sidebar .bottom {
             padding: 1rem;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* === MAIN CONTENT AREA === */
         .main-content {
             flex-grow: 1;
             background-color: #f8f9fa;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
+        /* === NAVBAR ATAS === */
         .navbar-top {
             height: 80px;
             background-color: white;
@@ -105,6 +114,7 @@
             align-items: center;
             padding: 0 1.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 10;
         }
 
         .navbar-top .profile-icon {
@@ -127,8 +137,33 @@
         }
 
         .content-area {
-            padding: 2rem;
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .scrollable-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            height: calc(100vh - 80px);
+            scrollbar-width: thin;
+            scrollbar-color: #0770d3 #f1f1f1;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: #0770d3;
+            border-radius: 4px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
 
         .has-submenu > a::after {
@@ -255,18 +290,22 @@
                     @endif
 
                     @if (auth()->user()->role === 'siswa')
+                        <li><a href="{{ route('master-siswa.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Siswa</a></li>
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-person-badge me-2"></i>Data Siswa
                             </a>
                             <ul class="submenu">
-                                {{-- <li><a href="{{ route('siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Siswa</a></li> --}}
+                                <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
+                                <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
                                 <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
-                                <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Akun</a></li>
-                                <li><a href="{{ route('periodik.index') }}"><i class="bi bi-file-earmark me-2"></i>Periodik</a></li>
-                                <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
+                                <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
                                 <li><a href="{{ route('prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
-                                <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua</a></li>
+                                <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
+                                <li><a href="{{ route('registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
+                                <li><a href="{{ route('kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
+                                <li><a href="{{ route('kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
                             </ul>
                         </li>
                     @endif
@@ -296,9 +335,13 @@
         </div>
 
         <div class="content-area">
-            @yield('content')
+            <div class="scrollable-content">
+                @yield('content')
+            </div>
         </div>
     </div>
+
+    
 
     <script>
         function toggleSubmenu(event) {

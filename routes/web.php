@@ -28,6 +28,7 @@ use App\Http\Controllers\KesejahteraanPtkController;
 use App\Http\Controllers\KesejahteraanSiswaController;
 use App\Http\Controllers\KompetensiKhususPtkController;
 use App\Http\Controllers\KompetensiPtkController;
+use App\Http\Controllers\MasterSiswaController;
 use App\Http\Controllers\NilaiTestController;
 use App\Http\Controllers\PendaftaranKeluarController;
 use App\Http\Controllers\PenghargaanController;
@@ -57,6 +58,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('profile', ProfileController::class);
 
     // siswa
+    Route::get('/master-siswa/{id}/cetak', [MasterSiswaController::class, 'cetakPDF'])
+    ->name('master-siswa.cetak');
+    Route::resource('master-siswa', MasterSiswaController::class);
     Route::resource('siswa', SiswaController::class);
     Route::resource('akun-siswa', AkunSiswaController::class);
     Route::resource('dokumen-siswa', DokumenSiswaController::class);

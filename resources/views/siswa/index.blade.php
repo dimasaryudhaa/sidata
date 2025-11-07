@@ -30,12 +30,17 @@
 <div class="container">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('siswa.create') }}" class="btn btn-sm btn-no-border">
-            <img src="{{ asset('images/tambah.png') }}" alt="Tambah Siswa" style="width:50px; height:50px; margin-right:5px;">
-        </a>
+        @if(!$isSiswa)
+            <div class="d-flex align-items-center">
+                <a href="{{ route('siswa.create') }}" class="btn btn-sm btn-no-border me-2">
+                    <img src="{{ asset('images/tambah.png') }}" alt="Tambah Siswa"
+                        style="width:50px; height:50px;">
+                </a>
+            </div>
 
-        <div class="d-flex" style="gap: 0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa..." style="max-width: 250px;">
+        <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
+            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
+
             <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
                 <option value="">Semua Rombel</option>
                 @foreach($rombels as $rombel)
@@ -43,6 +48,17 @@
                 @endforeach
             </select>
         </div>
+        @else
+            @php
+                $dataSiswa = $siswa->first();
+            @endphp
+
+            @if($dataSiswa)
+                <a href="{{ route('siswa.edit', $dataSiswa->id) }}" class="btn btn-primary px-4">
+                    <i class="bi bi-pencil-square me-2"></i> Edit
+                </a>
+            @endif
+        @endif
     </div>
 
     @if(session('success'))
@@ -73,71 +89,129 @@
 
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
         <table class="table table-bordered" id="siswaTable">
-            <thead class="text-white">
+            <thead class="text-white" style="background:linear-gradient(180deg,#0770d3,#007efd,#55a6f8);">
                 <tr>
-                    <th style="width: 50px;">No</th>
-                    <th>Nama Siswa</th>
-                    <th>Jenis Kelamin</th>
-                    <th>NIS</th>
-                    <th>NISN</th>
-                    <th>Rayon</th>
-                    <th>Rombel</th>
-                    <th style="width: 80px;">Aksi</th>
+                    @if(!$isSiswa)
+                        <th style="width:50px;">No</th>
+                        <th>Nama Siswa</th>
+                        <th>Jenis Kelamin</th>
+                        <th>NIS</th>
+                        <th>NISN</th>
+                        <th>Rayon</th>
+                        <th>Rombel</th>
+                        <th style="width:80px;">Aksi</th>
+                    @else
+                        <th style="width:50px;">No</th>
+                        <th>Data Diri</th>
+                        <th>Keterangan</th>
+                    @endif
                 </tr>
             </thead>
+
             <tbody>
-                @foreach($siswa as $s)
-                    <tr data-rombel="{{ $s->rombel_id }}">
-                        <td>{{ $loop->iteration }}</td>
-                        <td class="nama_siswa">{{ $s->nama_lengkap }}</td>
-                        <td>{{ $s->jenis_kelamin }}</td>
-                        <td>{{ $s->nis ?? '-' }}</td>
-                        <td>{{ $s->nisn ?? '-' }}</td>
-                        <td>{{ $s->rayon->nama_rayon ?? '-' }}</td>
-                        <td>{{ $s->rombel->nama_rombel ?? '-' }}</td>
-                        <td>
-                            <a href="{{ route('siswa.edit', $s->id) }}" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit Siswa" style="width:20px; height:20px; margin-right:5px;">
-                            </a>
-                            <form action="{{ route('siswa.destroy', $s->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-no-border"
+                @foreach($siswa as $index => $s)
+                    @if(!$isSiswa)
+                        <tr data-rombel="{{ $s->rombel_id ?? '' }}">
+                            <td>{{ $siswa->firstItem() + $index }}</td>
+                            <td class="nama_siswa">{{ $s->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $s->jenis_kelamin ?? '-' }}</td>
+                            <td>{{ $s->nis ?? '-' }}</td>
+                            <td>{{ $s->nisn ?? '-' }}</td>
+                            <td>{{ $s->nama_rayon ?? '-' }}</td>
+                            <td>{{ $s->nama_rombel ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('siswa.edit', $s->id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
+                                <form action="{{ route('siswa.destroy', $s->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-no-border"
                                         onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                    <img src="{{ asset('images/delete.png') }}" alt="Hapus Siswa" style="width:20px; height:20px;">
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                                        <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td>{{ $index * 5 + 1 }}</td>
+                            <td>Identitas Diri</td>
+                            <td>
+                                <strong>Nama Lengkap:</strong> {{ $s->nama_lengkap ?? '-' }}<br>
+                                <strong>Jenis Kelamin:</strong> {{ $s->jenis_kelamin ?? '-' }}<br>
+                                <strong>NIS:</strong> {{ $s->nis ?? '-' }}<br>
+                                <strong>NISN:</strong> {{ $s->nisn ?? '-' }}<br>
+                                <strong>NIK:</strong> {{ $s->nik ?? '-' }}<br>
+                                <strong>No KK:</strong> {{ $s->no_kk ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 5 + 2 }}</td>
+                            <td>Tempat & Tanggal Lahir</td>
+                            <td>
+                                <strong>Tempat Lahir:</strong> {{ $s->tempat_lahir ?? '-' }}<br>
+                                <strong>Tanggal Lahir:</strong> {{ $s->tanggal_lahir ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 5 + 3 }}</td>
+                            <td>Data Sekolah</td>
+                            <td>
+                                <strong>Agama:</strong> {{ $s->agama ?? '-' }}<br>
+                                <strong>Rayon:</strong> {{ $s->nama_rayon ?? '-' }}<br>
+                                <strong>Rombel:</strong> {{ $s->nama_rombel ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 5 + 4 }}</td>
+                            <td>Kewarganegaraan</td>
+                            <td>
+                                <strong>Kewarganegaraan:</strong> {{ $s->kewarganegaraan ?? '-' }}<br>
+                                <strong>Negara Asal:</strong> {{ $s->negara_asal ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 5 + 5 }}</td>
+                            <td>Berkebutuhan Khusus</td>
+                            <td>
+                                <strong>Berkebutuhan Khusus:</strong> {{ $s->berkebutuhan_khusus ?? '-' }}
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>
     </div>
+
+    <div class="d-flex justify-content-center mt-3">
+        {{ $siswa->links() }}
+    </div>
+
 </div>
 
 <script>
-const searchInput = document.getElementById('search');
-const rombelSelect = document.getElementById('rombelFilter');
-const rows = document.querySelectorAll('#siswaTable tbody tr');
+    const searchInput = document.getElementById('search');
+    const rombelSelect = document.getElementById('rombelFilter');
+    const rows = document.querySelectorAll('#siswaTable tbody tr');
 
-function filterTable() {
-    const searchValue = searchInput.value.toLowerCase();
-    const rombelValue = rombelSelect.value;
+    function filterTable() {
+        const searchValue = searchInput.value.toLowerCase();
+        const rombelValue = rombelSelect.value;
 
-    rows.forEach(row => {
-        const nama = row.querySelector('.nama_siswa').textContent.toLowerCase();
-        const rombel = row.getAttribute('data-rombel');
+        rows.forEach(row => {
+            const nama = row.querySelector('.nama_siswa')?.textContent.toLowerCase() || '';
+            const rombel = row.getAttribute('data-rombel');
 
-        const matchesNama = nama.includes(searchValue);
-        const matchesRombel = rombelValue === '' || rombel === rombelValue;
+            const matchesNama = nama.includes(searchValue);
+            const matchesRombel = rombelValue === '' || rombel === rombelValue;
 
-        row.style.display = (matchesNama && matchesRombel) ? '' : 'none';
-    });
-}
+            row.style.display = (matchesNama && matchesRombel) ? '' : 'none';
+        });
+    }
 
-searchInput.addEventListener('keyup', filterTable);
-rombelSelect.addEventListener('change', filterTable);
-
+    searchInput.addEventListener('keyup', filterTable);
+    rombelSelect.addEventListener('change', filterTable);
 </script>
 
 @endsection

@@ -35,16 +35,24 @@
 
 <div class="container">
 
-    @if(!$isSiswa)
-    <div class="d-flex justify-content-start mb-3" style="gap:0.5rem;">
-        <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa..." style="max-width: 250px;">
-        <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
-            <option value="">Semua Rombel</option>
-            @foreach($rombels as $rombel)
-                <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
-            @endforeach
-        </select>
-    </div>
+    @if($isSiswa)
+        <div class="d-flex justify-start-end mb-3">
+            <a href="{{ route('periodik.edit', $periodik->first()->id ?? 0) }}"
+               class="btn btn-primary btn-sm"
+               style="background:linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border:none;">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+        </div>
+    @else
+        <div class="d-flex justify-content-start mb-3" style="gap:0.5rem;">
+            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa..." style="max-width: 200px;">
+            <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
+                <option value="">Semua Rombel</option>
+                @foreach($rombels as $rombel)
+                    <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
+                @endforeach
+            </select>
+        </div>
     @endif
 
     @if(session('success'))
@@ -75,68 +83,83 @@
 
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
         <table class="table table-bordered" id="periodikTable">
-            <thead class="text-white">
+            <thead class="text-white" style="background:linear-gradient(180deg,#0770d3,#007efd,#55a6f8);">
                 <tr>
-                    <th style="width:50px;">No</th>
-                    @if($isSiswa)
-                        <th>Tinggi Badan</th>
-                        <th>Berat Badan</th>
-                        <th>Lingkar Kepala</th>
-                        <th>Jarak ke Sekolah</th>
+                    @if(!$isSiswa)
+                        <th style="width:50px;">No</th>
+                        <th>Nama Siswa</th>
+                        <th>Tinggi Badan (cm)</th>
+                        <th>Berat Badan (kg)</th>
+                        <th>Lingkar Kepala (cm)</th>
+                        <th>Jarak ke Sekolah (km)</th>
                         <th style="width:80px;">Aksi</th>
                     @else
-                        <th>Nama Siswa</th>
-                        <th>Tinggi Badan</th>
-                        <th>Berat Badan</th>
-                        <th>Lingkar Kepala</th>
-                        <th>Jarak ke Sekolah</th>
-                        <th style="width:80px;">Aksi</th>
+                        <th style="width:50px;">No</th>
+                        <th>Data Periodik</th>
+                        <th>Keterangan</th>
                     @endif
                 </tr>
             </thead>
+
             <tbody>
                 @foreach($periodik as $index => $p)
-                    <tr @if(!$isSiswa) data-rombel="{{ $p->rombel_id }}" @endif>
-                        <td>{{ $periodik->firstItem() + $index }}</td>
-
-                        @if($isSiswa)
-                            <td>{{ $p->tinggi_badan_cm ? number_format($p->tinggi_badan_cm, 0) . ' cm' : '-' }}</td>
-                            <td>{{ $p->berat_badan_kg ? number_format($p->berat_badan_kg, 0) . ' kg' : '-' }}</td>
-                            <td>{{ $p->lingkar_kepala_cm ? number_format($p->lingkar_kepala_cm, 0) . ' cm' : '-' }}</td>
-                            <td>{{ $p->jarak_sebenarnya_km ? number_format($p->jarak_sebenarnya_km, 0) . ' km' : '-' }}</td>
-                            <td>
-                                <a href="{{ route('periodik.edit', $p->id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit Periodik" style="width:20px; height:20px;">
-                                </a>
-                            </td>
-                        @else
+                    @if(!$isSiswa)
+                        <tr data-rombel="{{ $p->rombel_id ?? '' }}">
+                            <td>{{ $periodik->firstItem() + $index }}</td>
                             <td class="nama_siswa">{{ $p->nama_lengkap ?? '-' }}</td>
-                            <td>{{ $p->tinggi_badan_cm ? number_format($p->tinggi_badan_cm, 0) . ' cm' : '-' }}</td>
-                            <td>{{ $p->berat_badan_kg ? number_format($p->berat_badan_kg, 0) . ' kg' : '-' }}</td>
-                            <td>{{ $p->lingkar_kepala_cm ? number_format($p->lingkar_kepala_cm, 0) . ' cm' : '-' }}</td>
-                            <td>{{ $p->jarak_sebenarnya_km ? number_format($p->jarak_sebenarnya_km, 0) . ' km' : '-' }}</td>
+                            <td>{{ $p->tinggi_badan_cm ? number_format($p->tinggi_badan_cm, 0) : '-' }}</td>
+                            <td>{{ $p->berat_badan_kg ? number_format($p->berat_badan_kg, 0) : '-' }}</td>
+                            <td>{{ $p->lingkar_kepala_cm ? number_format($p->lingkar_kepala_cm, 0) : '-' }}</td>
+                            <td>{{ $p->jarak_sebenarnya_km ? number_format($p->jarak_sebenarnya_km, 1) . ' km' : '-' }}</td>
                             <td>
                                 <a href="{{ route('periodik.edit', ['periodik' => $p->siswa_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Tambah/Edit Periodik" style="width:20px; height:20px;">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
-
                                 @if($p->periodik_id)
                                     <form action="{{ route('periodik.destroy', $p->periodik_id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
                                             onclick="return confirm('Yakin ingin menghapus data periodik siswa ini?')">
-                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus Periodik" style="width:20px; height:20px;">
+                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                                         </button>
                                     </form>
-                                @else
-                                    <button class="btn btn-sm btn-no-border" disabled>
-                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
-                                    </button>
                                 @endif
                             </td>
-                        @endif
-                    </tr>
+                        </tr>
+                    @else
+                        <tr>
+                            <td>{{ $index * 3 + 1 }}</td>
+                            <td>Data Fisik</td>
+                            <td>
+                                <strong>Tinggi Badan:</strong> {{ $p->tinggi_badan_cm ? number_format($p->tinggi_badan_cm, 0) . ' cm' : '-' }}<br>
+                                <strong>Berat Badan:</strong> {{ $p->berat_badan_kg ? number_format($p->berat_badan_kg, 0) . ' kg' : '-' }}<br>
+                                <strong>Lingkar Kepala:</strong> {{ $p->lingkar_kepala_cm ? number_format($p->lingkar_kepala_cm, 0) . ' cm' : '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 3 + 2 }}</td>
+                            <td>Jarak & Waktu Tempuh</td>
+                            <td>
+                                <strong>Jarak ke Sekolah:</strong> {{ $p->jarak_ke_sekolah ?? '-' }}<br>
+                                <strong>Jarak Sebenarnya:</strong> {{ $p->jarak_sebenarnya_km ? number_format($p->jarak_sebenarnya_km, 1) . ' km' : '-' }}<br>
+                                <strong>Waktu Tempuh:</strong>
+                                @if($p->waktu_tempuh_jam || $p->waktu_tempuh_menit)
+                                    {{ $p->waktu_tempuh_jam ? $p->waktu_tempuh_jam . ' jam ' : '' }}
+                                    {{ $p->waktu_tempuh_menit ? $p->waktu_tempuh_menit . ' menit' : '' }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $index * 3 + 3 }}</td>
+                            <td>Data Keluarga</td>
+                            <td>
+                                <strong>Jumlah Saudara:</strong> {{ $p->jumlah_saudara ?? '-' }}
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>
@@ -148,29 +171,30 @@
 
 </div>
 
+
 @if(!$isSiswa)
 <script>
-const searchInput = document.getElementById('search');
-const rombelSelect = document.getElementById('rombelFilter');
-const rows = document.querySelectorAll('#periodikTable tbody tr');
+    const searchInput = document.getElementById('search');
+    const rombelSelect = document.getElementById('rombelFilter');
+    const rows = document.querySelectorAll('#periodikTable tbody tr');
 
-function filterTable() {
-    const searchValue = searchInput.value.toLowerCase();
-    const rombelValue = rombelSelect.value;
+    function filterTable() {
+        const searchValue = searchInput.value.toLowerCase();
+        const rombelValue = rombelSelect.value;
 
-    rows.forEach(row => {
-        const nama = row.querySelector('.nama_siswa').textContent.toLowerCase();
-        const rombel = row.getAttribute('data-rombel');
+        rows.forEach(row => {
+            const nama = row.querySelector('.nama_siswa')?.textContent.toLowerCase() || '';
+            const rombel = row.getAttribute('data-rombel');
 
-        const matchesNama = nama.includes(searchValue);
-        const matchesRombel = rombelValue === '' || rombel === rombelValue;
+            const matchesNama = nama.includes(searchValue);
+            const matchesRombel = rombelValue === '' || rombel === rombelValue;
 
-        row.style.display = (matchesNama && matchesRombel) ? '' : 'none';
-    });
-}
+            row.style.display = (matchesNama && matchesRombel) ? '' : 'none';
+        });
+    }
 
-searchInput.addEventListener('keyup', filterTable);
-rombelSelect.addEventListener('change', filterTable);
+    searchInput.addEventListener('keyup', filterTable);
+    rombelSelect.addEventListener('change', filterTable);
 </script>
 @endif
 
