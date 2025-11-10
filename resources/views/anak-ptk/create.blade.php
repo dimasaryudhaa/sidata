@@ -15,7 +15,7 @@
                 <div class="mb-3">
                     <label>Nama PTK</label>
                     @if(isset($ptkId))
-                        <input type="text" class="form-control" value="{{ $ptk->nama_lengkap }}" onlyread>
+                        <input type="text" class="form-control" value="{{ $ptk->nama_lengkap }}" readonly>
                         <input type="hidden" name="ptk_id" value="{{ $ptkId }}">
                     @else
                         <select name="ptk_id" class="form-control" required>

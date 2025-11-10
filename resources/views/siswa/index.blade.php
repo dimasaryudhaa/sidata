@@ -46,7 +46,7 @@
                 @foreach($rombels as $rombel)
                     <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
                 @endforeach
-            </select>  
+            </select>
         </div>
         @else
             @php
@@ -187,8 +187,8 @@
         </table>
     </div>
 
-    <div class="d-flex justify-content-center mt-3">
-        {{ $siswa->links() }}
+    <div class="mt-3">
+        {{ $siswa->links('pagination::bootstrap-5') }}
     </div>
 
 </div>

@@ -11,7 +11,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" class="form-control" value="{{ $ptk->nama_lengkap }}" required>
+                    <input type="text" name="nama_lengkap" class="form-control" value="{{ $ptk->nama_lengkap }}" readonly>
                 </div>
                 <div class="mb-3">
                     <label>NIK</label>
@@ -76,7 +76,7 @@
 
         <div class="d-flex justify-content-start mt-3">
             <a href="{{ route('ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
-            <button type="submit" class="btn btn-success">Update</button>
+            <button type="submit" class="btn btn-success">Perbarui      </button>
         </div>
     </form>
 </div>

@@ -45,7 +45,7 @@
                     <label>Dari Tahun</label>
                     <input type="number" name="dari_tahun" class="form-control" min="1900" max="2100">
                 </div>
-                
+
                 <div class="mb-3">
                     <label>Sampai Tahun</label>
                     <input type="number" name="sampai_tahun" class="form-control" min="1900" max="2100">
@@ -62,7 +62,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('kesejahteraan-ptk.index') }}" class="btn btn-secondary me-2">Batal</a>
+            <a href="{{ route('kesejahteraan-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>

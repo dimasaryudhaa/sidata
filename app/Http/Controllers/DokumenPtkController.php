@@ -26,13 +26,22 @@ class DokumenPtkController extends Controller
             ->groupBy('ptk.id', 'ptk.nama_lengkap')
             ->orderBy('ptk.nama_lengkap', 'asc');
 
-        if ($user->role === 'ptk') {
+        $isPtk = $user->role === 'ptk';
+
+        if ($isPtk) {
             $query->where('akun_ptk.email', $user->email);
         }
 
         $dokumen = $query->paginate(12);
 
-        return view('dokumen-ptk.index', compact('dokumen'));
+        $ptk = null;
+        $dokumenPtk = null;
+        if ($isPtk && $dokumen->first()) {
+            $ptk = DB::table('ptk')->find($dokumen->first()->ptk_id);
+            $dokumenPtk = DB::table('dokumen_ptk')->where('ptk_id', $ptk->id)->first();
+        }
+
+        return view('dokumen-ptk.index', compact('dokumen', 'isPtk', 'dokumenPtk', 'ptk'));
     }
 
     public function create(Request $request)

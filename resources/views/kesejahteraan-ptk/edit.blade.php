@@ -61,7 +61,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('kesejahteraan-ptk.index') }}" class="btn btn-secondary me-2">Batal</a>
+            <a href="{{ route('kesejahteraan-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
     </form>

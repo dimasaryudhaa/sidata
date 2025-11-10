@@ -6,34 +6,63 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\KontakPtk;
 use App\Models\Ptk;
+use Illuminate\Support\Facades\Auth;
 
 class KontakPtkController extends Controller
 {
     public function index()
     {
-        $data = DB::table('ptk')
-            ->leftJoin('kontak_ptk', 'ptk.id', '=', 'kontak_ptk.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                'kontak_ptk.id as kontak_id',
-                'kontak_ptk.no_hp',
-                'kontak_ptk.email',
-                'kontak_ptk.alamat_jalan',
-                'kontak_ptk.kelurahan',
-                'kontak_ptk.kecamatan',
-                'kontak_ptk.kode_pos'
-            )
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('kontak-ptk.index', compact('data'));
+        if ($isPtk) {
+            $data = DB::table('kontak_ptk')
+                ->join('ptk', 'kontak_ptk.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'kontak_ptk.id as kontak_id',
+                    'ptk.id as ptk_id',
+                    'kontak_ptk.no_hp',
+                    'kontak_ptk.email',
+                    'kontak_ptk.alamat_jalan',
+                    'kontak_ptk.rt',
+                    'kontak_ptk.rw',
+                    'kontak_ptk.kelurahan',
+                    'kontak_ptk.kecamatan',
+                    'kontak_ptk.kode_pos',
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kontak-ptk.index', compact('data', 'isPtk'));
+        } else {
+            $data = DB::table('ptk')
+                ->leftJoin('kontak_ptk', 'ptk.id', '=', 'kontak_ptk.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'kontak_ptk.id as kontak_id',
+                    'kontak_ptk.no_hp',
+                    'kontak_ptk.email',
+                    'kontak_ptk.alamat_jalan',
+                    'kontak_ptk.rt',
+                    'kontak_ptk.rw',
+                    'kontak_ptk.kelurahan',
+                    'kontak_ptk.kecamatan',
+                    'kontak_ptk.kode_pos'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kontak-ptk.index', compact('data', 'isPtk'));
+        }
     }
 
     public function create()
     {
         $ptks = Ptk::all();
-        $data = new KontakPtk(); 
+        $data = new KontakPtk();
         return view('kontak-ptk.edit', compact('data', 'ptks'));
     }
 

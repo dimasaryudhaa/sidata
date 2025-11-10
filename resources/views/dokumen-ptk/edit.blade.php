@@ -107,7 +107,7 @@
 
         <div class="d-flex justify-content-start mt-3">
             <a href="{{ route('dokumen-ptk.index') }}" class="btn btn-secondary me-2 btn-sm">Kembali</a>
-            <button type="submit" class="btn btn-success btn-sm">Simpan Perubahan</button>
+            <button type="submit" class="btn btn-success btn-sm">Simpan</button>
         </div>
     </form>
 </div>

@@ -4,13 +4,52 @@ namespace App\Http\Controllers;
 
 use App\Models\Ptk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PtkController extends Controller
 {
     public function index()
     {
-        $ptks = Ptk::orderBy('nama_lengkap')->paginate(12);
-        return view('ptk.index', compact('ptks'));
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
+
+        if ($isPtk) {
+            $ptk = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'ptk.id',
+                    'ptk.nama_lengkap',
+                    'ptk.nik',
+                    'ptk.jenis_kelamin',
+                    'ptk.tempat_lahir',
+                    'ptk.tanggal_lahir',
+                    'ptk.nama_ibu_kandung',
+                    'ptk.agama',
+                    'ptk.npwp',
+                    'ptk.nama_wajib_pajak',
+                    'ptk.kewarganegaraan',
+                    'ptk.negara_asal'
+                )
+                ->paginate(1);
+
+            return view('ptk.index', compact('ptk', 'isPtk'));
+        } else {
+            $ptk = DB::table('ptk')
+                ->select(
+                    'ptk.id',
+                    'ptk.nama_lengkap',
+                    'ptk.nik',
+                    'ptk.jenis_kelamin',
+                    'ptk.tempat_lahir',
+                    'ptk.tanggal_lahir'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('ptk.index', compact('ptk', 'isPtk'));
+        }
     }
 
     public function create()

@@ -5,24 +5,49 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\KesejahteraanPtk;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Ptk;
 
 class KesejahteraanPtkController extends Controller
 {
     public function index()
     {
-        $kesejahteraan = DB::table('ptk')
-            ->leftJoin('kesejahteraan_ptk', 'ptk.id', '=', 'kesejahteraan_ptk.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(kesejahteraan_ptk.id) as jumlah_kesejahteraan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('kesejahteraan-ptk.index', compact('kesejahteraan'));
+        if ($isPtk) {
+            $kesejahteraan = DB::table('kesejahteraan_ptk')
+                ->join('ptk', 'kesejahteraan_ptk.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'kesejahteraan_ptk.id as kesejahteraan_id',
+                    'ptk.id as ptk_id',
+                    'kesejahteraan_ptk.jenis_kesejahteraan',
+                    'kesejahteraan_ptk.nama',
+                    'kesejahteraan_ptk.penyelenggara',
+                    'kesejahteraan_ptk.dari_tahun',
+                    'kesejahteraan_ptk.sampai_tahun',
+                    'kesejahteraan_ptk.status'
+                )
+                ->orderBy('kesejahteraan_ptk.nama', 'asc')
+                ->paginate(12);
+
+            return view('kesejahteraan-ptk.index', compact('kesejahteraan', 'isPtk'));
+        } else {
+            $kesejahteraan = DB::table('ptk')
+                ->leftJoin('kesejahteraan_ptk', 'ptk.id', '=', 'kesejahteraan_ptk.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(kesejahteraan_ptk.id) as jumlah_kesejahteraan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kesejahteraan-ptk.index', compact('kesejahteraan', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

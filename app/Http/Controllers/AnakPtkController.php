@@ -6,23 +6,50 @@ use App\Models\AnakPtk;
 use App\Models\Ptk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AnakPtkController extends Controller
 {
     public function index()
     {
-        $anakPtk = DB::table('ptk')
-            ->leftJoin('anak', 'ptk.id', '=', 'anak.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(anak.id) as jumlah_anak')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('anak-ptk.index', compact('anakPtk'));
+        if ($isPtk) {
+            $anakPtk = DB::table('anak')
+                ->join('ptk', 'anak.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'anak.id as anak_id',
+                    'anak.ptk_id',
+                    'anak.nama_anak',
+                    'anak.status_anak',
+                    'anak.jenjang',
+                    'anak.nisn',
+                    'anak.jenis_kelamin',
+                    'anak.tempat_lahir',
+                    'anak.tanggal_lahir',
+                    'anak.tahun_masuk'
+                )
+                ->orderBy('anak.nama_anak', 'asc')
+                ->paginate(12);
+
+            return view('anak-ptk.index', compact('anakPtk', 'isPtk'));
+        } else {
+            $anakPtk = DB::table('ptk')
+                ->leftJoin('anak', 'ptk.id', '=', 'anak.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(anak.id) as jumlah_anak')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('anak-ptk.index', compact('anakPtk', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

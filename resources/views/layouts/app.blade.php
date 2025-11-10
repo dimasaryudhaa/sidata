@@ -25,9 +25,8 @@
             font-family: "Roboto", sans-serif;
         }
 
-        /* === SIDEBAR === */
         .sidebar {
-            width: 260px;
+            width: 270px;
             background-color: #0770d3;
             color: white;
             display: flex;
@@ -94,7 +93,6 @@
             border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* === MAIN CONTENT AREA === */
         .main-content {
             flex-grow: 1;
             background-color: #f8f9fa;
@@ -104,7 +102,6 @@
             overflow: hidden;
         }
 
-        /* === NAVBAR ATAS === */
         .navbar-top {
             height: 80px;
             background-color: white;
@@ -240,14 +237,14 @@
                                 <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
                                 <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
                                 <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
-                                <li><a href="{{ route('tunjangan.index') }}"><i class="bi bi-house me-2"></i>Tunjangan</a></li>
+                                <li><a href="{{ route('tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
                                 <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
                             </ul>
                         </li>
 
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
-                                <i class="bi bi-clock-history me-2"></i>Riwayat & Karir Ptk
+                                <i class="bi bi-clock-history me-2"></i>Riwayat & Karir PTK
                             </a>
                             <ul class="submenu">
                                 <li><a href="{{ route('penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
@@ -263,7 +260,7 @@
 
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
-                                <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi Ptk
+                                <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi PTK
                             </a>
                             <ul class="submenu">
                                 <li><a href="{{ route('diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
@@ -284,7 +281,14 @@
                                 <i class="bi bi-person-badge me-2"></i>Data PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen PTK</a></li>
+                                <li><a href="{{ route('ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
+                                <li><a href="{{ route('akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
+                                <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
+                                <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
+                                <li><a href="{{ route('tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
+                                <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
                             </ul>
                         </li>
                     @endif
@@ -341,7 +345,7 @@
         </div>
     </div>
 
-    
+
 
     <script>
         function toggleSubmenu(event) {

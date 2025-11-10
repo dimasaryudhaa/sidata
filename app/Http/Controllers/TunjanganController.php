@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Tunjangan;
 use App\Models\Ptk;
 use App\Models\Semester;
@@ -12,18 +13,47 @@ class TunjanganController extends Controller
 {
     public function index()
     {
-        $tunjangan = DB::table('ptk')
-            ->leftJoin('tunjangan', 'ptk.id', '=', 'tunjangan.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(tunjangan.id) as jumlah_tunjangan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('tunjangan.index', compact('tunjangan'));
+        if ($isPtk) {
+            $tunjangan = DB::table('tunjangan')
+                ->join('ptk', 'tunjangan.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'tunjangan.id as tunjangan_id',
+                    'tunjangan.ptk_id',
+                    'tunjangan.jenis_tunjangan',
+                    'tunjangan.nama_tunjangan',
+                    'tunjangan.instansi',
+                    'tunjangan.sk_tunjangan',
+                    'tunjangan.tgl_sk_tunjangan',
+                    'tunjangan.semester_id',
+                    'tunjangan.sumber_dana',
+                    'tunjangan.dari_tahun',
+                    'tunjangan.sampai_tahun',
+                    'tunjangan.nominal',
+                    'tunjangan.status'
+                )
+                ->orderBy('tunjangan.nama_tunjangan', 'asc')
+                ->paginate(12);
+
+            return view('tunjangan.index', compact('tunjangan', 'isPtk'));
+        } else {
+            $tunjangan = DB::table('ptk')
+                ->leftJoin('tunjangan', 'ptk.id', '=', 'tunjangan.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(tunjangan.id) as jumlah_tunjangan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('tunjangan.index', compact('tunjangan', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

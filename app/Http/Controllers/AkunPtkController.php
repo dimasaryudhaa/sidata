@@ -6,24 +6,44 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\AkunPtk;
 use App\Models\Ptk;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AkunPtkController extends Controller
 {
     public function index()
     {
-        $data = DB::table('ptk')
-            ->leftJoin('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                'akun_ptk.id as akun_id',
-                'akun_ptk.email'
-            )
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role == 'ptk';
 
-        return view('akun-ptk.index', compact('data'));
+        if ($isPtk) {
+            $data = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'akun_ptk.id as akun_id',
+                    'akun_ptk.email',
+                    'ptk.nama_lengkap',
+                    'ptk.id as ptk_id'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+                return view('akun-ptk.index', compact('data', 'isPtk'));
+        } else {
+            $data = DB::table('ptk')
+                ->leftJoin('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'akun_ptk.id as akun_id',
+                    'akun_ptk.email'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('akun-ptk.index', compact('data', 'isPtk'));
+        }
     }
 
     public function create()

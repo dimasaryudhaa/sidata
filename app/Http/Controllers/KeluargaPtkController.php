@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\KeluargaPtk;
 use App\Models\Ptk;
 
@@ -11,22 +12,46 @@ class KeluargaPtkController extends Controller
 {
     public function index()
     {
-        $data = DB::table('ptk')
-            ->leftJoin('keluarga_ptk', 'keluarga_ptk.ptk_id', '=', 'ptk.id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                'keluarga_ptk.id as keluarga_id',
-                'keluarga_ptk.no_kk',
-                'keluarga_ptk.status_perkawinan',
-                'keluarga_ptk.nama_suami_istri',
-                'keluarga_ptk.nip_suami_istri',
-                'keluarga_ptk.pekerjaan_suami_istri'
-            )
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
+        $data = collect();
 
-        return view('keluarga-ptk.index', compact('data'));
+        if ($isPtk) {
+            $data = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->leftJoin('keluarga_ptk', 'ptk.id', '=', 'keluarga_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'keluarga_ptk.id as keluarga_id',
+                    'keluarga_ptk.no_kk',
+                    'keluarga_ptk.status_perkawinan',
+                    'keluarga_ptk.nama_suami_istri',
+                    'keluarga_ptk.nip_suami_istri',
+                    'keluarga_ptk.pekerjaan_suami_istri'
+                )
+                ->paginate(1);
+
+            return view('keluarga-ptk.index', compact('data', 'isPtk'));
+        } else {
+            $data = DB::table('ptk')
+                ->leftJoin('keluarga_ptk', 'keluarga_ptk.ptk_id', '=', 'ptk.id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'keluarga_ptk.id as keluarga_id',
+                    'keluarga_ptk.no_kk',
+                    'keluarga_ptk.status_perkawinan',
+                    'keluarga_ptk.nama_suami_istri',
+                    'keluarga_ptk.nip_suami_istri',
+                    'keluarga_ptk.pekerjaan_suami_istri'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('keluarga-ptk.index', compact('data', 'isPtk'));
+        }
     }
 
     public function create()

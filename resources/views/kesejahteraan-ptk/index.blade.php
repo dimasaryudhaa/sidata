@@ -3,37 +3,36 @@
 @section('content')
 
 <style>
-    .table thead th {
-        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-        color: white !important;
-        border: none !important;
-        vertical-align: middle !important;
-        font-weight: 600;
-    }
+.table thead th {
+    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+    color: white !important;
+    border: none !important;
+    vertical-align: middle !important;
+    font-weight: 600;
+}
 
-    .btn-no-border {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        padding: 0;
-    }
+.btn-no-border {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0;
+}
 
-    .btn-no-border:focus,
-    .btn-no-border:active,
-    .btn-no-border:hover {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-    }
+.btn-no-border:focus,
+.btn-no-border:active,
+.btn-no-border:hover {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
 </style>
 
-<div class="container">
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+@endphp
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <form class="d-flex mb-3" style="gap:0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width: 250px;">
-        </form>
-    </div>
+<div class="container">
 
     @if(session('success'))
         <div id="successAlert"
@@ -62,51 +61,80 @@
     @endif
 
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
-        <table class="table table-bordered" id="tunjanganTable">
+        <table class="table table-bordered" id="kesejahteraanTable">
             <thead class="text-white">
                 <tr>
-                    <th style="width:50px;">No</th>
-                    <th>Nama PTK</th>
-                    <th>Jumlah Tunjangan</th>
-                    <th style="width:80px;">Aksi</th>
+                    <th style="width:60px;">No</th>
+                    @if($isPtk)
+                        <th>Jenis Kesejahteraan</th>
+                        <th>Nama</th>
+                        <th>Penyelenggara</th>
+                        <th>Dari Tahun</th>
+                        <th>Sampai Tahun</th>
+                        <th>Status</th>
+                        <th style="width:80px;">Aksi</th>
+                    @else
+                        <th>Nama PTK</th>
+                        <th>Jumlah Kesejahteraan</th>
+                        <th style="width:100px;">Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
-                @foreach($kesejahteraan as $index => $item)
-                <tr>
-                    <td>{{ $kesejahteraan->firstItem() + $index }}</td>
-                    <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $item->jumlah_kesejahteraan ?? 0 }}</td>
-                    <td>
-                        <a href="{{ route('kesejahteraan-ptk.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                @foreach($kesejahteraan as $index => $k)
+                    <tr>
+                        <td>{{ $kesejahteraan->firstItem() + $index }}</td>
 
-                            <img src="{{ asset('images/view.png') }}" alt="Lihat Data kesejahteraan" style="width:20px; height:20px;">
-                        </a>
-                        <a href="{{ route('kesejahteraan-ptk.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-
-                            <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Data kesejahteraan" style="width:20px; height:20px;">
-                        </a>
-                    </td>
-                </tr>
+                        @if($isPtk)
+                            <td>{{ $k->jenis_kesejahteraan ?? '-' }}</td>
+                            <td>{{ $k->nama ?? '-' }}</td>
+                            <td>{{ $k->penyelenggara ?? '-' }}</td>
+                            <td>{{ $k->dari_tahun ?? '-' }}</td>
+                            <td>{{ $k->sampai_tahun ?? '-' }}</td>
+                            <td>{{ $k->status ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('kesejahteraan-ptk.edit', ['kesejahteraan_ptk' => $k->kesejahteraan_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        @else
+                            <td class="nama_ptk">{{ $k->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $k->jumlah_kesejahteraan ?? 0 }}</td>
+                            <td>
+                                <a href="{{ route('kesejahteraan-ptk.show', $k->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat" style="width:20px; height:20px;">
+                                </a>
+                                <a href="{{ route('kesejahteraan-ptk.create', ['ptk_id' => $k->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        @endif
+                    </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
-    <div class="mt-3">
+
+    <div class="d-flex justify-content-center mt-3">
         {{ $kesejahteraan->links('pagination::bootstrap-5') }}
     </div>
+
 </div>
 
+@if(!$isPtk)
 <script>
-    document.getElementById('search').addEventListener('keyup', function() {
-        let filter = this.value.toLowerCase();
-        let rows = document.querySelectorAll('#tunjanganTable tbody tr');
+    const searchInput = document.getElementById('search');
+    const rows = document.querySelectorAll('#kesejahteraanTable tbody tr');
+
+    searchInput.addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
 
         rows.forEach(row => {
-            let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
+            const nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
             row.style.display = nama.includes(filter) ? '' : 'none';
         });
     });
 </script>
+@endif
 
 @endsection
