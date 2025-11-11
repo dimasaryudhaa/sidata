@@ -291,6 +291,22 @@
                                 <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
                             </ul>
                         </li>
+
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-clock-history me-2"></i>Riwayat & Karir PTK
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
+                                <li><a href="{{ route('kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
+                                <li><a href="{{ route('tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
+                                <li><a href="{{ route('riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
+                                <li><a href="{{ route('riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
+                                <li><a href="{{ route('riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
+                                <li><a href="{{ route('riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
+                                <li><a href="{{ route('riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
+                            </ul>
+                        </li>
                     @endif
 
                     @if (auth()->user()->role === 'siswa')

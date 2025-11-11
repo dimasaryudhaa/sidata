@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatKepangkatan;
 use App\Models\Ptk;
 
@@ -11,18 +12,43 @@ class RiwayatKepangkatanController extends Controller
 {
     public function index()
     {
-        $riwayatKepangkatan = DB::table('ptk')
-            ->leftJoin('riwayat_kepangkatan', 'ptk.id', '=', 'riwayat_kepangkatan.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(riwayat_kepangkatan.id) as jumlah_riwayat_kepangkatan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('riwayat-kepangkatan.index', compact('riwayatKepangkatan'));
+        if ($isPtk) {
+            $riwayatKepangkatan = DB::table('riwayat_kepangkatan')
+                ->join('ptk', 'riwayat_kepangkatan.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'riwayat_kepangkatan.id as riwayat_kepangkatan_id',
+                    'ptk.id as ptk_id',
+                    'riwayat_kepangkatan.pangkat_golongan',
+                    'riwayat_kepangkatan.nomor_sk',
+                    'riwayat_kepangkatan.tanggal_sk',
+                    'riwayat_kepangkatan.tmt_pangkat',
+                    'riwayat_kepangkatan.masa_kerja_thn',
+                    'riwayat_kepangkatan.masa_kerja_bln'
+                )
+                ->orderBy('riwayat_kepangkatan.tmt_pangkat', 'desc')
+                ->paginate(12);
+
+            return view('riwayat-kepangkatan.index', compact('riwayatKepangkatan', 'isPtk'));
+
+        } else {
+            $riwayatKepangkatan = DB::table('ptk')
+                ->leftJoin('riwayat_kepangkatan', 'ptk.id', '=', 'riwayat_kepangkatan.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(riwayat_kepangkatan.id) as jumlah_riwayat_kepangkatan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('riwayat-kepangkatan.index', compact('riwayatKepangkatan', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

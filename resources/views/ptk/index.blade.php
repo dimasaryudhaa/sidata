@@ -96,7 +96,6 @@
                         <th>Tanggal Lahir</th>
                         <th style="width:80px;">Aksi</th>
                     @else
-                        <th style="width:50px;">No</th>
                         <th>Data Diri</th>
                         <th>Keterangan</th>
                     @endif
@@ -129,7 +128,6 @@
                         </tr>
                     @else
                         <tr>
-                            <td>{{ $index * 5 + 1 }}</td>
                             <td>Identitas Diri</td>
                             <td>
                                 <strong>Nama Lengkap:</strong> {{ $p->nama_lengkap ?? '-' }}<br>
@@ -138,7 +136,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>{{ $index * 5 + 2 }}</td>
                             <td>Tempat & Tanggal Lahir</td>
                             <td>
                                 <strong>Tempat Lahir:</strong> {{ $p->tempat_lahir ?? '-' }}<br>
@@ -146,7 +143,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>{{ $index * 5 + 3 }}</td>
                             <td>Data Pribadi</td>
                             <td>
                                 <strong>Nama Ibu Kandung:</strong> {{ $p->nama_ibu_kandung ?? '-' }}<br>
@@ -155,7 +151,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>{{ $index * 5 + 4 }}</td>
                             <td>Pajak</td>
                             <td>
                                 <strong>NPWP:</strong> {{ $p->npwp ?? '-' }}<br>
@@ -163,7 +158,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>{{ $index * 5 + 5 }}</td>
                             <td>Kewarganegaraan</td>
                             <td>
                                 <strong>Kewarganegaraan:</strong> {{ $p->kewarganegaraan ?? '-' }}<br>

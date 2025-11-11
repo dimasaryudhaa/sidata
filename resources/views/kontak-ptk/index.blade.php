@@ -34,27 +34,14 @@
 
 <div class="container">
 
-    @if(!$isPtk)
-        <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width: 250px;">
-        </div>
-    @else
-        <div class="d-flex justify-start-end align-items-center mb-3">
-            <a href="{{ route('kontak-ptk.edit', ['kontak_ptk' => $data[0]->ptk_id ?? Auth::user()->id]) }}"
-               class="btn btn-primary px-4"
-               style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
-               <i class="bi bi-pencil-square me-2"></i> Edit
-            </a>
-        </div>
-    @endif
-
+    {{-- ✅ ALERT SUCCESS --}}
     @if(session('success'))
         <div id="successAlert"
-             class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
-             style="z-index:1050; min-width:320px;">
+            class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
+            style="z-index:1050; min-width:320px;">
             <div class="d-flex justify-content-center mb-3">
                 <div class="d-flex justify-content-center align-items-center"
-                     style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
+                    style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
                     <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
                 </div>
             </div>
@@ -74,12 +61,20 @@
         </script>
     @endif
 
-    <div class="table-responsive rounded-3 overflow-hidden mt-3">
-        <table class="table table-bordered" id="kontakPtkTable">
-            <thead class="text-white">
-                <tr>
-                    <th style="width:50px;">No</th>
-                    @if(!$isPtk)
+    {{-- ✅ MODE ADMIN --}}
+    @if(!$isPtk)
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex mb-3" style="gap:0.5rem;">
+                <input type="text" id="search" class="form-control form-control-sm"
+                    placeholder="Cari Nama PTK..." style="max-width: 250px;">
+            </form>
+        </div>
+
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="kontakPtkTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:50px;">No</th>
                         <th>Nama PTK</th>
                         <th>No HP</th>
                         <th>Email</th>
@@ -88,15 +83,10 @@
                         <th>Kecamatan</th>
                         <th>Kode Pos</th>
                         <th style="width:80px;">Aksi</th>
-                    @else
-                        <th>Data Kontak & Alamat</th>
-                        <th>Keterangan</th>
-                    @endif
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($data as $index => $item)
-                    @if(!$isPtk)
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($data as $index => $item)
                         <tr>
                             <td>{{ $data->firstItem() + $index }}</td>
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
@@ -110,66 +100,102 @@
                                 <a href="{{ route('kontak-ptk.edit', ['kontak_ptk' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
+
                                 @if($item->kontak_id)
                                     <form action="{{ route('kontak-ptk.destroy', $item->kontak_id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
-                                                onclick="return confirm('Yakin ingin menghapus data kontak PTK ini?')">
+                                            onclick="return confirm('Yakin ingin menghapus data kontak PTK ini?')">
                                             <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                                         </button>
                                     </form>
                                 @else
                                     <button class="btn btn-sm btn-no-border" disabled>
-                                        <img src="{{ asset('images/delete.png') }}" alt="Hapus Nonaktif" style="width:20px; height:20px; opacity:0.5;">
+                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
                                     </button>
                                 @endif
                             </td>
                         </tr>
-                    @else
-                        <tr>
-                            <td>{{ $index * 2 + 1 }}</td>
-                            <td>Informasi Kontak</td>
-                            <td>
-                                <strong>No HP:</strong> {{ $item->no_hp ?? '-' }}<br>
-                                <strong>Email:</strong> {{ $item->email ?? '-' }}<br>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>{{ $index * 2 + 2 }}</td>
-                            <td>Alamat Tempat Tinggal</td>
-                            <td>
-                                <strong>Alamat Jalan:</strong> {{ $item->alamat_jalan ?? '-' }}<br>
-                                <strong>RT:</strong> {{ $item->rt ?? '-' }}<br>
-                                <strong>RW:</strong> {{ $item->rw ?? '-' }}<br>
-                                <strong>Kelurahan:</strong> {{ $item->kelurahan ?? '-' }}<br>
-                                <strong>Kecamatan:</strong> {{ $item->kecamatan ?? '-' }}<br>
-                                <strong>Kode Pos:</strong> {{ $item->kode_pos ?? '-' }}
-                            </td>
-                        </tr>
-                    @endif
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-    <div class="d-flex justify-content-center mt-3">
-        {{ $data->links('pagination::bootstrap-5') }}
-    </div>
+        <div class="mt-3">
+            {{ $data->links('pagination::bootstrap-5') }}
+        </div>
+
+        <script>
+            document.getElementById('search').addEventListener('keyup', function() {
+                let filter = this.value.toLowerCase();
+                let rows = document.querySelectorAll('#kontakPtkTable tbody tr');
+
+                rows.forEach(row => {
+                    let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
+                    row.style.display = nama.includes(filter) ? '' : 'none';
+                });
+            });
+        </script>
+
+    @else
+        @php $dataPtk = $data->first(); @endphp
+
+        @if($dataPtk && $dataPtk->kontak_id)
+            <div class="d-flex justify-content-start align-items-center mb-3">
+                <a href="{{ route('kontak-ptk.edit', ['kontak_ptk' => $dataPtk->kontak_id]) }}"
+                    class="btn btn-primary px-4"
+                    style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                    <i class="bi bi-pencil-square me-2"></i> Edit
+                </a>
+            </div>
+        @endif
+
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Data Kontak & Alamat</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No HP</td>
+                        <td>{{ $dataPtk->no_hp ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ $dataPtk->email ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Jalan</td>
+                        <td>{{ $dataPtk->alamat_jalan ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>RT</td>
+                        <td>{{ $dataPtk->rt ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>RW</td>
+                        <td>{{ $dataPtk->rw ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kelurahan</td>
+                        <td>{{ $dataPtk->kelurahan ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kecamatan</td>
+                        <td>{{ $dataPtk->kecamatan ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kode Pos</td>
+                        <td>{{ $dataPtk->kode_pos ?? '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    @endif
 </div>
-
-<script>
-const searchInput = document.getElementById('search');
-const rows = document.querySelectorAll('#kontakPtkTable tbody tr');
-
-searchInput.addEventListener('keyup', function() {
-    let filter = this.value.toLowerCase();
-
-    rows.forEach(row => {
-        let nama = row.querySelector('.nama_ptk')?.textContent.toLowerCase() || '';
-        row.style.display = nama.includes(filter) ? '' : 'none';
-    });
-});
-</script>
 
 @endsection

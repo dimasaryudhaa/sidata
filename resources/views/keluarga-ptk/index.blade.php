@@ -152,22 +152,30 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th style="width:50px;">No</th>
                         <th>Data Keluarga</th>
                         <th>Keterangan</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>1</td>
-                        <td>Informasi Keluarga</td>
-                        <td>
-                            <strong>No KK:</strong> {{ $dataPtk->no_kk ?? '-' }}<br>
-                            <strong>Status Perkawinan:</strong> {{ $dataPtk->status_perkawinan ?? '-' }}<br>
-                            <strong>Nama Suami/Istri:</strong> {{ $dataPtk->nama_suami_istri ?? '-' }}<br>
-                            <strong>NIP Suami/Istri:</strong> {{ $dataPtk->nip_suami_istri ?? '-' }}<br>
-                            <strong>Pekerjaan Suami/Istri:</strong> {{ $dataPtk->pekerjaan_suami_istri ?? '-' }}
-                        </td>
+                        <td>No KK</td>
+                        <td>{{ $dataPtk->no_kk ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status Perkawinan</td>
+                        <td>{{ $dataPtk->status_perkawinan ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Suami/Istri</td>
+                        <td>{{ $dataPtk->nama_suami_istri ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>NIP Suami/Istri</td>
+                        <td>{{ $dataPtk->nip_suami_istri ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Pekerjaan Suami/Istri</td>
+                        <td>{{ $dataPtk->pekerjaan_suami_istri ?? '-' }}</td>
                     </tr>
                 </tbody>
             </table>

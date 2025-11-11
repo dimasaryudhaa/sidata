@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\KepegawaianPtk;
 use App\Models\Ptk;
 
@@ -11,31 +12,65 @@ class KepegawaianPtkController extends Controller
 {
     public function index()
     {
-        $data = DB::table('ptk')
-            ->leftJoin('kepegawaian', 'kepegawaian.ptk_id', '=', 'ptk.id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                'kepegawaian.id as kepegawaian_id',
-                'kepegawaian.status_kepegawaian',
-                'kepegawaian.nip',
-                'kepegawaian.niy_nigk',
-                'kepegawaian.nuptk',
-                'kepegawaian.jenis_ptk',
-                'kepegawaian.sk_pengangkatan',
-                'kepegawaian.tmt_pengangkatan',
-                'kepegawaian.lembaga_pengangkat',
-                'kepegawaian.sk_cpns',
-                'kepegawaian.tmt_pns',
-                'kepegawaian.pangkat_golongan',
-                'kepegawaian.sumber_gaji',
-                'kepegawaian.kartu_pegawai',
-                'kepegawaian.kartu_keluarga'
-            )
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
+        $data = collect();
 
-        return view('kepegawaian-ptk.index', compact('data'));
+        if ($isPtk) {
+            $data = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->leftJoin('kepegawaian', 'ptk.id', '=', 'kepegawaian.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'kepegawaian.id as kepegawaian_id',
+                    'kepegawaian.status_kepegawaian',
+                    'kepegawaian.nip',
+                    'kepegawaian.niy_nigk',
+                    'kepegawaian.nuptk',
+                    'kepegawaian.jenis_ptk',
+                    'kepegawaian.sk_pengangkatan',
+                    'kepegawaian.tmt_pengangkatan',
+                    'kepegawaian.lembaga_pengangkat',
+                    'kepegawaian.sk_cpns',
+                    'kepegawaian.tmt_pns',
+                    'kepegawaian.pangkat_golongan',
+                    'kepegawaian.sumber_gaji',
+                    'kepegawaian.kartu_pegawai',
+                    'kepegawaian.kartu_keluarga'
+                )
+                ->paginate(1);
+
+            return view('kepegawaian-ptk.index', compact('data', 'isPtk'));
+
+        } else {
+            $data = DB::table('ptk')
+                ->leftJoin('kepegawaian', 'kepegawaian.ptk_id', '=', 'ptk.id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'kepegawaian.id as kepegawaian_id',
+                    'kepegawaian.status_kepegawaian',
+                    'kepegawaian.nip',
+                    'kepegawaian.niy_nigk',
+                    'kepegawaian.nuptk',
+                    'kepegawaian.jenis_ptk',
+                    'kepegawaian.sk_pengangkatan',
+                    'kepegawaian.tmt_pengangkatan',
+                    'kepegawaian.lembaga_pengangkat',
+                    'kepegawaian.sk_cpns',
+                    'kepegawaian.tmt_pns',
+                    'kepegawaian.pangkat_golongan',
+                    'kepegawaian.sumber_gaji',
+                    'kepegawaian.kartu_pegawai',
+                    'kepegawaian.kartu_keluarga'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kepegawaian-ptk.index', compact('data', 'isPtk'));
+        }
     }
 
     public function create()

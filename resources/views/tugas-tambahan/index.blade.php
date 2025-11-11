@@ -27,13 +27,12 @@
     }
 </style>
 
-<div class="container">
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+@endphp
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <form class="d-flex mb-3" style="gap:0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width: 250px;">
-        </form>
-    </div>
+<div class="container">
 
     @if(session('success'))
         <div id="successAlert"
@@ -61,51 +60,97 @@
         </script>
     @endif
 
-    <div class="table-responsive rounded-3 overflow-hidden mt-3">
-        <table class="table table-bordered" id="tugasTambahanTable">
-            <thead class="text-white">
-                <tr>
-                    <th style="width:50px;">No</th>
-                    <th>Nama PTK</th>
-                    <th>Jumlah Tugas Tambahan</th>
-                    <th style="width:80px;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($tugasTambahan as $index => $item)
-                <tr>
-                    <td>{{ $tugasTambahan->firstItem() + $index }}</td>
-                    <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $item->jumlah_tugas_tambahan ?? 0 }}</td>
-                    <td>
-                        <a href="{{ route('tugas-tambahan.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/view.png') }}" alt="Lihat Tugas Tambahan" style="width:20px; height:20px;">
-                        </a>
-                        <a href="{{ route('tugas-tambahan.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Tugas Tambahan" style="width:20px; height:20px;">
-                        </a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+    @if($isPtk)
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="tugasTambahanTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:60px;">No</th>
+                        <th>Jabatan PTK</th>
+                        <th>Prasarana</th>
+                        <th>Nomor SK</th>
+                        <th>TMT Tambahan</th>
+                        <th>TST Tambahan</th>
+                        <th style="width:80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($tugasTambahan as $index => $item)
+                        <tr>
+                            <td>{{ $tugasTambahan->firstItem() + $index }}</td>
+                            <td>{{ $item->jabatan_ptk ?? '-' }}</td>
+                            <td>{{ $item->prasarana ?? '-' }}</td>
+                            <td>{{ $item->nomor_sk ?? '-' }}</td>
+                            <td>{{ $item->tmt_tambahan ?? '-' }}</td>
+                            <td>{{ $item->tst_tambahan ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('tugas-tambahan.edit', ['tugas_tambahan' => $item->tugas_tambahan_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-    <div class="mt-3">
-        {{ $tugasTambahan->links('pagination::bootstrap-5') }}
-    </div>
+        <div class="d-flex justify-content-center mt-3">
+            {{ $tugasTambahan->links('pagination::bootstrap-5') }}
+        </div>
+
+    @else
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex mb-3" style="gap:0.5rem;">
+                <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width:250px;">
+            </form>
+        </div>
+
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="tugasTambahanTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:50px;">No</th>
+                        <th>Nama PTK</th>
+                        <th>Jumlah Tugas Tambahan</th>
+                        <th style="width:80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($tugasTambahan as $index => $item)
+                        <tr>
+                            <td>{{ $tugasTambahan->firstItem() + $index }}</td>
+                            <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $item->jumlah_tugas_tambahan ?? 0 }}</td>
+                            <td>
+                                <a href="{{ route('tugas-tambahan.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat" style="width:20px; height:20px;">
+                                </a>
+                                <a href="{{ route('tugas-tambahan.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            {{ $tugasTambahan->links('pagination::bootstrap-5') }}
+        </div>
+
+        <script>
+            document.getElementById('search').addEventListener('keyup', function() {
+                let filter = this.value.toLowerCase();
+                let rows = document.querySelectorAll('#tugasTambahanTable tbody tr');
+
+                rows.forEach(row => {
+                    let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
+                    row.style.display = nama.includes(filter) ? '' : 'none';
+                });
+            });
+        </script>
+    @endif
 </div>
-
-<script>
-    document.getElementById('search').addEventListener('keyup', function() {
-        let filter = this.value.toLowerCase();
-        let rows = document.querySelectorAll('#tugasTambahanTable tbody tr');
-
-        rows.forEach(row => {
-            let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-            row.style.display = nama.includes(filter) ? '' : 'none';
-        });
-    });
-</script>
 
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatKarir;
 use App\Models\Ptk;
 
@@ -11,18 +12,48 @@ class RiwayatKarirController extends Controller
 {
     public function index()
     {
-        $riwayatKarir = DB::table('ptk')
-            ->leftJoin('riwayat_karir', 'ptk.id', '=', 'riwayat_karir.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(riwayat_karir.id) as jumlah_riwayat_karir')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('riwayat-karir.index', compact('riwayatKarir'));
+        if ($isPtk) {
+            $riwayatKarir = DB::table('riwayat_karir')
+                ->join('ptk', 'riwayat_karir.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'riwayat_karir.id as riwayat_karir_id',
+                    'ptk.id as ptk_id',
+                    'riwayat_karir.jenjang_pendidikan',
+                    'riwayat_karir.jenis_lembaga',
+                    'riwayat_karir.status_kepegawaian',
+                    'riwayat_karir.jenis_ptk',
+                    'riwayat_karir.lembaga_pengangkat',
+                    'riwayat_karir.no_sk_kerja',
+                    'riwayat_karir.tgl_sk_kerja',
+                    'riwayat_karir.tmt_kerja',
+                    'riwayat_karir.tst_kerja',
+                    'riwayat_karir.tempat_kerja',
+                    'riwayat_karir.ttd_sk_kerja'
+                )
+                ->orderBy('riwayat_karir.tgl_sk_kerja', 'desc')
+                ->paginate(12);
+
+            return view('riwayat-karir.index', compact('riwayatKarir', 'isPtk'));
+
+        } else {
+            $riwayatKarir = DB::table('ptk')
+                ->leftJoin('riwayat_karir', 'ptk.id', '=', 'riwayat_karir.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(riwayat_karir.id) as jumlah_riwayat_karir')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('riwayat-karir.index', compact('riwayatKarir', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

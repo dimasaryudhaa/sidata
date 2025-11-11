@@ -27,13 +27,12 @@
     }
 </style>
 
-<div class="container">
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+@endphp
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <form class="d-flex mb-3" style="gap:0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width: 250px;">
-        </form>
-    </div>
+<div class="container">
 
     @if(session('success'))
         <div id="successAlert"
@@ -61,50 +60,99 @@
         </script>
     @endif
 
-    <div class="table-responsive rounded-3 overflow-hidden mt-3">
-        <table class="table table-bordered" id="riwayatGajiTable">
-            <thead class="text-white">
-                <tr>
-                    <th style="width:50px;">No</th>
-                    <th>Nama PTK</th>
-                    <th>Jumlah Riwayat Gaji</th>
-                    <th style="width:80px;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($riwayatGaji as $index => $item)
-                <tr>
-                    <td>{{ $riwayatGaji->firstItem() + $index }}</td>
-                    <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $item->jumlah_riwayat_gaji ?? 0 }}</td>
-                    <td>
-                        <a href="{{ route('riwayat-gaji.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/view.png') }}" alt="Lihat Riwayat Gaji" style="width:20px; height:20px;">
-                        </a>
-                        <a href="{{ route('riwayat-gaji.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Riwayat Gaji" style="width:20px; height:20px;">
-                        </a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-3">
-        {{ $riwayatGaji->links('pagination::bootstrap-5') }}
-    </div>
+    @if($isPtk)
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="riwayatGajiTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:60px;">No</th>
+                        <th>Pangkat/Golongan</th>
+                        <th>Nomor SK</th>
+                        <th>Tanggal SK</th>
+                        <th>TMT KGB</th>
+                        <th>Masa Kerja</th>
+                        <th>Gaji Pokok</th>
+                        <th style="width:80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($riwayatGaji as $index => $item)
+                        <tr>
+                            <td>{{ $riwayatGaji->firstItem() + $index }}</td>
+                            <td>{{ $item->pangkat_golongan ?? '-' }}</td>
+                            <td>{{ $item->nomor_sk ?? '-' }}</td>
+                            <td>{{ $item->tanggal_sk ?? '-' }}</td>
+                            <td>{{ $item->tmt_kgb ?? '-' }}</td>
+                            <td>{{ $item->masa_kerja_thn }} Thn {{ $item->masa_kerja_bln }} Bln</td>
+                            <td>{{ $item->gaji_pokok ? 'Rp ' . number_format($item->gaji_pokok, 0, ',', '.') : '-' }}</td>
+                            <td>
+                                <a href="{{ route('riwayat-gaji.edit', ['riwayat_gaji' => $item->riwayat_gaji_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            {{ $riwayatGaji->links('pagination::bootstrap-5') }}
+        </div>
+
+    @else
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex mb-3" style="gap:0.5rem;">
+                <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width:250px;">
+            </form>
+        </div>
+
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="riwayatGajiTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:50px;">No</th>
+                        <th>Nama PTK</th>
+                        <th>Jumlah Riwayat Gaji</th>
+                        <th style="width:80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($riwayatGaji as $index => $item)
+                        <tr>
+                            <td>{{ $riwayatGaji->firstItem() + $index }}</td>
+                            <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $item->jumlah_riwayat_gaji ?? 0 }}</td>
+                            <td>
+                                <a href="{{ route('riwayat-gaji.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat" style="width:20px; height:20px;">
+                                </a>
+                                <a href="{{ route('riwayat-gaji.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            {{ $riwayatGaji->links('pagination::bootstrap-5') }}
+        </div>
+
+        <script>
+            document.getElementById('search').addEventListener('keyup', function() {
+                let filter = this.value.toLowerCase();
+                let rows = document.querySelectorAll('#riwayatGajiTable tbody tr');
+
+                rows.forEach(row => {
+                    let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
+                    row.style.display = nama.includes(filter) ? '' : 'none';
+                });
+            });
+        </script>
+    @endif
 </div>
-
-<script>
-    document.getElementById('search').addEventListener('keyup', function() {
-        let filter = this.value.toLowerCase();
-        let rows = document.querySelectorAll('#riwayatGajiTable tbody tr');
-
-        rows.forEach(row => {
-            let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-            row.style.display = nama.includes(filter) ? '' : 'none';
-        });
-    });
-</script>
 
 @endsection

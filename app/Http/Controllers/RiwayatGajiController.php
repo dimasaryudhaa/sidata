@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatGaji;
 use App\Models\Ptk;
 
@@ -11,18 +12,44 @@ class RiwayatGajiController extends Controller
 {
     public function index()
     {
-        $riwayatGaji = DB::table('ptk')
-            ->leftJoin('riwayat_gaji', 'ptk.id', '=', 'riwayat_gaji.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(riwayat_gaji.id) as jumlah_riwayat_gaji')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('riwayat-gaji.index', compact('riwayatGaji'));
+        if ($isPtk) {
+            $riwayatGaji = DB::table('riwayat_gaji')
+                ->join('ptk', 'riwayat_gaji.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'riwayat_gaji.id as riwayat_gaji_id',
+                    'ptk.id as ptk_id',
+                    'riwayat_gaji.pangkat_golongan',
+                    'riwayat_gaji.nomor_sk',
+                    'riwayat_gaji.tanggal_sk',
+                    'riwayat_gaji.tmt_kgb',
+                    'riwayat_gaji.masa_kerja_thn',
+                    'riwayat_gaji.masa_kerja_bln',
+                    'riwayat_gaji.gaji_pokok'
+                )
+                ->orderBy('riwayat_gaji.tanggal_sk', 'desc')
+                ->paginate(12);
+
+            return view('riwayat-gaji.index', compact('riwayatGaji', 'isPtk'));
+
+        } else {
+            $riwayatGaji = DB::table('ptk')
+                ->leftJoin('riwayat_gaji', 'ptk.id', '=', 'riwayat_gaji.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(riwayat_gaji.id) as jumlah_riwayat_gaji')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('riwayat-gaji.index', compact('riwayatGaji', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

@@ -27,12 +27,12 @@
     }
 </style>
 
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+@endphp
+
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <form class="d-flex mb-3" style="gap:0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width: 250px;">
-        </form>
-    </div>
 
     @if(session('success'))
         <div id="successAlert"
@@ -60,48 +60,95 @@
         </script>
     @endif
 
-    <div class="table-responsive rounded-3 overflow-hidden mt-3">
-        <table class="table table-bordered" id="jabatanFungsionalTable">
-            <thead class="text-white">
-                <tr>
-                    <th style="width:50px;">No</th>
-                    <th>Nama PTK</th>
-                    <th>Jumlah Riwayat Jabatan Fungsional</th>
-                    <th style="width:80px;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($riwayatJabatanFungsional as $index => $item)
-                <tr>
-                    <td>{{ $riwayatJabatanFungsional->firstItem() + $index }}</td>
-                    <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $item->jumlah_riwayat_jabfung ?? 0 }}</td>
-                    <td>
-                        <a href="{{ route('riwayat-jabatan-fungsional.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/view.png') }}" alt="Lihat Riwayat Jabatan Fungsional" style="width:20px; height:20px;">
-                        </a>
-                        <a href="{{ route('riwayat-jabatan-fungsional.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Riwayat Jabatan Fungsional" style="width:20px; height:20px;">
-                        </a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-3">
-        {{ $riwayatJabatanFungsional->links('pagination::bootstrap-5') }}
-    </div>
-</div>
-<script>
-    document.getElementById('search').addEventListener('keyup', function() {
-        let filter = this.value.toLowerCase();
-        let rows = document.querySelectorAll('#jabatanFungsionalTable tbody tr');
+    @if($isPtk)
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="riwayatJabfungTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:60px;">No</th>
+                        <th>Jabatan Fungsional</th>
+                        <th>SK Jabatan Fungsional</th>
+                        <th>TMT Jabatan</th>
+                        <th style="width:80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($riwayatJabatanFungsional as $index => $item)
+                        <tr>
+                            <td>{{ $riwayatJabatanFungsional->firstItem() + $index }}</td>
+                            <td>{{ $item->jabatan_fungsional ?? '-' }}</td>
+                            <td>{{ $item->sk_jabfung ?? '-' }}</td>
+                            <td>{{ $item->tmt_jabatan ?? '-' }}</td>
+                            <td>
+                                <a href="{{ route('riwayat-jabatan-fungsional.edit', ['riwayat_jabatan_fungsional' => $item->riwayat_jabfung_id]) }}"
+                                   class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-        rows.forEach(row => {
-            let nama = row.querySelector('.nama_lengkap').textContent.toLowerCase();
-            row.style.display = nama.includes(filter) ? '' : 'none';
-        });
-    });
-</script>
+        <div class="d-flex justify-content-center mt-3">
+            {{ $riwayatJabatanFungsional->links('pagination::bootstrap-5') }}
+        </div>
+
+    @else
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex mb-3" style="gap:0.5rem;">
+                <input type="text" id="search" class="form-control form-control-sm"
+                       placeholder="Cari Nama PTK..." style="max-width:250px;">
+            </form>
+        </div>
+
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+            <table class="table table-bordered" id="riwayatJabfungTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width:50px;">No</th>
+                        <th>Nama PTK</th>
+                        <th>Jumlah Riwayat Jabatan Fungsional</th>
+                        <th style="width:80px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($riwayatJabatanFungsional as $index => $item)
+                        <tr>
+                            <td>{{ $riwayatJabatanFungsional->firstItem() + $index }}</td>
+                            <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $item->jumlah_riwayat_jabfung ?? 0 }}</td>
+                            <td>
+                                <a href="{{ route('riwayat-jabatan-fungsional.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Riwayat Jabatan Fungsional" style="width:20px; height:20px;">
+                                </a>
+                                <a href="{{ route('riwayat-jabatan-fungsional.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Riwayat Jabatan Fungsional" style="width:20px; height:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            {{ $riwayatJabatanFungsional->links('pagination::bootstrap-5') }}
+        </div>
+
+        <script>
+            document.getElementById('search').addEventListener('keyup', function() {
+                let filter = this.value.toLowerCase();
+                let rows = document.querySelectorAll('#riwayatJabfungTable tbody tr');
+
+                rows.forEach(row => {
+                    let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
+                    row.style.display = nama.includes(filter) ? '' : 'none';
+                });
+            });
+        </script>
+    @endif
+</div>
+
 @endsection

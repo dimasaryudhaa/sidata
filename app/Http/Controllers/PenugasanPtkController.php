@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\PenugasanPtk;
 use App\Models\Ptk;
 
@@ -11,22 +12,44 @@ class PenugasanPtkController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
+        $data = collect();
 
-        $data = DB::table('ptk')
-            ->leftJoin('penugasan', 'ptk.id', '=', 'penugasan.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                'penugasan.id as penugasan_id',
-                'penugasan.nomor_surat_tugas',
-                'penugasan.tanggal_surat_tugas',
-                'penugasan.tmt_tugas',
-                'penugasan.status_sekolah_induk'
-            )
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        if ($isPtk) {
+            $data = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->leftJoin('penugasan', 'ptk.id', '=', 'penugasan.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'penugasan.id as penugasan_id',
+                    'penugasan.nomor_surat_tugas',
+                    'penugasan.tanggal_surat_tugas',
+                    'penugasan.tmt_tugas',
+                    'penugasan.status_sekolah_induk'
+                )
+                ->paginate(1);
 
-        return view('penugasan-ptk.index', compact('data'));
+            return view('penugasan-ptk.index', compact('data', 'isPtk'));
+        } else {
+            $data = DB::table('ptk')
+                ->leftJoin('penugasan', 'penugasan.ptk_id', '=', 'ptk.id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    'penugasan.id as penugasan_id',
+                    'penugasan.nomor_surat_tugas',
+                    'penugasan.tanggal_surat_tugas',
+                    'penugasan.tmt_tugas',
+                    'penugasan.status_sekolah_induk'
+                )
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('penugasan-ptk.index', compact('data', 'isPtk'));
+        }
     }
 
     public function create()

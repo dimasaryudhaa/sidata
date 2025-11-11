@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\TugasTambahan;
 use App\Models\Ptk;
 
@@ -11,18 +12,42 @@ class TugasTambahanController extends Controller
 {
     public function index()
     {
-        $tugasTambahan = DB::table('ptk')
-            ->leftJoin('tugas_tambahan', 'ptk.id', '=', 'tugas_tambahan.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(tugas_tambahan.id) as jumlah_tugas_tambahan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('tugas-tambahan.index', compact('tugasTambahan'));
+        if ($isPtk) {
+            $tugasTambahan = DB::table('tugas_tambahan')
+                ->join('ptk', 'tugas_tambahan.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'tugas_tambahan.id as tugas_tambahan_id',
+                    'ptk.id as ptk_id',
+                    'tugas_tambahan.jabatan_ptk',
+                    'tugas_tambahan.prasarana',
+                    'tugas_tambahan.nomor_sk',
+                    'tugas_tambahan.tmt_tambahan',
+                    'tugas_tambahan.tst_tambahan'
+                )
+                ->orderBy('tugas_tambahan.tmt_tambahan', 'desc')
+                ->paginate(12);
+
+            return view('tugas-tambahan.index', compact('tugasTambahan', 'isPtk'));
+
+        } else {
+            $tugasTambahan = DB::table('ptk')
+                ->leftJoin('tugas_tambahan', 'ptk.id', '=', 'tugas_tambahan.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(tugas_tambahan.id) as jumlah_tugas_tambahan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('tugas-tambahan.index', compact('tugasTambahan', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

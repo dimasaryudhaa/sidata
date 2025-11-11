@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatJabatan;
 use App\Models\Ptk;
 
@@ -11,18 +12,40 @@ class RiwayatJabatanController extends Controller
 {
     public function index()
     {
-        $riwayatJabatan = DB::table('ptk')
-            ->leftJoin('riwayat_jabatan', 'ptk.id', '=', 'riwayat_jabatan.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(riwayat_jabatan.id) as jumlah_riwayat_jabatan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('riwayat-jabatan.index', compact('riwayatJabatan'));
+        if ($isPtk) {
+            $riwayatJabatan = DB::table('riwayat_jabatan')
+                ->join('ptk', 'riwayat_jabatan.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'riwayat_jabatan.id as riwayat_jabatan_id',
+                    'ptk.id as ptk_id',
+                    'riwayat_jabatan.jabatan_ptk',
+                    'riwayat_jabatan.sk_jabatan',
+                    'riwayat_jabatan.tmt_jabatan'
+                )
+                ->orderBy('riwayat_jabatan.tmt_jabatan', 'desc')
+                ->paginate(12);
+
+            return view('riwayat-jabatan.index', compact('riwayatJabatan', 'isPtk'));
+
+        } else {
+            $riwayatJabatan = DB::table('ptk')
+                ->leftJoin('riwayat_jabatan', 'ptk.id', '=', 'riwayat_jabatan.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(riwayat_jabatan.id) as jumlah_riwayat_jabatan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('riwayat-jabatan.index', compact('riwayatJabatan', 'isPtk'));
+        }
     }
 
     public function create(Request $request)
