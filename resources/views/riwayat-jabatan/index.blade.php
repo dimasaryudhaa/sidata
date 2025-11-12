@@ -108,7 +108,7 @@
                 <thead class="text-white">
                     <tr>
                         <th style="width:50px;">No</th>
-                        <th>Nama PTK</th>
+                        <th style="width:500px;">Nama PTK</th>
                         <th>Jumlah Riwayat Jabatan</th>
                         <th style="width:80px;">Aksi</th>
                     </tr>

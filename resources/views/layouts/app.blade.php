@@ -307,6 +307,22 @@
                                 <li><a href="{{ route('riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
                             </ul>
                         </li>
+
+                        <li class="has-submenu">
+                            <a href="#" onclick="toggleSubmenu(event)">
+                                <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi PTK
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
+                                <li><a href="{{ route('nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
+                                <li><a href="{{ route('pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
+                                <li><a href="{{ route('sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
+                                <li><a href="{{ route('beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
+                                <li><a href="{{ route('kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
+                                <li><a href="{{ route('kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
+                            </ul>
+                        </li>
                     @endif
 
                     @if (auth()->user()->role === 'siswa')

@@ -6,23 +6,49 @@ use Illuminate\Http\Request;
 use App\Models\SertifikatPtk;
 use App\Models\Ptk;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class SertifikatPtkController extends Controller
 {
-    public function index()
+public function index()
     {
-        $sertifikatPtk = DB::table('ptk')
-            ->leftJoin('sertifikat', 'ptk.id', '=', 'sertifikat.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(sertifikat.id) as jumlah_sertifikat')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('sertifikat-ptk.index', compact('sertifikatPtk'));
+        if ($isPtk) {
+            $sertifikatPtk = DB::table('sertifikat')
+                ->join('ptk', 'sertifikat.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'sertifikat.id as sertifikat_id',
+                    'ptk.id as ptk_id',
+                    'sertifikat.jenis_sertifikasi',
+                    'sertifikat.nomor_sertifikat',
+                    'sertifikat.tahun_sertifikasi',
+                    'sertifikat.bidang_studi',
+                    'sertifikat.nrg',
+                    'sertifikat.nomor_peserta'
+                )
+                ->orderBy('sertifikat.tahun_sertifikasi', 'desc')
+                ->paginate(12);
+
+            return view('sertifikat-ptk.index', compact('sertifikatPtk', 'isPtk'));
+
+        } else {
+            $sertifikatPtk = DB::table('ptk')
+                ->leftJoin('sertifikat', 'ptk.id', '=', 'sertifikat.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(sertifikat.id) as jumlah_sertifikat')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('sertifikat-ptk.index', compact('sertifikatPtk', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\KompetensiKhususPtk;
 use App\Models\Ptk;
 
@@ -11,18 +12,43 @@ class KompetensiKhususPtkController extends Controller
 {
     public function index()
     {
-        $kompetensiKhusus = DB::table('ptk')
-            ->leftJoin('kompetensi_khusus', 'ptk.id', '=', 'kompetensi_khusus.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(kompetensi_khusus.id) as jumlah_kompetensi_khusus')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('kompetensi-khusus-ptk.index', compact('kompetensiKhusus'));
+        if ($isPtk) {
+            $kompetensiKhusus = DB::table('kompetensi_khusus')
+                ->join('ptk', 'kompetensi_khusus.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'kompetensi_khusus.id as kompetensi_khusus_id',
+                    'ptk.id as ptk_id',
+                    'kompetensi_khusus.punya_lisensi_kepala_sekolah',
+                    'kompetensi_khusus.nomor_unik_kepala_sekolah',
+                    'kompetensi_khusus.keahlian_lab_oratorium',
+                    'kompetensi_khusus.mampu_menangani',
+                    'kompetensi_khusus.keahlian_braile',
+                    'kompetensi_khusus.keahlian_bahasa_isyarat'
+                )
+                ->orderBy('kompetensi_khusus.id', 'asc')
+                ->paginate(12);
+
+            return view('kompetensi-khusus-ptk.index', compact('kompetensiKhusus', 'isPtk'));
+
+        } else {
+            $kompetensiKhusus = DB::table('ptk')
+                ->leftJoin('kompetensi_khusus', 'ptk.id', '=', 'kompetensi_khusus.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(kompetensi_khusus.id) as jumlah_kompetensi_khusus')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kompetensi-khusus-ptk.index', compact('kompetensiKhusus', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

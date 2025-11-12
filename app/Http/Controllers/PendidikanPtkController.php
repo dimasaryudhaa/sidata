@@ -6,23 +6,55 @@ use Illuminate\Http\Request;
 use App\Models\PendidikanPtk;
 use App\Models\Ptk;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PendidikanPtkController extends Controller
 {
     public function index()
     {
-        $pendidikanPtk = DB::table('ptk')
-            ->leftJoin('pendidikan_ptk', 'ptk.id', '=', 'pendidikan_ptk.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(pendidikan_ptk.id) as jumlah_pendidikan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('pendidikan-ptk.index', compact('pendidikanPtk'));
+        if ($isPtk) {
+            $pendidikanPtk = DB::table('pendidikan_ptk')
+                ->join('ptk', 'pendidikan_ptk.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'pendidikan_ptk.id as pendidikan_id',
+                    'ptk.id as ptk_id',
+                    'pendidikan_ptk.bidang_studi',
+                    'pendidikan_ptk.jenjang_pendidikan',
+                    'pendidikan_ptk.gelar_akademik',
+                    'pendidikan_ptk.satuan_pendidikan_formal',
+                    'pendidikan_ptk.fakultas',
+                    'pendidikan_ptk.kependidikan',
+                    'pendidikan_ptk.tahun_masuk',
+                    'pendidikan_ptk.tahun_lulus',
+                    'pendidikan_ptk.nomor_induk',
+                    'pendidikan_ptk.masih_studi',
+                    'pendidikan_ptk.semester',
+                    'pendidikan_ptk.rata_rata_ujian'
+                )
+                ->orderBy('pendidikan_ptk.tahun_lulus', 'desc')
+                ->paginate(12);
+
+            return view('pendidikan-ptk.index', compact('pendidikanPtk', 'isPtk'));
+
+        } else {
+            $pendidikanPtk = DB::table('ptk')
+                ->leftJoin('pendidikan_ptk', 'ptk.id', '=', 'pendidikan_ptk.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(pendidikan_ptk.id) as jumlah_pendidikan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('pendidikan-ptk.index', compact('pendidikanPtk', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

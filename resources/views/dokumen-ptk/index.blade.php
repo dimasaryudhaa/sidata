@@ -188,16 +188,19 @@
         </script>
 
     @else
-        <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK" style="max-width: 200px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form class="d-flex mb-3" style="gap:0.5rem;">
+                <input type="text" id="search" class="form-control form-control-sm"
+                       placeholder="Cari Nama PTK..." style="max-width:250px;">
+            </form>
         </div>
 
-        <div class="table-responsive rounded-3 overflow-auto mt-3" style="max-height: 550px;">
+        <div class="table-responsive rounded-3 overflow-auto mt-3">
             <table class="table table-bordered" id="dokumenTable">
                 <thead class="text-white">
                     <tr>
                         <th style="width: 50px;">No</th>
-                        <th>Nama PTK</th>
+                        <th style="width: 500px">Nama PTK</th>
                         <th>Status</th>
                         <th style="width: 80px;">Aksi</th>
                     </tr>

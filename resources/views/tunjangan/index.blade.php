@@ -133,7 +133,7 @@
                 <thead class="text-white">
                     <tr>
                         <th style="width:50px;">No</th>
-                        <th>Nama PTK</th>
+                        <th style="width: 500px">Nama PTK</th>
                         <th>Jumlah Tunjangan</th>
                         <th style="width:100px;">Aksi</th>
                     </tr>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Diklat;
 use App\Models\Ptk;
 
@@ -11,18 +12,44 @@ class DiklatController extends Controller
 {
     public function index()
     {
-        $diklats = DB::table('ptk')
-            ->leftJoin('diklat', 'ptk.id', '=', 'diklat.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(diklat.id) as jumlah_diklat')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('diklat.index', compact('diklats'));
+        if ($isPtk) {
+            $diklats = DB::table('diklat')
+                ->join('ptk', 'diklat.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'diklat.id as diklat_id',
+                    'ptk.id as ptk_id',
+                    'diklat.jenis_diklat',
+                    'diklat.nama_diklat',
+                    'diklat.no_sertifikat',
+                    'diklat.penyelenggara',
+                    'diklat.tahun',
+                    'diklat.peran',
+                    'diklat.tingkat',
+                )
+                ->orderBy('diklat.tahun', 'desc')
+                ->paginate(12);
+
+            return view('diklat.index', compact('diklats', 'isPtk'));
+
+        } else {
+            $diklats = DB::table('ptk')
+                ->leftJoin('diklat', 'ptk.id', '=', 'diklat.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(diklat.id) as jumlah_diklat')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('diklat.index', compact('diklats', 'isPtk'));
+        }
     }
 
     public function show($ptk_id)

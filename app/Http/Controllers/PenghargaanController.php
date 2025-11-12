@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Penghargaan;
 use App\Models\Ptk;
 
@@ -11,18 +12,42 @@ class PenghargaanController extends Controller
 {
     public function index()
     {
-        $penghargaans = DB::table('ptk')
-            ->leftJoin('penghargaan', 'ptk.id', '=', 'penghargaan.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(penghargaan.id) as jumlah_penghargaan')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('penghargaan.index', compact('penghargaans'));
+        if ($isPtk) {
+            $penghargaanPtk = DB::table('penghargaan')
+                ->join('ptk', 'penghargaan.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'penghargaan.id as penghargaan_id',
+                    'ptk.id as ptk_id',
+                    'penghargaan.tingkat_penghargaan',
+                    'penghargaan.jenis_penghargaan',
+                    'penghargaan.nama_penghargaan',
+                    'penghargaan.tahun',
+                    'penghargaan.instansi'
+                )
+                ->orderBy('penghargaan.tahun', 'desc')
+                ->paginate(12);
+
+            return view('penghargaan.index', compact('penghargaanPtk', 'isPtk'));
+
+        } else {
+            $penghargaanPtk = DB::table('ptk')
+                ->leftJoin('penghargaan', 'ptk.id', '=', 'penghargaan.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(penghargaan.id) as jumlah_penghargaan')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('penghargaan.index', compact('penghargaanPtk', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\KompetensiPtk;
 use App\Models\Ptk;
 
@@ -11,18 +12,39 @@ class KompetensiPtkController extends Controller
 {
     public function index()
     {
-        $kompetensis = DB::table('ptk')
-            ->leftJoin('kompetensi', 'ptk.id', '=', 'kompetensi.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(kompetensi.id) as jumlah_kompetensi')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('kompetensi-ptk.index', compact('kompetensis'));
+        if ($isPtk) {
+            $kompetensiPtk = DB::table('kompetensi')
+                ->join('ptk', 'kompetensi.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'kompetensi.id as kompetensi_id',
+                    'ptk.id as ptk_id',
+                    'kompetensi.bidang_studi',
+                    'kompetensi.urutan'
+                )
+                ->orderBy('kompetensi.urutan', 'asc')
+                ->paginate(12);
+
+            return view('kompetensi-ptk.index', compact('kompetensiPtk', 'isPtk'));
+
+        } else {
+            $kompetensiPtk = DB::table('ptk')
+                ->leftJoin('kompetensi', 'ptk.id', '=', 'kompetensi.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(kompetensi.id) as jumlah_kompetensi')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('kompetensi-ptk.index', compact('kompetensiPtk', 'isPtk'));
+        }
     }
 
     public function create(Request $request)

@@ -19,7 +19,6 @@ class Diklat extends Model
         'tahun',
         'peran',
         'tingkat',
-        'lama_jam',
     ];
 
     public function ptk()

@@ -6,23 +6,48 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\BeasiswaPtk;
 use App\Models\Ptk;
+use Illuminate\Support\Facades\Auth;
 
 class BeasiswaPtkController extends Controller
 {
     public function index()
     {
-        $beasiswaPtk = DB::table('ptk')
-            ->leftJoin('beasiswa_ptk', 'ptk.id', '=', 'beasiswa_ptk.ptk_id')
-            ->select(
-                'ptk.id as ptk_id',
-                'ptk.nama_lengkap',
-                DB::raw('COUNT(beasiswa_ptk.id) as jumlah_beasiswa')
-            )
-            ->groupBy('ptk.id', 'ptk.nama_lengkap')
-            ->orderBy('ptk.nama_lengkap', 'asc')
-            ->paginate(12);
+        $user = Auth::user();
+        $isPtk = $user->role === 'ptk';
 
-        return view('beasiswa-ptk.index', compact('beasiswaPtk'));
+        if ($isPtk) {
+            $beasiswaPtk = DB::table('beasiswa_ptk')
+                ->join('ptk', 'beasiswa_ptk.ptk_id', '=', 'ptk.id')
+                ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
+                ->where('akun_ptk.email', $user->email)
+                ->select(
+                    'beasiswa_ptk.id as beasiswa_id',
+                    'ptk.id as ptk_id',
+                    'beasiswa_ptk.jenis_beasiswa',
+                    'beasiswa_ptk.keterangan',
+                    'beasiswa_ptk.tahun_mulai',
+                    'beasiswa_ptk.tahun_akhir',
+                    'beasiswa_ptk.masih_menerima'
+                )
+                ->orderBy('beasiswa_ptk.tahun_mulai', 'desc')
+                ->paginate(12);
+
+            return view('beasiswa-ptk.index', compact('beasiswaPtk', 'isPtk'));
+        }
+        else {
+            $beasiswaPtk = DB::table('ptk')
+                ->leftJoin('beasiswa_ptk', 'ptk.id', '=', 'beasiswa_ptk.ptk_id')
+                ->select(
+                    'ptk.id as ptk_id',
+                    'ptk.nama_lengkap',
+                    DB::raw('COUNT(beasiswa_ptk.id) as jumlah_beasiswa')
+                )
+                ->groupBy('ptk.id', 'ptk.nama_lengkap')
+                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            return view('beasiswa-ptk.index', compact('beasiswaPtk', 'isPtk'));
+        }
     }
 
     public function create(Request $request)
