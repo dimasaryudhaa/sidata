@@ -79,7 +79,7 @@
             @endif
         </div>
 
-        <div class="table-responsive rounded-3">
+        <div class="table-responsive rounded-3 overflow-hidden mt-3">
             <table class="table table-bordered mt-3">
                 <thead class="text-white" style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8);">
                     <tr>

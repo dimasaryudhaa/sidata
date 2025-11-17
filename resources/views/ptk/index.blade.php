@@ -147,7 +147,6 @@
                             <td>
                                 <strong>Nama Ibu Kandung:</strong> {{ $p->nama_ibu_kandung ?? '-' }}<br>
                                 <strong>Agama:</strong> {{ $p->agama ?? '-' }}<br>
-                                <strong>Kode Pos:</strong> {{ $p->kode_pos ?? '-' }}
                             </td>
                         </tr>
                         <tr>

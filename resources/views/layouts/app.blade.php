@@ -276,6 +276,7 @@
                     @endif
 
                     @if (auth()->user()->role === 'ptk')
+                        <li><a href="{{ route('master-ptk.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Ptk</a></li>
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-person-badge me-2"></i>Data PTK

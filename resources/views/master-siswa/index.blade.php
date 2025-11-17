@@ -241,7 +241,7 @@
                     @endif
                 </td>
             </tr>
-        </table>
+    </table>
     </div>
 
     @else

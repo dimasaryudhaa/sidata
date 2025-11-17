@@ -34,7 +34,6 @@
 
 <div class="container">
 
-    {{-- ✅ ALERT SUCCESS --}}
     @if(session('success'))
         <div id="successAlert"
             class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
@@ -61,7 +60,6 @@
         </script>
     @endif
 
-    {{-- ✅ MODE ADMIN --}}
     @if(!$isPtk)
         <div class="d-flex justify-content-between align-items-center mb-3">
             <form class="d-flex mb-3" style="gap:0.5rem;">

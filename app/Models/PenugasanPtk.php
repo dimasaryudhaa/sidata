@@ -14,7 +14,7 @@ class PenugasanPtk extends Model
     protected $fillable = [
         'ptk_id',
         'nomor_surat_tugas',
-        'tanggal_surat_tugas',      
+        'tanggal_surat_tugas',
         'tmt_tugas',
         'status_sekolah_induk',
     ];
