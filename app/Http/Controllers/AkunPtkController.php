@@ -15,6 +15,14 @@ class AkunPtkController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role == 'ptk';
+        $isAdmin = $user->role == 'admin';
+
+        $ptkId = null;
+        if ($isPtk) {
+            $ptkId = DB::table('akun_ptk')
+                ->where('email', $user->email)
+                ->value('ptk_id');
+        }
 
         if ($isPtk) {
             $data = DB::table('akun_ptk')
@@ -29,7 +37,6 @@ class AkunPtkController extends Controller
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
 
-                return view('akun-ptk.index', compact('data', 'isPtk'));
         } else {
             $data = DB::table('ptk')
                 ->leftJoin('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
@@ -41,15 +48,17 @@ class AkunPtkController extends Controller
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('akun-ptk.index', compact('data', 'isPtk'));
         }
+
+        return view('akun-ptk.index', compact('data', 'isPtk', 'isAdmin', 'ptkId'));
     }
 
     public function create()
     {
         $ptks = Ptk::all();
-        return view('akun-ptk.create', compact('ptks'));
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        return view('akun-ptk.create', compact('ptks', 'prefix'));
     }
 
     public function store(Request $request)
@@ -75,15 +84,23 @@ class AkunPtkController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('akun-ptk.index')->with('success', 'Akun PTK berhasil ditambahkan ke tabel users.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'akun-ptk.index')
+                        ->with('success', 'Akun PTK berhasil ditambahkan ke tabel users.');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
         $akun = AkunPtk::find($id);
 
         if (!$akun) {
             $ptk = Ptk::findOrFail($id);
+
             $existing = AkunPtk::where('ptk_id', $ptk->id)->first();
 
             if ($existing) {
@@ -96,11 +113,11 @@ class AkunPtkController extends Controller
             $ptk = Ptk::find($akun->ptk_id);
         }
 
-        $semuaPtk = Ptk::all();
-
         return view('akun-ptk.edit', [
             'data' => $akun,
-            'ptks' => $semuaPtk,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
         ]);
     }
 
@@ -138,7 +155,12 @@ class AkunPtkController extends Controller
             ->where('email', $oldEmail)
             ->update($updateData);
 
-        return redirect()->route('akun-ptk.index')->with('success', 'Akun PTK dan user berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'.akun-ptk.index')
+            ->with('success', 'Akun PTK dan user berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -149,6 +171,11 @@ class AkunPtkController extends Controller
 
         $akun->delete();
 
-        return redirect()->route('akun-ptk.index')->with('success', 'Akun PTK dan user berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'akun-ptk.index')
+            ->with('success', 'Akun PTK dan user berhasil dihapus.');
     }
+
 }

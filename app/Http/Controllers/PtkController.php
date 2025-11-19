@@ -46,7 +46,7 @@ class PtkController extends Controller
                     'ptk.tanggal_lahir'
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(15);
 
             return view('ptk.index', compact('ptk', 'isPtk'));
         }
@@ -80,7 +80,15 @@ class PtkController extends Controller
 
     public function edit(Ptk $ptk)
     {
-        return view('ptk.edit', compact('ptk'));
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
+        return view('ptk.edit', [
+            'ptk' => $ptk,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+        ]);
     }
 
     public function update(Request $request, Ptk $ptk)
@@ -96,7 +104,12 @@ class PtkController extends Controller
 
         $ptk->update($request->all());
 
-        return redirect()->route('ptk.index')->with('success', 'Data PTK berhasil diperbarui!');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix . '.ptk.index')
+            ->with('success', 'Data PTK berhasil diperbarui!');
     }
 
     public function destroy(Ptk $ptk)

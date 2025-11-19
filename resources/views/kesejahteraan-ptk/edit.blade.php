@@ -3,10 +3,21 @@
 @section('content')
 
 <div class="container">
-    <h3>Edit Kesejahteraan PTK</h3>
-    <form action="{{ route('kesejahteraan-ptk.update', $kesejahteraanPtk->id) }}" method="POST">
+    <h1 class="mb-4">{{ $kesejahteraanPtk->id ? 'Edit Kesejahteraan PTK' : 'Tambah Kesejahteraan PTK' }}</h1>
+
+    @php
+        $user = auth()->user();
+        $prefix = $user->role === 'admin' ? 'admin' : 'ptk';
+    @endphp
+
+    <form action="{{ $kesejahteraanPtk->id
+            ? route($prefix . '.kesejahteraan-ptk.update', $kesejahteraanPtk->id)
+            : route($prefix . '.kesejahteraan-ptk.store')
+        }}" method="POST">
         @csrf
-        @method('PUT')
+        @if($kesejahteraanPtk->id)
+            @method('PUT')
+        @endif
 
         <div class="row">
             <div class="col-md-6">
@@ -61,8 +72,8 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('kesejahteraan-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
-            <button type="submit" class="btn btn-success">Perbarui</button>
+            <a href="{{ route($prefix . '.kesejahteraan-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <button type="submit" class="btn btn-success">{{ $kesejahteraanPtk->id ? 'Perbarui' : 'Simpan' }}</button>
         </div>
     </form>
 </div>

@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+
+@php
+    $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
+@endphp
+
 <div class="container">
     <h4>{{ $ptk->nama_lengkap }}</h4>
 
@@ -55,6 +60,6 @@
         </table>
     </div>
 
-    <a href="{{ route('dokumen-ptk.index') }}" class="btn btn-secondary mt-2">Kembali</a>
+    <a href="{{ route($prefix . '.dokumen-ptk.index') }}" class="btn btn-secondary mt-2">Kembali</a>
 </div>
 @endsection

@@ -189,10 +189,15 @@
                     <li class="brand-item">Sidata</li>
 
                     <li style="margin-top: 1rem;">
-                        <a href="{{ route('home') }}">
+                        <a href="{{
+                            auth()->user()->role === 'admin' ? route('admin.dashboard') :
+                            (auth()->user()->role === 'ptk' ? route('ptk.dashboard') :
+                            route('siswa.dashboard'))
+                        }}">
                             <i class="bi bi-speedometer2 me-2"></i>Dashboard
                         </a>
                     </li>
+
 
                     @if (auth()->user()->role === 'admin')
                         <li class="has-submenu">
@@ -231,14 +236,14 @@
                                 <i class="bi bi-person-badge me-2"></i>Data PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
-                                <li><a href="{{ route('akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
-                                <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
-                                <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
-                                <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
-                                <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
-                                <li><a href="{{ route('tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
-                                <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
+                                <li><a href="{{ route('admin.ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
+                                <li><a href="{{ route('admin.akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('admin.dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('admin.kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
+                                <li><a href="{{ route('admin.anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
+                                <li><a href="{{ route('admin.keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
+                                <li><a href="{{ route('admin.tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
+                                <li><a href="{{ route('admin.kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
                             </ul>
                         </li>
 
@@ -276,20 +281,20 @@
                     @endif
 
                     @if (auth()->user()->role === 'ptk')
-                        <li><a href="{{ route('master-ptk.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Ptk</a></li>
+                        <li><a href="{{ route('ptk.master-ptk.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Ptk</a></li>
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-person-badge me-2"></i>Data PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
-                                <li><a href="{{ route('akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
-                                <li><a href="{{ route('kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
-                                <li><a href="{{ route('dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
-                                <li><a href="{{ route('anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
-                                <li><a href="{{ route('keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
-                                <li><a href="{{ route('tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
-                                <li><a href="{{ route('kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
+                                <li><a href="{{ route('ptk.ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
+                                <li><a href="{{ route('ptk.akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('ptk.kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
+                                <li><a href="{{ route('ptk.dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('ptk.anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
+                                <li><a href="{{ route('ptk.keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
+                                <li><a href="{{ route('ptk.tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
+                                <li><a href="{{ route('ptk.kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
                             </ul>
                         </li>
 

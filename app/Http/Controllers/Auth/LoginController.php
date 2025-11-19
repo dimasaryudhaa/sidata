@@ -20,6 +20,25 @@ class LoginController extends Controller
      *
      * @return void
      */
+
+protected function authenticated(Request $request, $user)
+{
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard')->with('success', 'Berhasil login sebagai Admin!');
+    }
+
+    if ($user->role === 'ptk') {
+        return redirect()->route('ptk.dashboard')->with('success', 'Berhasil login sebagai PTK!');
+    }
+
+    if ($user->role === 'siswa') {
+        return redirect()->route('siswa.dashboard')->with('success', 'Berhasil login sebagai Siswa!');
+    }
+
+    return redirect('/')->with('success', 'Berhasil login!');
+}
+
+
     public function __construct()
     {
         $this->middleware('guest')->except('logout');

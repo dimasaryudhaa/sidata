@@ -15,6 +15,14 @@ class TunjanganController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+
+        $ptkId = null;
+        if ($isPtk) {
+            $ptkId = DB::table('akun_ptk')
+                ->where('email', $user->email)
+                ->value('ptk_id');
+        }
 
         if ($isPtk) {
             $tunjangan = DB::table('tunjangan')
@@ -38,8 +46,6 @@ class TunjanganController extends Controller
                 )
                 ->orderBy('tunjangan.nama_tunjangan', 'asc')
                 ->paginate(12);
-
-            return view('tunjangan.index', compact('tunjangan', 'isPtk'));
         } else {
             $tunjangan = DB::table('ptk')
                 ->leftJoin('tunjangan', 'ptk.id', '=', 'tunjangan.ptk_id')
@@ -51,23 +57,26 @@ class TunjanganController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('tunjangan.index', compact('tunjangan', 'isPtk'));
         }
+
+        return view('tunjangan.index', compact('tunjangan', 'isPtk', 'isAdmin', 'ptkId'));
     }
 
     public function create(Request $request)
     {
+        $user = auth()->user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         $semesters = Semester::orderBy('nama_semester')->get();
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('tunjangan.create', compact('ptkId', 'ptk', 'semesters'));
+            return view('tunjangan.create', compact('ptkId', 'ptk', 'semesters', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('tunjangan.create', compact('ptks', 'semesters'));
+            return view('tunjangan.create', compact('ptks', 'semesters', 'prefix'));
         }
     }
 
@@ -90,24 +99,42 @@ class TunjanganController extends Controller
 
         Tunjangan::create($validated);
 
-        return redirect()->route('tunjangan.index')
-            ->with('success', 'Data tunjangan berhasil ditambahkan.');
+        $prefix = auth()->user()->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'tunjangan.index')
+                        ->with('success', 'Data tunjangan berhasil ditambahkan.');
     }
 
     public function show($ptk_id)
     {
+
         $tunjangan = Tunjangan::where('ptk_id', $ptk_id)->with('semester')->get();
         $ptk = Ptk::findOrFail($ptk_id);
 
         return view('tunjangan.show', compact('tunjangan', 'ptk'));
     }
 
+
     public function edit(Tunjangan $tunjangan)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
+        // Ambil PTK dan Semester
         $ptks = Ptk::orderBy('nama_lengkap')->get();
         $semesters = Semester::orderBy('nama_semester')->get();
 
-        return view('tunjangan.edit', compact('tunjangan', 'ptks', 'semesters'));
+        $ptk = Ptk::find($tunjangan->ptk_id);
+
+        return view('tunjangan.edit', [
+            'tunjangan' => $tunjangan,
+            'ptks' => $ptks,
+            'semesters' => $semesters,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
+        ]);
     }
 
     public function update(Request $request, Tunjangan $tunjangan)
@@ -129,7 +156,10 @@ class TunjanganController extends Controller
 
         $tunjangan->update($validated);
 
-        return redirect()->route('tunjangan.index')
+        $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
+
+        return redirect()
+            ->route($prefix.'.tunjangan.index')
             ->with('success', 'Data tunjangan berhasil diperbarui.');
     }
 
@@ -137,7 +167,10 @@ class TunjanganController extends Controller
     {
         $tunjangan->delete();
 
-        return redirect()->route('tunjangan.index')
+        $prefix = auth()->user()->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'tunjangan.index')
             ->with('success', 'Data tunjangan berhasil dihapus.');
     }
+
 }

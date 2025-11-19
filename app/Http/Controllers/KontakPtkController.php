@@ -61,9 +61,13 @@ class KontakPtkController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::all();
         $data = new KontakPtk();
-        return view('kontak-ptk.edit', compact('data', 'ptks'));
+
+        return view('kontak-ptk.edit', compact('data', 'ptks', 'prefix'));
     }
 
     public function store(Request $request)
@@ -82,11 +86,19 @@ class KontakPtkController extends Controller
 
         KontakPtk::create($validated);
 
-        return redirect()->route('kontak-ptk.index')->with('success', 'Data kontak PTK berhasil ditambahkan.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kontak-ptk.index')
+                        ->with('success', 'Data kontak PTK berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
         $kontak = KontakPtk::find($id);
 
         if (!$kontak) {
@@ -103,11 +115,11 @@ class KontakPtkController extends Controller
             $ptk = Ptk::find($kontak->ptk_id);
         }
 
-        $semuaPtk = Ptk::all();
-
         return view('kontak-ptk.edit', [
             'data' => $kontak,
-            'ptks' => $semuaPtk,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
         ]);
     }
 
@@ -127,7 +139,12 @@ class KontakPtkController extends Controller
 
         $kontak_ptk->update($validated);
 
-        return redirect()->route('kontak-ptk.index')->with('success', 'Data kontak PTK berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'.kontak-ptk.index')
+            ->with('success', 'Data kontak PTK berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -135,6 +152,11 @@ class KontakPtkController extends Controller
         $kontak = KontakPtk::findOrFail($id);
         KontakPtk::where('ptk_id', $kontak->ptk_id)->delete();
 
-        return redirect()->route('kontak-ptk.index')->with('success', 'Data kontak PTK berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kontak-ptk.index')
+            ->with('success', 'Data kontak PTK berhasil dihapus.');
     }
+
 }

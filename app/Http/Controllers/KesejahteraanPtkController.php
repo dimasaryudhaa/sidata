@@ -14,6 +14,7 @@ class KesejahteraanPtkController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
 
         if ($isPtk) {
             $kesejahteraan = DB::table('kesejahteraan_ptk')
@@ -22,7 +23,7 @@ class KesejahteraanPtkController extends Controller
                 ->where('akun_ptk.email', $user->email)
                 ->select(
                     'kesejahteraan_ptk.id as kesejahteraan_id',
-                    'ptk.id as ptk_id',
+                    'kesejahteraan_ptk.ptk_id',
                     'kesejahteraan_ptk.jenis_kesejahteraan',
                     'kesejahteraan_ptk.nama',
                     'kesejahteraan_ptk.penyelenggara',
@@ -32,8 +33,6 @@ class KesejahteraanPtkController extends Controller
                 )
                 ->orderBy('kesejahteraan_ptk.nama', 'asc')
                 ->paginate(12);
-
-            return view('kesejahteraan-ptk.index', compact('kesejahteraan', 'isPtk'));
         } else {
             $kesejahteraan = DB::table('ptk')
                 ->leftJoin('kesejahteraan_ptk', 'ptk.id', '=', 'kesejahteraan_ptk.ptk_id')
@@ -45,21 +44,23 @@ class KesejahteraanPtkController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('kesejahteraan-ptk.index', compact('kesejahteraan', 'isPtk'));
         }
+
+        return view('kesejahteraan-ptk.index', compact('kesejahteraan', 'isPtk', 'isAdmin'));
     }
 
     public function create(Request $request)
     {
-        $ptkId = $request->query('ptk_id');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
+        $ptkId = $request->query('ptk_id');
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('kesejahteraan-ptk.create', compact('ptkId', 'ptk'));
+            return view('kesejahteraan-ptk.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('kesejahteraan-ptk.create', compact('ptks'));
+            return view('kesejahteraan-ptk.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -77,7 +78,10 @@ class KesejahteraanPtkController extends Controller
 
         KesejahteraanPtk::create($validated);
 
-        return redirect()->route('kesejahteraan-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kesejahteraan-ptk.index')
             ->with('success', 'Data kesejahteraan PTK berhasil ditambahkan.');
     }
 
@@ -91,9 +95,22 @@ class KesejahteraanPtkController extends Controller
 
     public function edit(KesejahteraanPtk $kesejahteraanPtk)
     {
-        $ptks = Ptk::orderBy('nama_lengkap')->get();
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
-        return view('kesejahteraan-ptk.edit', compact('kesejahteraanPtk', 'ptks'));
+        $ptks = Ptk::orderBy('nama_lengkap')->get();
+        $ptk = Ptk::find($kesejahteraanPtk->ptk_id);
+
+        return view('kesejahteraan-ptk.edit', [
+            'kesejahteraanPtk' => $kesejahteraanPtk,
+            'ptks' => $ptks,
+            'ptk' => $ptk,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'prefix' => $prefix,
+        ]);
     }
 
     public function update(Request $request, KesejahteraanPtk $kesejahteraanPtk)
@@ -110,7 +127,10 @@ class KesejahteraanPtkController extends Controller
 
         $kesejahteraanPtk->update($validated);
 
-        return redirect()->route('kesejahteraan-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kesejahteraan-ptk.index')
             ->with('success', 'Data kesejahteraan PTK berhasil diperbarui.');
     }
 
@@ -118,7 +138,11 @@ class KesejahteraanPtkController extends Controller
     {
         $kesejahteraanPtk->delete();
 
-        return redirect()->route('kesejahteraan-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kesejahteraan-ptk.index')
             ->with('success', 'Data kesejahteraan PTK berhasil dihapus.');
     }
+
 }

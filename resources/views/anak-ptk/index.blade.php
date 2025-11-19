@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -26,11 +33,6 @@
     background: transparent !important;
 }
 </style>
-
-@php
-    $user = Auth::user();
-    $isPtk = $user->role === 'ptk';
-@endphp
 
 <div class="container">
 
@@ -87,17 +89,26 @@
                         <td>{{ $anak->tempat_lahir ?? '-' }}, {{ $anak->tanggal_lahir ?? '-' }}</td>
                         <td>{{ $anak->tahun_masuk ?? '-' }}</td>
                         <td>
-                            <a href="{{ route('anak-ptk.edit', $anak->anak_id) }}" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
-                            </a>
-                            <form action="{{ route('anak-ptk.destroy', $anak->anak_id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-no-border"
-                                    onclick="return confirm('Yakin ingin menghapus anak ini?')">
-                                    <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
+                            @if($anak->anak_id)
+                                <a href="{{ route($prefix.'anak-ptk.edit', ['anak_ptk' => $anak->anak_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit Anak" style="width:20px; height:20px;">
+                                </a>
+                            @endif
+
+                            @if($isAdmin && $anak->anak_id)
+                                <form action="{{ route($prefix.'anak-ptk.destroy', $anak->anak_id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-no-border"
+                                        onclick="return confirm('Yakin ingin menghapus anak ini?')">
+                                        <img src="{{ asset('images/delete.png') }}" alt="Hapus Anak" style="width:20px; height:20px;">
+                                    </button>
+                                </form>
+                            @elseif(!$anak->anak_id)
+                                <button class="btn btn-sm btn-no-border" disabled>
+                                    <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
                                 </button>
-                            </form>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -137,10 +148,10 @@
                         <td class="nama_ptk">{{ $anak->nama_lengkap ?? '-' }}</td>
                         <td>{{ $anak->jumlah_anak ?? 0 }}</td>
                         <td>
-                            <a href="{{ route('anak-ptk.show', $anak->ptk_id) }}" class="btn btn-sm btn-no-border">
+                            <a href="{{ route($prefix.'anak-ptk.show', $anak->ptk_id) }}" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/view.png') }}" alt="Lihat Anak" style="width:20px; height:20px;">
                             </a>
-                            <a href="{{ route('anak-ptk.create', ['ptk_id' => $anak->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                            <a href="{{ route($prefix.'anak-ptk.create', ['ptk_id' => $anak->ptk_id]) }}" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Anak" style="width:20px; height:20px;">
                             </a>
                         </td>

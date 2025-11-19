@@ -2,6 +2,10 @@
 
 @section('content')
 
+@php
+    $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
+@endphp
+
 <style>
     .table thead th {
         background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -68,12 +72,14 @@
     @if(isset($isPtk) && $isPtk && isset($ptk))
         <div class="mb-3">
             @if($dokumenPtk)
-                <a href="{{ route('dokumen-ptk.edit', $ptk->id) }}" class="btn btn-primary px-4"
-                   style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                <a href="{{ route($prefix . '.dokumen-ptk.edit', $ptk->id) }}"
+                class="btn btn-primary px-4"
+                style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
                     <i class="bi bi-pencil-square me-2"></i> Edit
                 </a>
             @else
-                <a href="{{ route('dokumen-ptk.create', ['ptk_id' => $ptk->id]) }}" class="btn btn-success px-4">
+                <a href="{{ route($prefix . '.dokumen-ptk.create', ['ptk_id' => $ptk->id]) }}"
+                class="btn btn-success px-4">
                     <i class="bi bi-upload me-2"></i> Upload
                 </a>
             @endif
@@ -220,9 +226,9 @@
                         </td>
 
                         <td>
-                            <a href="{{ route('dokumen-ptk.show', $d->ptk_id) }}"
-                               class="btn btn-sm btn-no-border"
-                               title="Lihat Dokumen">
+                            <a href="{{ route($prefix . '.dokumen-ptk.show', $d->ptk_id) }}"
+                            class="btn btn-sm btn-no-border"
+                            title="Lihat Dokumen">
                                 <img src="{{ asset('images/view.png') }}" alt="Lihat Dokumen" style="width:20px; height:20px;">
                             </a>
                         </td>

@@ -12,7 +12,7 @@
     <h3 class="mb-4 fw-bold text-center">Data Lengkap PTK</h3>
 
     <div class="text-end mb-3">
-        <a href="{{ route('master-ptk.cetak', $ptk->id) }}"
+        <a href="{{ route('ptk.master-ptk.cetak', $ptk->id) }}"
            class="btn btn-success" target="_blank">
             <i class="bi bi-file-earmark-pdf"></i> Cetak PDF
         </a>

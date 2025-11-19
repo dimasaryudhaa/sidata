@@ -14,6 +14,14 @@ class AnakPtkController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+
+        $ptkId = null;
+        if ($isPtk) {
+            $ptkId = DB::table('akun_ptk')
+                ->where('email', $user->email)
+                ->value('ptk_id');
+        }
 
         if ($isPtk) {
             $anakPtk = DB::table('anak')
@@ -34,8 +42,6 @@ class AnakPtkController extends Controller
                 )
                 ->orderBy('anak.nama_anak', 'asc')
                 ->paginate(12);
-
-            return view('anak-ptk.index', compact('anakPtk', 'isPtk'));
         } else {
             $anakPtk = DB::table('ptk')
                 ->leftJoin('anak', 'ptk.id', '=', 'anak.ptk_id')
@@ -47,21 +53,24 @@ class AnakPtkController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('anak-ptk.index', compact('anakPtk', 'isPtk'));
         }
+
+        return view('anak-ptk.index', compact('anakPtk', 'isPtk', 'isAdmin', 'ptkId'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('anak-ptk.create', compact('ptkId', 'ptk'));
+            return view('anak-ptk.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::all();
-            return view('anak-ptk.create', compact('ptks'));
+            return view('anak-ptk.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -81,7 +90,10 @@ class AnakPtkController extends Controller
 
         AnakPtk::create($validated);
 
-        return redirect()->route('anak-ptk.index')->with('success', 'Data anak PTK berhasil ditambahkan.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'anak-ptk.index')->with('success', 'Data anak PTK berhasil ditambahkan.');
     }
 
     public function show($ptk_id)
@@ -92,20 +104,40 @@ class AnakPtkController extends Controller
         return view('anak-ptk.show', compact('anak', 'ptk'));
     }
 
-    public function edit($ptk_id)
+    public function edit($id)
     {
-        $anak = AnakPtk::where('ptk_id', $ptk_id)->first();
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
+        $anak = AnakPtk::find($id);
 
         if (!$anak) {
-            $anak = new AnakPtk();
-            $anak->ptk_id = $ptk_id;
+            $ptk = Ptk::findOrFail($id);
+            $existing = AnakPtk::where('ptk_id', $ptk->id)->first();
+
+            if ($existing) {
+                $anak = $existing;
+            } else {
+                $anak = new AnakPtk();
+                $anak->ptk_id = $ptk->id;
+            }
+        } else {
+            $ptk = Ptk::find($anak->ptk_id);
         }
 
         $ptks = Ptk::all();
-        return view('anak-ptk.edit', compact('anak', 'ptks'));
+
+        return view('anak-ptk.edit', [
+            'anak' => $anak,
+            'ptks' => $ptks,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
+        ]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, AnakPtk $anak)
     {
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
@@ -119,18 +151,25 @@ class AnakPtkController extends Controller
             'tahun_masuk' => 'required|digits:4',
         ]);
 
-        AnakPtk::updateOrCreate(
-            ['ptk_id' => $request->ptk_id],
-            $validated
-        );
+        $anak->update($validated);
 
-        return redirect()->route('anak-ptk.index')->with('success', 'Data anak PTK berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'.anak-ptk.index')
+            ->with('success', 'Data Anak PTK berhasil diperbarui.');
     }
 
     public function destroy($ptk_id)
     {
         AnakPtk::where('ptk_id', $ptk_id)->delete();
 
-        return redirect()->route('anak-ptk.index')->with('success', 'Semua data anak PTK berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'anak-ptk.index')
+            ->with('success', 'Semua data anak PTK berhasil dihapus.');
     }
+
 }

@@ -27,6 +27,13 @@
     }
 </style>
 
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+
+    $prefix = $isPtk ? 'ptk.' : 'admin.';
+@endphp
+
 <div class="container">
 
     @if(session('success'))
@@ -88,18 +95,12 @@
                             <td>{{ $item->nip_suami_istri ?? '-' }}</td>
                             <td>{{ $item->pekerjaan_suami_istri ?? '-' }}</td>
                             <td>
-                                @if($item->keluarga_id)
-                                    <a href="{{ route('keluarga-ptk.edit', ['keluarga_ptk' => $item->keluarga_id]) }}" class="btn btn-sm btn-no-border">
-                                        <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
-                                    </a>
-                                @else
-                                    <a href="{{ route('keluarga-ptk.edit', ['keluarga_ptk' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                        <img src="{{ asset('images/edit.png') }}" alt="Tambah" style="width:20px; height:20px;">
-                                    </a>
-                                @endif
+                                <a href="{{ route($prefix.'keluarga-ptk.edit', ['keluarga_ptk' => $item->keluarga_id ?? $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="{{ $item->keluarga_id ? 'Edit' : 'Tambah' }}" style="width:20px; height:20px;">
+                                </a>
 
                                 @if($item->keluarga_id)
-                                    <form action="{{ route('keluarga-ptk.destroy', $item->keluarga_id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route($prefix.'keluarga-ptk.destroy', $item->keluarga_id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
@@ -140,7 +141,7 @@
 
         @if($dataPtk && $dataPtk->keluarga_id)
             <div class="d-flex justify-content-start align-items-center mb-3">
-                <a href="{{ route('keluarga-ptk.edit', ['keluarga_ptk' => $dataPtk->keluarga_id]) }}"
+                <a href="{{ route($prefix.'keluarga-ptk.edit', ['keluarga_ptk' => $dataPtk->keluarga_id]) }}"
                     class="btn btn-primary px-4"
                     style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
                     <i class="bi bi-pencil-square me-2"></i> Edit

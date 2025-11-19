@@ -30,6 +30,8 @@
 @php
     $user = Auth::user();
     $isPtk = $user->role === 'ptk';
+
+    $prefix = $isPtk ? 'ptk.' : 'admin.';
 @endphp
 
 <div class="container">
@@ -95,12 +97,12 @@
                             <td>{{ $item->kecamatan ?? '-' }}</td>
                             <td>{{ $item->kode_pos ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('kontak-ptk.edit', ['kontak_ptk' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route($prefix.'kontak-ptk.edit', ['kontak_ptk' => $item->kontak_id ?? $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
 
                                 @if($item->kontak_id)
-                                    <form action="{{ route('kontak-ptk.destroy', $item->kontak_id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route($prefix.'kontak-ptk.destroy', $item->kontak_id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
@@ -128,7 +130,6 @@
             document.getElementById('search').addEventListener('keyup', function() {
                 let filter = this.value.toLowerCase();
                 let rows = document.querySelectorAll('#kontakPtkTable tbody tr');
-
                 rows.forEach(row => {
                     let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
                     row.style.display = nama.includes(filter) ? '' : 'none';
@@ -141,7 +142,7 @@
 
         @if($dataPtk && $dataPtk->kontak_id)
             <div class="d-flex justify-content-start align-items-center mb-3">
-                <a href="{{ route('kontak-ptk.edit', ['kontak_ptk' => $dataPtk->kontak_id]) }}"
+                <a href="{{ route($prefix.'kontak-ptk.edit', $dataPtk->kontak_id) }}"
                     class="btn btn-primary px-4"
                     style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
                     <i class="bi bi-pencil-square me-2"></i> Edit

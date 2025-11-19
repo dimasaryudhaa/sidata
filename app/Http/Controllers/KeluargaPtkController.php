@@ -56,9 +56,13 @@ class KeluargaPtkController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::all();
         $data = new KeluargaPtk();
-        return view('keluarga-ptk.edit', compact('data', 'ptks'));
+
+        return view('keluarga-ptk.edit', compact('data', 'ptks', 'prefix'));
     }
 
     public function store(Request $request)
@@ -73,11 +77,19 @@ class KeluargaPtkController extends Controller
         ]);
 
         KeluargaPtk::create($validated);
-        return redirect()->route('keluarga-ptk.index')->with('success', 'Data keluarga PTK berhasil ditambahkan.');
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'keluarga-ptk.index')->with('success', 'Data keluarga PTK berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
         $keluarga = KeluargaPtk::find($id);
 
         if (!$keluarga) {
@@ -91,6 +103,8 @@ class KeluargaPtkController extends Controller
                 $keluarga = new KeluargaPtk();
                 $keluarga->ptk_id = $ptk->id;
             }
+        } else {
+            $ptk = Ptk::find($keluarga->ptk_id);
         }
 
         $ptks = Ptk::all();
@@ -98,13 +112,14 @@ class KeluargaPtkController extends Controller
         return view('keluarga-ptk.edit', [
             'data' => $keluarga,
             'ptks' => $ptks,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, KeluargaPtk $keluarga_ptk)
     {
-        $keluarga = KeluargaPtk::findOrFail($id);
-
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'no_kk' => 'nullable|digits:16',
@@ -114,9 +129,14 @@ class KeluargaPtkController extends Controller
             'pekerjaan_suami_istri' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS,Swasta,Wiraswasta,Pedagang,Buruh,Pensiunan,Sudah Meninggal',
         ]);
 
-        $keluarga->update($validated);
+        $keluarga_ptk->update($validated);
 
-        return redirect()->route('keluarga-ptk.index')->with('success', 'Data keluarga PTK berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'.keluarga-ptk.index')
+            ->with('success', 'Data keluarga PTK berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -124,6 +144,11 @@ class KeluargaPtkController extends Controller
         $keluarga = KeluargaPtk::findOrFail($id);
         KeluargaPtk::where('ptk_id', $keluarga->ptk_id)->delete();
 
-        return redirect()->route('keluarga-ptk.index')->with('success', 'Data keluarga PTK berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'keluarga-ptk.index')
+            ->with('success', 'Data keluarga PTK berhasil dihapus.');
     }
+
 }

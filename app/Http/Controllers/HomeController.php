@@ -7,24 +7,43 @@ use App\Models\Jurusan;
 use App\Models\Rombel;
 use App\Models\Rayon;
 use App\Models\Ptk;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function __construct()
+
+    public function admin()
     {
-        $this->middleware('auth');
+        return view('home', [
+            'role' => 'admin',
+            'jumlahSiswa' => Siswa::count(),
+            'jumlahJurusan' => Jurusan::count(),
+            'jumlahRombel' => Rombel::count(),
+            'jumlahRayon' => Rayon::count(),
+            'jumlahPtk' => Ptk::count(),
+        ]);
     }
 
-    public function index()
+    public function ptk()
     {
-        $jumlahSiswa = Siswa::count();
-        $jumlahJurusan = Jurusan::count();
-        $jumlahRombel = Rombel::count();
-        $jumlahRayon = Rayon::count();
-        $jumlahPtk = Ptk::count();
+        return view('home', [
+            'role' => 'ptk',
+            'jumlahSiswa' => Siswa::count(),
+            'jumlahJurusan' => Jurusan::count(),
+            'jumlahRombel' => Rombel::count(),
+            'jumlahRayon' => Rayon::count(),
+            'jumlahPtk' => Ptk::count(),
+        ]);
+    }
 
-        return view('home', compact('jumlahSiswa', 'jumlahJurusan', 'jumlahRombel', 'jumlahRayon', 'jumlahPtk'));
+    public function siswa()
+    {
+        return view('home', [
+            'role' => 'siswa',
+            'jumlahSiswa' => Siswa::count(),
+            'jumlahJurusan' => Jurusan::count(),
+            'jumlahRombel' => Rombel::count(),
+            'jumlahRayon' => Rayon::count(),
+            'jumlahPtk' => Ptk::count(),
+        ]);
     }
 }
-

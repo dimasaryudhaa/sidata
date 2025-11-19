@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -27,11 +34,6 @@
 }
 </style>
 
-@php
-    $user = Auth::user();
-    $isPtk = $user->role === 'ptk';
-@endphp
-
 <div class="container">
 
     @if(session('success'))
@@ -47,7 +49,6 @@
             <h5 class="fw-bold mb-1">Success</h5>
             <p class="text-muted mb-0">{{ session('success') }}</p>
         </div>
-
         <script>
             setTimeout(() => {
                 const alertBox = document.getElementById('successAlert');
@@ -94,10 +95,11 @@
                             <td>Rp {{ number_format($item->nominal ?? 0, 0, ',', '.') }}</td>
                             <td>{{ $item->status ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('tunjangan.edit', $item->tunjangan_id) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route($prefix.'tunjangan.edit', ['tunjangan' => $item->tunjangan_id]) }}" class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
-                                <form action="{{ route('tunjangan.destroy', $item->tunjangan_id) }}" method="POST" class="d-inline">
+                                @if($isAdmin)
+                                <form action="{{ route($prefix.'tunjangan.destroy', ['tunjangan' => $item->tunjangan_id]) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-no-border"
@@ -105,6 +107,7 @@
                                         <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                                     </button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -133,7 +136,7 @@
                 <thead class="text-white">
                     <tr>
                         <th style="width:50px;">No</th>
-                        <th style="width: 500px">Nama PTK</th>
+                        <th style="width:500px;">Nama PTK</th>
                         <th>Jumlah Tunjangan</th>
                         <th style="width:100px;">Aksi</th>
                     </tr>
@@ -145,13 +148,11 @@
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
                             <td>{{ $item->jumlah_tunjangan ?? 0 }}</td>
                             <td>
-                                <a href="{{ route('tunjangan.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Data Tunjangan"
-                                         style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'tunjangan.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Data" style="width:20px; height:20px;">
                                 </a>
-                                <a href="{{ route('tunjangan.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Data Tunjangan"
-                                         style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'tunjangan.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Data" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>

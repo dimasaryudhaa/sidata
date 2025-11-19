@@ -53,7 +53,46 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
+
     Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
+    Route::get('/admin/dashboard', [HomeController::class, 'admin'])
+        ->name('admin.dashboard');
+    Route::get('/ptk/dashboard', [HomeController::class, 'ptk'])
+        ->name('ptk.dashboard');
+    Route::get('/siswa/dashboard', [HomeController::class, 'siswa'])
+        ->name('siswa.dashboard');
+
+    // ptk
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('ptk', PtkController::class);
+        Route::resource('akun-ptk', AkunPtkController::class);
+        Route::resource('kontak-ptk', KontakPtkController::class);
+        Route::resource('dokumen-ptk', DokumenPtkController::class);
+        Route::resource('anak-ptk', AnakPtkController::class);
+        Route::resource('keluarga-ptk', KeluargaPtkController::class);
+        Route::resource('tunjangan', TunjanganController::class);
+        Route::resource('kesejahteraan-ptk', KesejahteraanPtkController::class);
+    });
+
+    Route::prefix('ptk')->name('ptk.')->group(function () {
+        Route::resource('ptk', PtkController::class);
+        Route::resource('akun-ptk', AkunPtkController::class);
+        Route::resource('kontak-ptk', KontakPtkController::class);
+        Route::resource('dokumen-ptk', DokumenPtkController::class);
+        Route::resource('anak-ptk', AnakPtkController::class);
+        Route::resource('keluarga-ptk', KeluargaPtkController::class);
+        Route::resource('tunjangan', TunjanganController::class);
+        Route::resource('kesejahteraan-ptk', KesejahteraanPtkController::class);
+    });
+
+
+    //master ptk
+    Route::prefix('ptk')->name('ptk.')->group(function () {
+        Route::resource('master-ptk', MasterPtkController::class);
+        Route::get('/master-ptk/{id}/cetak', [MasterPtkController::class, 'cetakPDF'])
+        ->name('master-ptk.cetak');
+    });
+
 
     //profile
     Route::resource('profile', ProfileController::class);
@@ -82,23 +121,14 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('semester', SemesterController::class);
 
     // ptk
-    Route::get('/master-ptk/{id}/cetak', [MasterPtkController::class, 'cetakPDF'])
-    ->name('master-ptk.cetak');
-    Route::resource('master-ptk', MasterPtkController::class);
     Route::resource('pendidikan-ptk', PendidikanPtkController::class);
-    Route::resource('kontak-ptk', KontakPtkController::class);
-    Route::resource('dokumen-ptk', DokumenPtkController::class);
-    Route::resource('keluarga-ptk', KeluargaPtkController::class);
     Route::resource('tunjangan', TunjanganController::class);
     Route::resource('kepegawaian-ptk', KepegawaianPtkController::class);
-    Route::resource('kesejahteraan-ptk', KesejahteraanPtkController::class);
     Route::resource('beasiswa-ptk', BeasiswaPtkController::class);
     Route::resource('sertifikat-ptk', SertifikatPtkController::class);
     Route::resource('penugasan-ptk', PenugasanPtkController::class);
     Route::resource('kompetensi-ptk', KompetensiPtkController::class);
     Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
-    Route::resource('anak-ptk', AnakPtkController::class);
-    Route::resource('akun-ptk', AkunPtkController::class);
     Route::resource('riwayat-karir', RiwayatKarirController::class);
     Route::resource('penghargaan', PenghargaanController::class);
     Route::resource('nilai-test', NilaiTestController::class);

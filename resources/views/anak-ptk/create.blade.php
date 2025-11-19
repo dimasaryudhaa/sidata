@@ -1,10 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
+
 <div class="container">
     <h1>{{ isset($anakPtk) ? 'Edit Anak PTK' : 'Tambah Anak PTK' }}</h1>
 
-    <form action="{{ isset($anakPtk) ? route('anak-ptk.update', $anakPtk->id) : route('anak-ptk.store') }}" method="POST">
+    <form action="{{ isset($anakPtk) ? route($prefix.'anak-ptk.update', $anakPtk->id) : route($prefix.'anak-ptk.store') }}" method="POST">
         @csrf
         @if(isset($anakPtk))
             @method('PUT')
@@ -45,18 +50,18 @@
                 <div class="mb-3">
                     <label>Jenjang Pendidikan</label>
                     <input type="text" name="jenjang" class="form-control"
-                    value="{{ old('jenjang', $anakPtk->jenjang ?? '') }}"
-                    placeholder="Contoh: SD, SMP, SMA" required>
+                           value="{{ old('jenjang', $anakPtk->jenjang ?? '') }}"
+                           placeholder="Contoh: SD, SMP, SMA" required>
                 </div>
+
                 <div class="mb-3">
                     <label>NISN</label>
                     <input type="text" name="nisn" class="form-control"
-                    value="{{ old('nisn', $anakPtk->nisn ?? '') }}">
+                           value="{{ old('nisn', $anakPtk->nisn ?? '') }}">
                 </div>
             </div>
 
             <div class="col-md-6">
-
                 <div class="mb-3">
                     <label>Jenis Kelamin</label>
                     <select name="jenis_kelamin" class="form-control" required>
@@ -75,7 +80,7 @@
                 <div class="mb-3">
                     <label>Tanggal Lahir</label>
                     <input type="date" name="tanggal_lahir" class="form-control"
-                           value="{{ old('tanggal_lahir', isset($anakPtk) ? $anakPtk->tanggal_lahir->format('Y-m-d') : '') }}">
+                           value="{{ old('tanggal_lahir', isset($anakPtk) && $anakPtk->tanggal_lahir ? $anakPtk->tanggal_lahir->format('Y-m-d') : '') }}">
                 </div>
 
                 <div class="mb-3">
@@ -87,7 +92,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('anak-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'anak-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">{{ isset($anakPtk) ? 'Update' : 'Simpan' }}</button>
         </div>
     </form>

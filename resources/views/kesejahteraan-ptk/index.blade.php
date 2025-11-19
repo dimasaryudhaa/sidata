@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -27,14 +34,8 @@
 }
 </style>
 
-@php
-    $user = Auth::user();
-    $isPtk = $user->role === 'ptk';
-@endphp
-
 <div class="container">
 
-    {{-- Alert sukses --}}
     @if(session('success'))
         <div id="successAlert"
              class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
@@ -60,7 +61,6 @@
             }, 5000);
         </script>
     @endif
-
 
     @if($isPtk)
         <div class="table-responsive rounded-3 mt-3">
@@ -88,10 +88,12 @@
                             <td>{{ $item->sampai_tahun ?? '-' }}</td>
                             <td>{{ $item->status ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('kesejahteraan-ptk.edit', $item->kesejahteraan_id) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route($prefix.'kesejahteraan-ptk.edit', ['kesejahteraan_ptk' => $item->kesejahteraan_id]) }}" class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
-                                <form action="{{ route('kesejahteraan-ptk.destroy', $item->kesejahteraan_id) }}" method="POST" class="d-inline">
+
+                                @if($isAdmin)
+                                <form action="{{ route($prefix.'kesejahteraan-ptk.destroy', ['kesejahteraan_ptk' => $item->kesejahteraan_id]) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-no-border"
@@ -99,6 +101,7 @@
                                         <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                                     </button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -139,13 +142,15 @@
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
                             <td>{{ $item->jumlah_kesejahteraan ?? 0 }}</td>
                             <td>
-                                <a href="{{ route('kesejahteraan-ptk.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/view.png') }}" alt="Lihat" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'kesejahteraan-ptk.show', ['kesejahteraan_ptk' => $item->kesejahteraan_id ?? $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Data" style="width:20px; height:20px;">
                                 </a>
-                                <a href="{{ route('kesejahteraan-ptk.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah" style="width:20px; height:20px;">
+
+                                <a href="{{ route($prefix.'kesejahteraan-ptk.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Data" style="width:20px; height:20px;">
                                 </a>
                             </td>
+
                         </tr>
                     @endforeach
                 </tbody>

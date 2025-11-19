@@ -47,13 +47,15 @@ class DokumenPtkController extends Controller
     public function create(Request $request)
     {
         $ptkId = $request->query('ptk_id');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('dokumen-ptk.create', compact('ptkId', 'ptk'));
+            return view('dokumen-ptk.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::all();
-            return view('dokumen-ptk.create', compact('ptks'));
+            return view('dokumen-ptk.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -84,7 +86,11 @@ class DokumenPtkController extends Controller
 
         DokumenPtk::create($data);
 
-        return redirect()->route('dokumen-ptk.index')->with('success', 'Dokumen PTK berhasil diunggah.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'dokumen-ptk.index')
+                        ->with('success', 'Dokumen PTK berhasil diunggah.');
     }
 
     public function show($ptk_id)
@@ -97,13 +103,26 @@ class DokumenPtkController extends Controller
 
     public function edit($ptk_id)
     {
-        $dokumen = DokumenPtk::firstOrNew(['ptk_id' => $ptk_id]);
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
 
-        return view('dokumen-ptk.edit', compact('dokumen'));
+        $dokumen = DokumenPtk::firstOrNew(['ptk_id' => $ptk_id]);
+        $ptk = Ptk::findOrFail($ptk_id);
+
+        return view('dokumen-ptk.edit', [
+            'dokumen' => $dokumen,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
+        ]);
     }
 
     public function update(Request $request, $ptk_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $request->validate([
             'akte_kelahiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'kartu_keluarga' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
@@ -129,7 +148,9 @@ class DokumenPtkController extends Controller
 
         $dokumen->save();
 
-        return redirect()->route('dokumen-ptk.index')->with('success', 'Dokumen PTK berhasil diperbarui.');
+        return redirect()
+            ->route($prefix.'.dokumen-ptk.index')
+            ->with('success', 'Dokumen PTK berhasil diperbarui.');
     }
 
     public function destroy($ptk_id)
@@ -137,7 +158,17 @@ class DokumenPtkController extends Controller
         $dokumen = DokumenPtk::where('ptk_id', $ptk_id)->first();
 
         if ($dokumen) {
-            foreach (['akte_kelahiran','kartu_keluarga','ktp','ijazah_sd','ijazah_smp','ijazah_sma','ijazah_s1','ijazah_s2','ijazah_s3'] as $field) {
+            foreach ([
+                'akte_kelahiran',
+                'kartu_keluarga',
+                'ktp',
+                'ijazah_sd',
+                'ijazah_smp',
+                'ijazah_sma',
+                'ijazah_s1',
+                'ijazah_s2',
+                'ijazah_s3'
+            ] as $field) {
                 if ($dokumen->$field && Storage::disk('public')->exists($dokumen->$field)) {
                     Storage::disk('public')->delete($dokumen->$field);
                 }
@@ -145,6 +176,11 @@ class DokumenPtkController extends Controller
             $dokumen->delete();
         }
 
-        return redirect()->route('dokumen-ptk.index')->with('success', 'Dokumen PTK berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'dokumen-ptk.index')
+            ->with('success', 'Dokumen PTK berhasil dihapus.');
     }
+
 }

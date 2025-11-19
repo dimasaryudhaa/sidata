@@ -34,11 +34,22 @@
 </style>
 
 <div class="container container-fullheight">
-    <h3>Edit Dokumen PTK</h3>
 
-    <form action="{{ route('dokumen-ptk.update', $dokumen->ptk_id) }}" method="POST" enctype="multipart/form-data">
+    <h3>{{ $dokumen->id ? 'Edit Dokumen PTK' : 'Tambah Dokumen PTK' }}</h3>
+
+    @php
+        $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
+    @endphp
+
+    <form action="{{ $dokumen->id
+            ? route($prefix . '.dokumen-ptk.update', $dokumen->ptk_id)
+            : route($prefix . '.dokumen-ptk.store') }}"
+        method="POST" enctype="multipart/form-data">
+
         @csrf
-        @method('PUT')
+        @if($dokumen->id)
+            @method('PUT')
+        @endif
 
         <input type="hidden" name="ptk_id" value="{{ $dokumen->ptk_id }}">
 
@@ -106,7 +117,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('dokumen-ptk.index') }}" class="btn btn-secondary me-2 btn-sm">Kembali</a>
+            <a href="{{ route($prefix . '.dokumen-ptk.index') }}" class="btn btn-secondary me-2 btn-sm">Kembali</a>
             <button type="submit" class="btn btn-success btn-sm">Simpan</button>
         </div>
     </form>

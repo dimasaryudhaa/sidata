@@ -2,24 +2,28 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Edit Anak PTK</h1>
 
-    <form action="{{ route('anak-ptk.update', $anak->ptk_id) }}" method="POST">
+    <h1 class="mb-4">{{ $anak->id ? 'Edit Anak PTK' : 'Tambah Anak PTK' }}</h1>
+
+    @php
+        $prefix = $isAdmin ? 'admin' : 'ptk';
+    @endphp
+
+    <form action="{{ $anak->id
+            ? route($prefix . '.anak-ptk.update', $anak->id)
+            : route($prefix . '.anak-ptk.store')
+        }}" method="POST">
         @csrf
-        @method('PUT')
+        @if($anak->id)
+            @method('PUT')
+        @endif
 
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama PTK</label>
-                    <select name="ptk_id" class="form-control" required>
-                        <option value="">-- Pilih PTK --</option>
-                        @foreach($ptks as $ptk)
-                            <option value="{{ $ptk->id }}" {{ $anak->ptk_id == $ptk->id ? 'selected' : '' }}>
-                                {{ $ptk->nama_lengkap }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" class="form-control" value="{{ $anak->ptk->nama_lengkap ?? '' }}" readonly>
+                    <input type="hidden" name="ptk_id" value="{{ $anak->ptk_id }}">
                 </div>
 
                 <div class="mb-3">
@@ -44,7 +48,6 @@
             </div>
 
             <div class="col-md-6">
-
                 <div class="mb-3">
                     <label>Jenis Kelamin</label>
                     <select name="jenis_kelamin" class="form-control" required>
@@ -72,9 +75,10 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('anak-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
-            <button type="submit" class="btn btn-success">Perbarui</button>
+            <a href="{{ route($prefix . '.anak-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <button type="submit" class="btn btn-success">{{ $anak->id ? 'Perbarui' : 'Simpan' }}</button>
         </div>
     </form>
+
 </div>
 @endsection

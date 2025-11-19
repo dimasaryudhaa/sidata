@@ -4,7 +4,15 @@
 <div class="container">
     <h1 class="mb-4">{{ $data->id ? 'Edit Keluarga PTK' : 'Tambah Keluarga PTK' }}</h1>
 
-    <form action="{{ $data->id ? route('keluarga-ptk.update', $data->id) : route('keluarga-ptk.store') }}" method="POST">
+    @php
+        $user = Auth::user();
+        $prefix = $user->role === 'ptk' ? 'ptk.' : 'admin.';
+    @endphp
+
+    <form action="{{ $data->id
+            ? route($prefix.'keluarga-ptk.update', $data->id)
+            : route($prefix.'keluarga-ptk.store')
+        }}" method="POST">
         @csrf
         @if($data->id)
             @method('PUT')
@@ -66,7 +74,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('keluarga-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'keluarga-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">
                 {{ $data->id ? 'Perbarui' : 'Simpan' }}
             </button>

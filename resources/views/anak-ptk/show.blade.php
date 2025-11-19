@@ -2,6 +2,11 @@
 
 @section('content')
 
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -60,10 +65,12 @@
                     <td>{{ $a->tempat_lahir ?? '-' }}, {{ $a->tanggal_lahir ? date('d-m-Y', strtotime($a->tanggal_lahir)) : '-' }}</td>
                     <td>{{ $a->tahun_masuk ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('anak-ptk.edit', $a->ptk_id) }}" class="btn btn-sm btn-no-border">
+                        @if($a->anak_id)
+                        <a href="{{ route($prefix.'anak-ptk.edit', $a->anak_id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('anak-ptk.destroy', $a->ptk_id) }}" method="POST" class="d-inline">
+
+                        <form action="{{ route($prefix.'anak-ptk.destroy', $a->anak_id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-no-border"
@@ -71,6 +78,11 @@
                                 <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                             </button>
                         </form>
+                        @else
+                        <button class="btn btn-sm btn-no-border" disabled>
+                            <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
+                        </button>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -81,7 +93,9 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('anak-ptk.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'anak-ptk.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
+
 </div>
 
 @endsection

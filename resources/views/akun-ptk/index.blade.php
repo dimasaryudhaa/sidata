@@ -2,6 +2,11 @@
 
 @section('content')
 
+@php
+    $isAdmin = Auth::user()->role === 'admin';
+    $isPtk = Auth::user()->role === 'ptk';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -83,14 +88,18 @@
 
                         <td>{{ $item->email ?? '-' }}</td>
                         <td>
-                            <a href="{{ route('akun-ptk.edit', ['akun_ptk' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                <a href="{{ route('akun-ptk.edit', ['akun_ptk' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit Akun" style="width:20px; height:20px;">
-                            </a>
-
-                            @if(!$isPtk)
+                            @if($isAdmin || ($isPtk && $ptkId == $item->ptk_id))
+                                <a href="{{ $isAdmin
+                                    ? route('admin.akun-ptk.edit', $item->ptk_id)
+                                    : route('ptk.akun-ptk.edit', $item->ptk_id) }}"
+                                    class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit Akun" style="width:20px; height:20px;">
+                                </a>
+                            @endif
+                            @if($isAdmin)
                                 @if($item->akun_id)
-                                    <form action="{{ route('akun-ptk.destroy', $item->akun_id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('admin.akun-ptk.destroy', $item->akun_id) }}"
+                                        method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
