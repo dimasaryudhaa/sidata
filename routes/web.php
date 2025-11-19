@@ -82,8 +82,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('semester', SemesterController::class);
 
     // ptk
-    // Route::get('/master-siswa/{id}/cetak', [MasterSiswaController::class, 'cetakPDF'])
-    // ->name('master-siswa.cetak');
+    Route::get('/master-ptk/{id}/cetak', [MasterPtkController::class, 'cetakPDF'])
+    ->name('master-ptk.cetak');
     Route::resource('master-ptk', MasterPtkController::class);
     Route::resource('pendidikan-ptk', PendidikanPtkController::class);
     Route::resource('kontak-ptk', KontakPtkController::class);

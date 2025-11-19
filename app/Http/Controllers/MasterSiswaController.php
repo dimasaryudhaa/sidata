@@ -26,7 +26,7 @@ class MasterSiswaController extends Controller
             ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
             ->where('akun_siswa.email', $user->email)
             ->select(
-                
+
                 // siswa
                 'peserta_didik.id',
                 'peserta_didik.nama_lengkap',
