@@ -64,7 +64,7 @@ class TunjanganController extends Controller
 
     public function create(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         $ptkId = $request->query('ptk_id');
@@ -99,7 +99,8 @@ class TunjanganController extends Controller
 
         Tunjangan::create($validated);
 
-        $prefix = auth()->user()->role === 'admin' ? 'admin.' : 'ptk.';
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'tunjangan.index')
                         ->with('success', 'Data tunjangan berhasil ditambahkan.');
@@ -121,7 +122,6 @@ class TunjanganController extends Controller
         $isAdmin = $user->role === 'admin';
         $isPtk = $user->role === 'ptk';
 
-        // Ambil PTK dan Semester
         $ptks = Ptk::orderBy('nama_lengkap')->get();
         $semesters = Semester::orderBy('nama_semester')->get();
 
@@ -156,7 +156,8 @@ class TunjanganController extends Controller
 
         $tunjangan->update($validated);
 
-        $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()
             ->route($prefix.'.tunjangan.index')
@@ -167,7 +168,8 @@ class TunjanganController extends Controller
     {
         $tunjangan->delete();
 
-        $prefix = auth()->user()->role === 'admin' ? 'admin.' : 'ptk.';
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'tunjangan.index')
             ->with('success', 'Data tunjangan berhasil dihapus.');
