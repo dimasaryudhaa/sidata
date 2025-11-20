@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
 
 <style>
 .table thead th {
@@ -58,10 +62,10 @@
                     <td>{{ $s->nrg ?? '-' }}</td>
                     <td>{{ $s->nomor_peserta ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('sertifikat-ptk.edit', $s->id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'sertifikat-ptk.edit', $s->id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit Sertifikat" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('sertifikat-ptk.destroy', $s->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data sertifikat ini?')">
+                        <form action="{{ route($prefix.'sertifikat-ptk.destroy', $s->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data sertifikat ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-no-border">
@@ -72,12 +76,13 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-center">Belum ada data sertifikat untuk PTK ini.</td>
+                    <td colspan="8" class="text-center">Belum ada data sertifikat untuk PTK ini.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <a href="{{ route('sertifikat-ptk.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'sertifikat-ptk.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
 </div>
 @endsection

@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
 
 <style>
 .table thead th {
@@ -56,10 +60,10 @@
                     <td>{{ $b->tahun_akhir ?? '-' }}</td>
                     <td>{{ $b->masih_menerima ? 'Ya' : 'Tidak' }}</td>
                     <td>
-                        <a href="{{ route('beasiswa-ptk.edit', $b->id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'beasiswa-ptk.edit', $b->id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit Beasiswa" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('beasiswa-ptk.destroy', $b->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data beasiswa ini?')">
+                        <form action="{{ route($prefix.'beasiswa-ptk.destroy', $b->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data beasiswa ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-no-border">
@@ -76,6 +80,7 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('beasiswa-ptk.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'beasiswa-ptk.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
 </div>
 @endsection

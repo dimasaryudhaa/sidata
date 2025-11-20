@@ -14,8 +14,11 @@ class RiwayatKepangkatanController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
+
             $riwayatKepangkatan = DB::table('riwayat_kepangkatan')
                 ->join('ptk', 'riwayat_kepangkatan.ptk_id', '=', 'ptk.id')
                 ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
@@ -33,9 +36,8 @@ class RiwayatKepangkatanController extends Controller
                 ->orderBy('riwayat_kepangkatan.tmt_pangkat', 'desc')
                 ->paginate(12);
 
-            return view('riwayat-kepangkatan.index', compact('riwayatKepangkatan', 'isPtk'));
-
         } else {
+
             $riwayatKepangkatan = DB::table('ptk')
                 ->leftJoin('riwayat_kepangkatan', 'ptk.id', '=', 'riwayat_kepangkatan.ptk_id')
                 ->select(
@@ -44,23 +46,31 @@ class RiwayatKepangkatanController extends Controller
                     DB::raw('COUNT(riwayat_kepangkatan.id) as jumlah_riwayat_kepangkatan')
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
-                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->orderBy('ptk.nama_lengkap')
                 ->paginate(12);
-
-            return view('riwayat-kepangkatan.index', compact('riwayatKepangkatan', 'isPtk'));
         }
+
+        return view('riwayat-kepangkatan.index', compact(
+            'riwayatKepangkatan',
+            'isPtk',
+            'isAdmin',
+            'prefix'
+        ));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('riwayat-kepangkatan.create', compact('ptkId', 'ptk'));
+            return view('riwayat-kepangkatan.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('riwayat-kepangkatan.create', compact('ptks'));
+            return view('riwayat-kepangkatan.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -78,22 +88,40 @@ class RiwayatKepangkatanController extends Controller
 
         RiwayatKepangkatan::create($validated);
 
-        return redirect()->route('riwayat-kepangkatan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'riwayat-kepangkatan.index')
             ->with('success', 'Data riwayat kepangkatan berhasil ditambahkan.');
     }
 
     public function show($ptk_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $riwayatKepangkatan = RiwayatKepangkatan::where('ptk_id', $ptk_id)->get();
         $ptk = Ptk::findOrFail($ptk_id);
 
-        return view('riwayat-kepangkatan.show', compact('riwayatKepangkatan', 'ptk'));
+        return view('riwayat-kepangkatan.show', compact('riwayatKepangkatan', 'ptk', 'prefix'));
     }
 
     public function edit(RiwayatKepangkatan $riwayatKepangkatan)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::orderBy('nama_lengkap')->get();
-        return view('riwayat-kepangkatan.edit', compact('riwayatKepangkatan', 'ptks'));
+
+        return view('riwayat-kepangkatan.edit', compact(
+            'riwayatKepangkatan',
+            'ptks',
+            'isAdmin',
+            'isPtk',
+            'prefix'
+        ));
     }
 
     public function update(Request $request, RiwayatKepangkatan $riwayatKepangkatan)
@@ -110,7 +138,10 @@ class RiwayatKepangkatanController extends Controller
 
         $riwayatKepangkatan->update($validated);
 
-        return redirect()->route('riwayat-kepangkatan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'riwayat-kepangkatan.index')
             ->with('success', 'Data riwayat kepangkatan berhasil diperbarui.');
     }
 
@@ -118,7 +149,10 @@ class RiwayatKepangkatanController extends Controller
     {
         $riwayatKepangkatan->delete();
 
-        return redirect()->route('riwayat-kepangkatan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'riwayat-kepangkatan.index')
             ->with('success', 'Data riwayat kepangkatan berhasil dihapus.');
     }
 }

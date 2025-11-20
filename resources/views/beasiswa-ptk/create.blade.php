@@ -1,10 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <div class="container">
     <h1>Tambah Beasiswa PTK</h1>
 
-    <form action="{{ route('beasiswa-ptk.store') }}" method="POST">
+    <form action="{{ route($prefix.'beasiswa-ptk.store') }}" method="POST">
         @csrf
         <div class="row">
             <div class="col-md-6">
@@ -56,7 +62,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('beasiswa-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'beasiswa-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>

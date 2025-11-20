@@ -14,8 +14,11 @@ class RiwayatJabatanFungsionalController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
+
             $riwayatJabatanFungsional = DB::table('riwayat_jabatan_fungsional')
                 ->join('ptk', 'riwayat_jabatan_fungsional.ptk_id', '=', 'ptk.id')
                 ->join('akun_ptk', 'ptk.id', '=', 'akun_ptk.ptk_id')
@@ -30,9 +33,8 @@ class RiwayatJabatanFungsionalController extends Controller
                 ->orderBy('riwayat_jabatan_fungsional.tmt_jabatan', 'desc')
                 ->paginate(12);
 
-            return view('riwayat-jabatan-fungsional.index', compact('riwayatJabatanFungsional', 'isPtk'));
-
         } else {
+
             $riwayatJabatanFungsional = DB::table('ptk')
                 ->leftJoin('riwayat_jabatan_fungsional', 'ptk.id', '=', 'riwayat_jabatan_fungsional.ptk_id')
                 ->select(
@@ -41,23 +43,31 @@ class RiwayatJabatanFungsionalController extends Controller
                     DB::raw('COUNT(riwayat_jabatan_fungsional.id) as jumlah_riwayat_jabfung')
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
-                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->orderBy('ptk.nama_lengkap')
                 ->paginate(12);
-
-            return view('riwayat-jabatan-fungsional.index', compact('riwayatJabatanFungsional', 'isPtk'));
         }
+
+        return view('riwayat-jabatan-fungsional.index', compact(
+            'riwayatJabatanFungsional',
+            'isPtk',
+            'isAdmin',
+            'prefix'
+        ));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('riwayat-jabatan-fungsional.create', compact('ptkId', 'ptk'));
+            return view('riwayat-jabatan-fungsional.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('riwayat-jabatan-fungsional.create', compact('ptks'));
+            return view('riwayat-jabatan-fungsional.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -72,22 +82,44 @@ class RiwayatJabatanFungsionalController extends Controller
 
         RiwayatJabatanFungsional::create($validated);
 
-        return redirect()->route('riwayat-jabatan-fungsional.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'riwayat-jabatan-fungsional.index')
             ->with('success', 'Data riwayat jabatan fungsional berhasil ditambahkan.');
     }
 
     public function show($ptk_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptk = Ptk::findOrFail($ptk_id);
         $riwayatJabatanFungsional = RiwayatJabatanFungsional::where('ptk_id', $ptk_id)->get();
 
-        return view('riwayat-jabatan-fungsional.show', compact('ptk', 'riwayatJabatanFungsional'));
+        return view('riwayat-jabatan-fungsional.show', compact(
+            'ptk',
+            'riwayatJabatanFungsional',
+            'prefix'
+        ));
     }
 
     public function edit(RiwayatJabatanFungsional $riwayatJabatanFungsional)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::orderBy('nama_lengkap')->get();
-        return view('riwayat-jabatan-fungsional.edit', compact('riwayatJabatanFungsional', 'ptks'));
+
+        return view('riwayat-jabatan-fungsional.edit', compact(
+            'riwayatJabatanFungsional',
+            'ptks',
+            'isAdmin',
+            'isPtk',
+            'prefix'
+        ));
     }
 
     public function update(Request $request, RiwayatJabatanFungsional $riwayatJabatanFungsional)
@@ -101,7 +133,10 @@ class RiwayatJabatanFungsionalController extends Controller
 
         $riwayatJabatanFungsional->update($validated);
 
-        return redirect()->route('riwayat-jabatan-fungsional.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'riwayat-jabatan-fungsional.index')
             ->with('success', 'Data riwayat jabatan fungsional berhasil diperbarui.');
     }
 
@@ -109,7 +144,10 @@ class RiwayatJabatanFungsionalController extends Controller
     {
         $riwayatJabatanFungsional->delete();
 
-        return redirect()->route('riwayat-jabatan-fungsional.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'riwayat-jabatan-fungsional.index')
             ->with('success', 'Data riwayat jabatan fungsional berhasil dihapus.');
     }
 }

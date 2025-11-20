@@ -14,6 +14,8 @@ class DiklatController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $diklats = DB::table('diklat')
@@ -34,8 +36,6 @@ class DiklatController extends Controller
                 ->orderBy('diklat.tahun', 'desc')
                 ->paginate(12);
 
-            return view('diklat.index', compact('diklats', 'isPtk'));
-
         } else {
             $diklats = DB::table('ptk')
                 ->leftJoin('diklat', 'ptk.id', '=', 'diklat.ptk_id')
@@ -45,27 +45,38 @@ class DiklatController extends Controller
                     DB::raw('COUNT(diklat.id) as jumlah_diklat')
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
-                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->orderBy('ptk.nama_lengkap')
                 ->paginate(12);
-
-            return view('diklat.index', compact('diklats', 'isPtk'));
         }
+
+        return view('diklat.index', compact('diklats', 'isPtk', 'isAdmin', 'prefix'));
     }
 
     public function show($ptk_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptk = Ptk::findOrFail($ptk_id);
         $diklat = Diklat::where('ptk_id', $ptk_id)->get();
-        return view('diklat.show', compact('ptk', 'diklat'));
+
+        return view('diklat.show', compact('ptk', 'diklat', 'prefix'));
     }
 
     public function create(Request $request)
     {
-        $ptks = Ptk::all();
-        $ptkId = $request->query('ptk_id');
-        $ptk = $ptkId ? Ptk::findOrFail($ptkId) : null;
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return view('diklat.create', compact('ptks', 'ptk', 'ptkId'));
+        $ptkId = $request->query('ptk_id');
+
+        if ($ptkId) {
+            $ptk = Ptk::findOrFail($ptkId);
+            return view('diklat.create', compact('ptkId', 'ptk', 'prefix'));
+        } else {
+            $ptks = Ptk::orderBy('nama_lengkap')->get();
+            return view('diklat.create', compact('ptks', 'prefix'));
+        }
     }
 
     public function store(Request $request)
@@ -83,14 +94,31 @@ class DiklatController extends Controller
 
         Diklat::create($validated);
 
-        return redirect()->route('diklat.index')->with('success', 'Data diklat berhasil ditambahkan.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'diklat.index')
+            ->with('success', 'Data diklat berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    public function edit(Diklat $diklat)
     {
-        $diklat = Diklat::findOrFail($id);
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
+
+        $ptks = Ptk::orderBy('nama_lengkap')->get();
         $ptk = Ptk::findOrFail($diklat->ptk_id);
-        return view('diklat.edit', compact('diklat', 'ptk'));
+
+        return view('diklat.edit', compact(
+            'diklat',
+            'ptks',
+            'ptk',
+            'isAdmin',
+            'isPtk',
+            'prefix'
+        ));
     }
 
     public function update(Request $request, Diklat $diklat)
@@ -108,12 +136,21 @@ class DiklatController extends Controller
 
         $diklat->update($validated);
 
-        return redirect()->route('diklat.index')->with('success', 'Data diklat berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'diklat.index')
+            ->with('success', 'Data diklat berhasil diperbarui.');
     }
 
     public function destroy(Diklat $diklat)
     {
         $diklat->delete();
-        return redirect()->route('diklat.index')->with('success', 'Data diklat berhasil dihapus.');
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'diklat.index')
+            ->with('success', 'Data diklat berhasil dihapus.');
     }
 }

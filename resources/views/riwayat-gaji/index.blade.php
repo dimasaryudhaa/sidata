@@ -2,35 +2,37 @@
 
 @section('content')
 
-<style>
-    .table thead th {
-        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-        color: white !important;
-        border: none !important;
-        vertical-align: middle !important;
-        font-weight: 600;
-    }
-
-    .btn-no-border {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        padding: 0;
-    }
-
-    .btn-no-border:focus,
-    .btn-no-border:active,
-    .btn-no-border:hover {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-    }
-</style>
-
 @php
     $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
     $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
 @endphp
+
+<style>
+.table thead th {
+    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+    color: white !important;
+    border: none !important;
+    vertical-align: middle !important;
+    font-weight: 600;
+}
+
+.btn-no-border {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0;
+}
+
+.btn-no-border:hover,
+.btn-no-border:focus,
+.btn-no-border:active {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+</style>
 
 <div class="container">
 
@@ -61,8 +63,9 @@
     @endif
 
     @if($isPtk)
-        <div class="table-responsive rounded-3 overflow-hidden mt-3">
-            <table class="table table-bordered" id="riwayatGajiTable">
+
+        <div class="table-responsive rounded-3 mt-3 overflow-hidden">
+            <table class="table table-bordered">
                 <thead class="text-white">
                     <tr>
                         <th style="width:60px;">No</th>
@@ -84,10 +87,11 @@
                             <td>{{ $item->tanggal_sk ?? '-' }}</td>
                             <td>{{ $item->tmt_kgb ?? '-' }}</td>
                             <td>{{ $item->masa_kerja_thn }} Thn {{ $item->masa_kerja_bln }} Bln</td>
-                            <td>{{ $item->gaji_pokok ? 'Rp ' . number_format($item->gaji_pokok, 0, ',', '.') : '-' }}</td>
+                            <td>{{ $item->gaji_pokok ? 'Rp ' . number_format($item->gaji_pokok,0,',','.') : '-' }}</td>
                             <td>
-                                <a href="{{ route('riwayat-gaji.edit', ['riwayat_gaji' => $item->riwayat_gaji_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'riwayat-gaji.edit', ['riwayat_gaji' => $item->riwayat_gaji_id]) }}"
+                                    class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -96,14 +100,15 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $riwayatGaji->links('pagination::bootstrap-5') }}
         </div>
 
     @else
         <div class="d-flex justify-content-between align-items-center mb-3">
             <form class="d-flex mb-3" style="gap:0.5rem;">
-                <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width:250px;">
+                <input type="text" id="search" class="form-control form-control-sm"
+                       placeholder="Cari Nama PTK..." style="max-width:250px;">
             </form>
         </div>
 
@@ -121,14 +126,17 @@
                     @foreach($riwayatGaji as $index => $item)
                         <tr>
                             <td>{{ $riwayatGaji->firstItem() + $index }}</td>
-                            <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
-                            <td>{{ $item->jumlah_riwayat_gaji ?? 0 }}</td>
+                            <td class="nama_ptk">{{ $item->nama_lengkap }}</td>
+                            <td>{{ $item->jumlah_riwayat_gaji }}</td>
                             <td>
-                                <a href="{{ route('riwayat-gaji.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/view.png') }}" alt="Lihat" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'riwayat-gaji.show', $item->ptk_id) }}"
+                                   class="btn btn-sm btn-no-border">
+                                   <img src="{{ asset('images/view.png') }}" style="width:20px; height:20px;">
                                 </a>
-                                <a href="{{ route('riwayat-gaji.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah" style="width:20px; height:20px;">
+
+                                <a href="{{ route($prefix.'riwayat-gaji.create', ['ptk_id' => $item->ptk_id]) }}"
+                                   class="btn btn-sm btn-no-border">
+                                   <img src="{{ asset('images/tambah2.png') }}" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -137,12 +145,12 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $riwayatGaji->links('pagination::bootstrap-5') }}
         </div>
 
         <script>
-            document.getElementById('search').addEventListener('keyup', function() {
+            document.getElementById('search')?.addEventListener('keyup', function() {
                 let filter = this.value.toLowerCase();
                 let rows = document.querySelectorAll('#riwayatGajiTable tbody tr');
 
@@ -152,7 +160,9 @@
                 });
             });
         </script>
+
     @endif
+
 </div>
 
 @endsection

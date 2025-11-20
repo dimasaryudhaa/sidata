@@ -27,9 +27,14 @@
     }
 </style>
 
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isPtk ? 'ptk.' : 'admin.';
+@endphp
+
 <div class="container">
 
-    {{-- Alert sukses --}}
     @if(session('success'))
         <div id="successAlert"
             class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
@@ -56,8 +61,8 @@
         </script>
     @endif
 
-    {{-- Untuk Admin --}}
     @if(!$isPtk)
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <form class="d-flex mb-3" style="gap:0.5rem;">
                 <input type="text" id="search" class="form-control form-control-sm"
@@ -87,29 +92,36 @@
                             <td>{{ $item->tanggal_surat_tugas ?? '-' }}</td>
                             <td>{{ $item->tmt_tugas ?? '-' }}</td>
                             <td>{{ $item->status_sekolah_induk ?? '-' }}</td>
+
                             <td>
                                 @if($item->penugasan_id)
-                                    <a href="{{ route('penugasan-ptk.edit', ['penugasan_ptk' => $item->penugasan_id]) }}" class="btn btn-sm btn-no-border">
-                                        <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                    <a href="{{ route($prefix.'penugasan-ptk.edit', ['penugasan_ptk' => $item->penugasan_id]) }}"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
                                     </a>
 
-                                    <form action="{{ route('penugasan-ptk.destroy', $item->penugasan_id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route($prefix.'penugasan-ptk.destroy', $item->penugasan_id) }}"
+                                        method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
                                             onclick="return confirm('Yakin ingin menghapus data penugasan PTK ini?')">
-                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
+                                            <img src="{{ asset('images/delete.png') }}" style="width:20px; height:20px;">
                                         </button>
                                     </form>
+
                                 @else
-                                    <a href="{{ route('penugasan-ptk.edit', ['penugasan_ptk' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                        <img src="{{ asset('images/edit.png') }}" alt="Tambah" style="width:20px; height:20px;">
+                                    <a href="{{ route($prefix.'penugasan-ptk.edit', ['penugasan_ptk' => $item->ptk_id]) }}"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
                                     </a>
+
                                     <button class="btn btn-sm btn-no-border" disabled>
-                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
+                                        <img src="{{ asset('images/delete.png') }}" style="width:20px; height:20px; opacity:0.5;">
                                     </button>
                                 @endif
                             </td>
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -133,11 +145,12 @@
         </script>
 
     @else
+
         @php $dataPtk = $data->first(); @endphp
 
         @if($dataPtk && $dataPtk->penugasan_id)
             <div class="d-flex justify-content-start align-items-center mb-3">
-                <a href="{{ route('penugasan-ptk.edit', ['penugasan_ptk' => $dataPtk->penugasan_id]) }}"
+                <a href="{{ route($prefix.'penugasan-ptk.edit', ['penugasan_ptk' => $dataPtk->penugasan_id]) }}"
                     class="btn btn-primary px-4"
                     style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
                     <i class="bi bi-pencil-square me-2"></i> Edit
@@ -173,7 +186,9 @@
                 </tbody>
             </table>
         </div>
+
     @endif
+
 </div>
 
 @endsection

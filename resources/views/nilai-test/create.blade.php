@@ -1,21 +1,32 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $isAdmin = $user->role === 'admin';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <div class="container">
     <h1>Tambah Nilai Test PTK</h1>
 
-    <form action="{{ route('nilai-test.store') }}" method="POST">
+    <form action="{{ route($prefix.'nilai-test.store') }}" method="POST">
         @csrf
+
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama PTK</label>
-                    @if(isset($ptkId))
+                    @if(isset($ptk))
                         <input type="text" class="form-control" value="{{ $ptk->nama_lengkap }}" readonly>
-                        <input type="hidden" name="ptk_id" value="{{ $ptkId }}">
+                        <input type="hidden" name="ptk_id" value="{{ $ptk->id }}">
                     @else
-                        <input type="text" class="form-control" value="{{ $ptk->nama_lengkap ?? '' }}" readonly>
-                        <input type="hidden" name="ptk_id" value="{{ $ptk->id ?? '' }}">
+                        <select name="ptk_id" class="form-control" required>
+                            <option value="">-- Pilih PTK --</option>
+                            @foreach($ptks as $p)
+                                <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
+                            @endforeach
+                        </select>
                     @endif
                 </div>
 
@@ -54,7 +65,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('nilai-test.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'nilai-test.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>

@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class SertifikatPtkController extends Controller
 {
-public function index()
+    public function index()
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $sertifikatPtk = DB::table('sertifikat')
@@ -33,8 +35,6 @@ public function index()
                 ->orderBy('sertifikat.tahun_sertifikasi', 'desc')
                 ->paginate(12);
 
-            return view('sertifikat-ptk.index', compact('sertifikatPtk', 'isPtk'));
-
         } else {
             $sertifikatPtk = DB::table('ptk')
                 ->leftJoin('sertifikat', 'ptk.id', '=', 'sertifikat.ptk_id')
@@ -46,21 +46,35 @@ public function index()
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('sertifikat-ptk.index', compact('sertifikatPtk', 'isPtk'));
         }
+
+        return view('sertifikat-ptk.index', compact('sertifikatPtk', 'isPtk', 'isAdmin', 'prefix'));
+    }
+
+    public function show($ptk_id)
+    {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        $ptk = Ptk::findOrFail($ptk_id);
+        $sertifikat = SertifikatPtk::where('ptk_id', $ptk_id)->get();
+
+        return view('sertifikat-ptk.show', compact('ptk', 'sertifikat', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('sertifikat-ptk.create', compact('ptkId', 'ptk'));
+            return view('sertifikat-ptk.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('sertifikat-ptk.create', compact('ptks'));
+            return view('sertifikat-ptk.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -78,26 +92,30 @@ public function index()
 
         SertifikatPtk::create($validated);
 
-        return redirect()->route('sertifikat-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'sertifikat-ptk.index')
             ->with('success', 'Data sertifikat PTK berhasil ditambahkan.');
     }
 
-    public function show($ptk_id)
+    public function edit(SertifikatPtk $sertifikatPtk)
     {
-        $sertifikat = SertifikatPtk::where('ptk_id', $ptk_id)->get();
-        $ptk = Ptk::findOrFail($ptk_id);
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
-        return view('sertifikat-ptk.show', compact('sertifikat', 'ptk'));
-    }
-
-    public function edit($id)
-    {
-        $sertifikatPtk = SertifikatPtk::findOrFail($id);
         $ptk = Ptk::findOrFail($sertifikatPtk->ptk_id);
 
-        return view('sertifikat-ptk.edit', compact('sertifikatPtk', 'ptk'));
+        return view('sertifikat-ptk.edit', compact(
+            'sertifikatPtk',
+            'ptk',
+            'isAdmin',
+            'isPtk',
+            'prefix'
+        ));
     }
-
 
     public function update(Request $request, SertifikatPtk $sertifikatPtk)
     {
@@ -113,7 +131,10 @@ public function index()
 
         $sertifikatPtk->update($validated);
 
-        return redirect()->route('sertifikat-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'sertifikat-ptk.index')
             ->with('success', 'Data sertifikat PTK berhasil diperbarui.');
     }
 
@@ -121,7 +142,10 @@ public function index()
     {
         $sertifikatPtk->delete();
 
-        return redirect()->route('sertifikat-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'sertifikat-ptk.index')
             ->with('success', 'Data sertifikat PTK berhasil dihapus.');
     }
 }

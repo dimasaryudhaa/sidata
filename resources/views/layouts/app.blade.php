@@ -252,14 +252,14 @@
                                 <i class="bi bi-clock-history me-2"></i>Riwayat & Karir PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
-                                <li><a href="{{ route('kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
-                                <li><a href="{{ route('tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
-                                <li><a href="{{ route('riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
-                                <li><a href="{{ route('riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
-                                <li><a href="{{ route('riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
-                                <li><a href="{{ route('riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
-                                <li><a href="{{ route('riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
+                                <li><a href="{{ route('admin.penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
+                                <li><a href="{{ route('admin.kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
+                                <li><a href="{{ route('admin.tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
+                                <li><a href="{{ route('admin.riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
+                                <li><a href="{{ route('admin.riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
+                                <li><a href="{{ route('admin.riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
+                                <li><a href="{{ route('admin.riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
+                                <li><a href="{{ route('admin.riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
                             </ul>
                         </li>
 
@@ -268,14 +268,14 @@
                                 <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
-                                <li><a href="{{ route('nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
-                                <li><a href="{{ route('pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
-                                <li><a href="{{ route('sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
-                                <li><a href="{{ route('beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                                <li><a href="{{ route('penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
-                                <li><a href="{{ route('kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
-                                <li><a href="{{ route('kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
+                                <li><a href="{{ route('admin.diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
+                                <li><a href="{{ route('admin.nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
+                                <li><a href="{{ route('admin.pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
+                                <li><a href="{{ route('admin.sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
+                                <li><a href="{{ route('admin.beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('admin.penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
+                                <li><a href="{{ route('admin.kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
+                                <li><a href="{{ route('admin.kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
                             </ul>
                         </li>
                     @endif
@@ -303,14 +303,14 @@
                                 <i class="bi bi-clock-history me-2"></i>Riwayat & Karir PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
-                                <li><a href="{{ route('kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
-                                <li><a href="{{ route('tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
-                                <li><a href="{{ route('riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
-                                <li><a href="{{ route('riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
-                                <li><a href="{{ route('riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
-                                <li><a href="{{ route('riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
-                                <li><a href="{{ route('riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
+                                <li><a href="{{ route('ptk.penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
+                                <li><a href="{{ route('ptk.kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
+                                <li><a href="{{ route('ptk.tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
+                                <li><a href="{{ route('ptk.riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
+                                <li><a href="{{ route('ptk.riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
+                                <li><a href="{{ route('ptk.riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
+                                <li><a href="{{ route('ptk.riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
+                                <li><a href="{{ route('ptk.riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
                             </ul>
                         </li>
 
@@ -319,14 +319,14 @@
                                 <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi PTK
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
-                                <li><a href="{{ route('nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
-                                <li><a href="{{ route('pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
-                                <li><a href="{{ route('sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
-                                <li><a href="{{ route('beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                                <li><a href="{{ route('penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
-                                <li><a href="{{ route('kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
-                                <li><a href="{{ route('kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
+                                <li><a href="{{ route('ptk.diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
+                                <li><a href="{{ route('ptk.nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
+                                <li><a href="{{ route('ptk.pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
+                                <li><a href="{{ route('ptk.sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
+                                <li><a href="{{ route('ptk.beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('ptk.penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
+                                <li><a href="{{ route('ptk.kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
+                                <li><a href="{{ route('ptk.kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
                             </ul>
                         </li>
                     @endif

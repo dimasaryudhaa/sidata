@@ -2,9 +2,15 @@
 
 @section('content')
 
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
+
 <div class="container">
     <h3>Tambah Riwayat Gaji</h3>
-    <form action="{{ route('riwayat-gaji.store') }}" method="POST">
+
+    <form action="{{ route($prefix.'riwayat-gaji.store') }}" method="POST">
         @csrf
         <div class="row">
             <div class="col-md-6">
@@ -16,8 +22,8 @@
                     @else
                         <select name="ptk_id" class="form-control" required>
                             <option value="">-- Pilih PTK --</option>
-                            @foreach($ptks as $ptk)
-                                <option value="{{ $ptk->id }}">{{ $ptk->nama_lengkap }}</option>
+                            @foreach($ptks as $p)
+                                <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
                             @endforeach
                         </select>
                     @endif
@@ -62,7 +68,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('riwayat-gaji.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'riwayat-gaji.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>

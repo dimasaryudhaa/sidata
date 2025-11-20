@@ -14,6 +14,8 @@ class BeasiswaPtkController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $beasiswaPtk = DB::table('beasiswa_ptk')
@@ -32,9 +34,7 @@ class BeasiswaPtkController extends Controller
                 ->orderBy('beasiswa_ptk.tahun_mulai', 'desc')
                 ->paginate(12);
 
-            return view('beasiswa-ptk.index', compact('beasiswaPtk', 'isPtk'));
-        }
-        else {
+        } else {
             $beasiswaPtk = DB::table('ptk')
                 ->leftJoin('beasiswa_ptk', 'ptk.id', '=', 'beasiswa_ptk.ptk_id')
                 ->select(
@@ -45,21 +45,35 @@ class BeasiswaPtkController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('beasiswa-ptk.index', compact('beasiswaPtk', 'isPtk'));
         }
+
+        return view('beasiswa-ptk.index', compact('beasiswaPtk', 'isPtk', 'isAdmin', 'prefix'));
+    }
+
+    public function show($ptk_id)
+    {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        $ptk = Ptk::findOrFail($ptk_id);
+        $beasiswa = BeasiswaPtk::where('ptk_id', $ptk_id)->get();
+
+        return view('beasiswa-ptk.show', compact('ptk', 'beasiswa', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('beasiswa-ptk.create', compact('ptkId', 'ptk'));
+            return view('beasiswa-ptk.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('beasiswa-ptk.create', compact('ptks'));
+            return view('beasiswa-ptk.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -76,24 +90,29 @@ class BeasiswaPtkController extends Controller
 
         BeasiswaPtk::create($validated);
 
-        return redirect()->route('beasiswa-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'beasiswa-ptk.index')
             ->with('success', 'Data beasiswa PTK berhasil ditambahkan.');
     }
 
-    public function show($ptk_id)
+    public function edit(BeasiswaPtk $beasiswaPtk)
     {
-        $beasiswa = BeasiswaPtk::where('ptk_id', $ptk_id)->get();
-        $ptk = Ptk::findOrFail($ptk_id);
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
-        return view('beasiswa-ptk.show', compact('beasiswa', 'ptk'));
-    }
-
-    public function edit($id)
-    {
-        $beasiswaPtk = BeasiswaPtk::findOrFail($id);
         $ptk = Ptk::findOrFail($beasiswaPtk->ptk_id);
 
-        return view('beasiswa-ptk.edit', compact('beasiswaPtk', 'ptk'));
+        return view('beasiswa-ptk.edit', compact(
+            'beasiswaPtk',
+            'ptk',
+            'isAdmin',
+            'isPtk',
+            'prefix'
+        ));
     }
 
     public function update(Request $request, BeasiswaPtk $beasiswaPtk)
@@ -109,7 +128,10 @@ class BeasiswaPtkController extends Controller
 
         $beasiswaPtk->update($validated);
 
-        return redirect()->route('beasiswa-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'beasiswa-ptk.index')
             ->with('success', 'Data beasiswa PTK berhasil diperbarui.');
     }
 
@@ -117,7 +139,10 @@ class BeasiswaPtkController extends Controller
     {
         $beasiswaPtk->delete();
 
-        return redirect()->route('beasiswa-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'beasiswa-ptk.index')
             ->with('success', 'Data beasiswa PTK berhasil dihapus.');
     }
 }

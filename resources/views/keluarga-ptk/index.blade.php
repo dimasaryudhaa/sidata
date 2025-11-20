@@ -30,7 +30,6 @@
 @php
     $user = Auth::user();
     $isPtk = $user->role === 'ptk';
-
     $prefix = $isPtk ? 'ptk.' : 'admin.';
 @endphp
 

@@ -149,7 +149,7 @@ class DokumenPtkController extends Controller
         $dokumen->save();
 
         return redirect()
-            ->route($prefix.'.dokumen-ptk.index')
+            ->route($prefix.'dokumen-ptk.index')
             ->with('success', 'Dokumen PTK berhasil diperbarui.');
     }
 

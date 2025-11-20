@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
 
 <style>
 .table thead th {
@@ -28,7 +32,6 @@
 </style>
 
 <div class="container">
-
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>{{ $ptk->nama_lengkap }}</h4>
     </div>
@@ -37,14 +40,14 @@
         <table class="table table-bordered" id="pendidikanPtkTable">
             <thead class="text-white">
                 <tr>
-                    <th style="width: 50px;">No</th>
+                    <th style="width:50px;">No</th>
                     <th>Jenjang Pendidikan</th>
                     <th>Bidang Studi</th>
                     <th>Gelar Akademik</th>
                     <th>Tahun Masuk</th>
                     <th>Tahun Lulus</th>
-                    <th>Nama PTK</th>
-                    <th style="width: 80px;">Aksi</th>
+                    <th>Kependidikan</th>
+                    <th style="width:80px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,16 +59,16 @@
                     <td>{{ $p->gelar_akademik ?? '-' }}</td>
                     <td>{{ $p->tahun_masuk ?? '-' }}</td>
                     <td>{{ $p->tahun_lulus ?? '-' }}</td>
-                    <td>{{ $ptk->nama_lengkap ?? '-' }}</td>
+                    <td>{{ $p->kependidikan ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('pendidikan-ptk.edit', $p->id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'pendidikan-ptk.edit', $p->id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('pendidikan-ptk.destroy', $p->id) }}" method="POST" class="d-inline">
+
+                        <form action="{{ route($prefix.'pendidikan-ptk.destroy', $p->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-no-border"
-                                onclick="return confirm('Yakin ingin menghapus data pendidikan ini?')">
+                            <button type="submit" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                             </button>
                         </form>
@@ -79,7 +82,7 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('pendidikan-ptk.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
-</div>
 
+    <a href="{{ route($prefix.'pendidikan-ptk.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
+</div>
 @endsection

@@ -2,35 +2,37 @@
 
 @section('content')
 
-<style>
-    .table thead th {
-        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-        color: white !important;
-        border: none !important;
-        vertical-align: middle !important;
-        font-weight: 600;
-    }
-
-    .btn-no-border {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        padding: 0;
-    }
-
-    .btn-no-border:focus,
-    .btn-no-border:active,
-    .btn-no-border:hover {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-    }
-</style>
-
 @php
     $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
     $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
 @endphp
+
+<style>
+.table thead th {
+    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+    color: white !important;
+    border: none !important;
+    vertical-align: middle !important;
+    font-weight: 600;
+}
+
+.btn-no-border {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0;
+}
+
+.btn-no-border:hover,
+.btn-no-border:focus,
+.btn-no-border:active {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+</style>
 
 <div class="container">
 
@@ -61,7 +63,8 @@
     @endif
 
     @if($isPtk)
-        <div class="table-responsive rounded-3 overflow-hidden mt-3">
+
+        <div class="table-responsive rounded-3 mt-3 overflow-hidden">
             <table class="table table-bordered" id="riwayatJabatanTable">
                 <thead class="text-white">
                     <tr>
@@ -80,9 +83,9 @@
                             <td>{{ $item->sk_jabatan ?? '-' }}</td>
                             <td>{{ $item->tmt_jabatan ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('riwayat-jabatan.edit', ['riwayat_jabatan' => $item->riwayat_jabatan_id]) }}"
-                                   class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'riwayat-jabatan.edit', ['riwayat_jabatan' => $item->riwayat_jabatan_id]) }}"
+                                    class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -91,7 +94,7 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $riwayatJabatan->links('pagination::bootstrap-5') }}
         </div>
 
@@ -120,11 +123,14 @@
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
                             <td>{{ $item->jumlah_riwayat_jabatan ?? 0 }}</td>
                             <td>
-                                <a href="{{ route('riwayat-jabatan.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Riwayat Jabatan" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'riwayat-jabatan.show', $item->ptk_id) }}"
+                                   class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" style="width:20px; height:20px;">
                                 </a>
-                                <a href="{{ route('riwayat-jabatan.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Riwayat Jabatan" style="width:20px; height:20px;">
+
+                                <a href="{{ route($prefix.'riwayat-jabatan.create', ['ptk_id' => $item->ptk_id]) }}"
+                                   class="btn btn-sm btn-no-border">
+                                   <img src="{{ asset('images/tambah2.png') }}" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -133,12 +139,12 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $riwayatJabatan->links('pagination::bootstrap-5') }}
         </div>
 
         <script>
-            document.getElementById('search').addEventListener('keyup', function() {
+            document.getElementById('search')?.addEventListener('keyup', function() {
                 let filter = this.value.toLowerCase();
                 let rows = document.querySelectorAll('#riwayatJabatanTable tbody tr');
 
@@ -148,7 +154,9 @@
                 });
             });
         </script>
+
     @endif
+
 </div>
 
 @endsection

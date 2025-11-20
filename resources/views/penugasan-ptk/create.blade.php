@@ -8,7 +8,6 @@
         @csrf
 
         <div class="row">
-            <!-- Kolom Kiri -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>PTK</label>
@@ -31,7 +30,6 @@
                 </div>
             </div>
 
-            <!-- Kolom Kanan -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>TMT Tugas</label>
@@ -55,4 +53,3 @@
     </form>
 </div>
 @endsection
-    

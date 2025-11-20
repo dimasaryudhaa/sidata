@@ -2,6 +2,11 @@
 
 @section('content')
 
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -60,27 +65,42 @@
                     <td>{{ $item->peran ?? '-' }}</td>
                     <td>{{ $item->tingkat ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('diklat.edit', $item->id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/edit.png') }}" alt="Edit Diklat" style="width:20px; height:20px;">
+                        <a href="{{ route($prefix.'diklat.edit', $item->id) }}"
+                           class="btn btn-sm btn-no-border">
+                            <img src="{{ asset('images/edit.png') }}"
+                                 alt="Edit Diklat" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('diklat.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+
+                        <form action="{{ route($prefix.'diklat.destroy', $item->id) }}"
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                             @csrf
                             @method('DELETE')
+
                             <button type="submit" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/delete.png') }}" alt="Hapus Diklat" style="width:20px; height:20px;">
+                                <img src="{{ asset('images/delete.png') }}"
+                                     alt="Hapus Diklat" style="width:20px; height:20px;">
                             </button>
                         </form>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center">Belum ada data diklat untuk PTK ini.</td>
+                    <td colspan="10" class="text-center">
+                        Belum ada data diklat untuk PTK ini.
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <a href="{{ route('diklat.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'diklat.index') }}"
+       class="btn btn-sm btn-secondary mt-3">
+       Kembali
+    </a>
+
 </div>
 
 @endsection

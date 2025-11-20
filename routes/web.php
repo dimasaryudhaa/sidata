@@ -62,8 +62,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/siswa/dashboard', [HomeController::class, 'siswa'])
         ->name('siswa.dashboard');
 
-    // ptk
     Route::prefix('admin')->name('admin.')->group(function () {
+        //ptk
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
@@ -72,25 +72,55 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('keluarga-ptk', KeluargaPtkController::class);
         Route::resource('tunjangan', TunjanganController::class);
         Route::resource('kesejahteraan-ptk', KesejahteraanPtkController::class);
-    });
-
-    Route::prefix('ptk')->name('ptk.')->group(function () {
-        Route::resource('ptk', PtkController::class);
-        Route::resource('akun-ptk', AkunPtkController::class);
-        Route::resource('kontak-ptk', KontakPtkController::class);
-        Route::resource('dokumen-ptk', DokumenPtkController::class);
-        Route::resource('anak-ptk', AnakPtkController::class);
-        Route::resource('keluarga-ptk', KeluargaPtkController::class);
+        Route::resource('penugasan-ptk', PenugasanPtkController::class);
+        Route::resource('kepegawaian-ptk', KepegawaianPtkController::class);
+        Route::resource('tugas-tambahan', TugasTambahanController::class);
+        Route::resource('riwayat-gaji', RiwayatGajiController::class);
+        Route::resource('riwayat-karir', RiwayatKarirController::class);
+        Route::resource('riwayat-jabatan', RiwayatJabatanController::class);
+        Route::resource('riwayat-kepangkatan', RiwayatKepangkatanController::class);
+        Route::resource('riwayat-jabatan-fungsional', RiwayatJabatanFungsionalController::class);
+        Route::resource('diklat', DiklatController::class);
+        Route::resource('nilai-test', NilaiTestController::class);
+        Route::resource('pendidikan-ptk', PendidikanPtkController::class);
+        Route::resource('sertifikat-ptk', SertifikatPtkController::class);
+        Route::resource('beasiswa-ptk', BeasiswaPtkController::class);
+        Route::resource('penghargaan', PenghargaanController::class);
+        Route::resource('kompetensi-ptk', KompetensiPtkController::class);
+        Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
         Route::resource('tunjangan', TunjanganController::class);
-        Route::resource('kesejahteraan-ptk', KesejahteraanPtkController::class);
     });
 
-
-    //master ptk
     Route::prefix('ptk')->name('ptk.')->group(function () {
+        //ptk
         Route::resource('master-ptk', MasterPtkController::class);
         Route::get('/master-ptk/{id}/cetak', [MasterPtkController::class, 'cetakPDF'])
         ->name('master-ptk.cetak');
+        Route::resource('ptk', PtkController::class);
+        Route::resource('akun-ptk', AkunPtkController::class);
+        Route::resource('kontak-ptk', KontakPtkController::class);
+        Route::resource('dokumen-ptk', DokumenPtkController::class);
+        Route::resource('anak-ptk', AnakPtkController::class);
+        Route::resource('keluarga-ptk', KeluargaPtkController::class);
+        Route::resource('tunjangan', TunjanganController::class);
+        Route::resource('kesejahteraan-ptk', KesejahteraanPtkController::class);
+        Route::resource('penugasan-ptk', PenugasanPtkController::class);
+        Route::resource('kepegawaian-ptk', KepegawaianPtkController::class);
+        Route::resource('tugas-tambahan', TugasTambahanController::class);
+        Route::resource('riwayat-gaji', RiwayatGajiController::class);
+        Route::resource('riwayat-karir', RiwayatKarirController::class);
+        Route::resource('riwayat-jabatan', RiwayatJabatanController::class);
+        Route::resource('riwayat-kepangkatan', RiwayatKepangkatanController::class);
+        Route::resource('riwayat-jabatan-fungsional', RiwayatJabatanFungsionalController::class);
+        Route::resource('diklat', DiklatController::class);
+        Route::resource('nilai-test', NilaiTestController::class);
+        Route::resource('pendidikan-ptk', PendidikanPtkController::class);
+        Route::resource('sertifikat-ptk', SertifikatPtkController::class);
+        Route::resource('beasiswa-ptk', BeasiswaPtkController::class);
+        Route::resource('penghargaan', PenghargaanController::class);
+        Route::resource('kompetensi-ptk', KompetensiPtkController::class);
+        Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
+        Route::resource('tunjangan', TunjanganController::class);
     });
 
 
@@ -120,22 +150,4 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('rombel', RombelController::class);
     Route::resource('semester', SemesterController::class);
 
-    // ptk
-    Route::resource('pendidikan-ptk', PendidikanPtkController::class);
-    Route::resource('tunjangan', TunjanganController::class);
-    Route::resource('kepegawaian-ptk', KepegawaianPtkController::class);
-    Route::resource('beasiswa-ptk', BeasiswaPtkController::class);
-    Route::resource('sertifikat-ptk', SertifikatPtkController::class);
-    Route::resource('penugasan-ptk', PenugasanPtkController::class);
-    Route::resource('kompetensi-ptk', KompetensiPtkController::class);
-    Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
-    Route::resource('riwayat-karir', RiwayatKarirController::class);
-    Route::resource('penghargaan', PenghargaanController::class);
-    Route::resource('nilai-test', NilaiTestController::class);
-    Route::resource('diklat', DiklatController::class);
-    Route::resource('riwayat-jabatan', RiwayatJabatanController::class);
-    Route::resource('riwayat-kepangkatan', RiwayatKepangkatanController::class);
-    Route::resource('riwayat-gaji', RiwayatGajiController::class);
-    Route::resource('tugas-tambahan', TugasTambahanController::class);
-    Route::resource('riwayat-jabatan-fungsional', RiwayatJabatanFungsionalController::class);
 });

@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Edit Data Beasiswa PTK</h2>
 
-    <form action="{{ route('beasiswa-ptk.update', $beasiswaPtk->id) }}" method="POST">
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
+<div class="container">
+    <h2 class="mb-4">Edit Data Beasiswa PTK</h2>
+
+    <form action="{{ route($prefix . 'beasiswa-ptk.update', $beasiswaPtk->id) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -18,8 +26,7 @@
 
                 <div class="mb-3">
                     <label>Jenis Beasiswa</label>
-                    <input type="text" name="jenis_beasiswa" class="form-control"
-                    value="{{ old('jenis_beasiswa', $beasiswaPtk->jenis_beasiswa) }}" required>
+                    <input type="text" name="jenis_beasiswa" class="form-control" value="{{ old('jenis_beasiswa', $beasiswaPtk->jenis_beasiswa) }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -31,14 +38,12 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Tahun Mulai</label>
-                    <input type="number" name="tahun_mulai" class="form-control"
-                    value="{{ old('tahun_mulai', $beasiswaPtk->tahun_mulai) }}" required>
+                    <input type="number" name="tahun_mulai" class="form-control" value="{{ old('tahun_mulai', $beasiswaPtk->tahun_mulai) }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label>Tahun Akhir</label>
-                    <input type="number" name="tahun_akhir" class="form-control"
-                    value="{{ old('tahun_akhir', $beasiswaPtk->tahun_akhir) }}" required>
+                    <input type="number" name="tahun_akhir" class="form-control" value="{{ old('tahun_akhir', $beasiswaPtk->tahun_akhir) }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -52,9 +57,10 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('beasiswa-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix . 'beasiswa-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
     </form>
 </div>
+
 @endsection

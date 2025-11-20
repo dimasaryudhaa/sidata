@@ -14,6 +14,8 @@ class KompetensiKhususPtkController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $kompetensiKhusus = DB::table('kompetensi_khusus')
@@ -32,9 +34,6 @@ class KompetensiKhususPtkController extends Controller
                 )
                 ->orderBy('kompetensi_khusus.id', 'asc')
                 ->paginate(12);
-
-            return view('kompetensi-khusus-ptk.index', compact('kompetensiKhusus', 'isPtk'));
-
         } else {
             $kompetensiKhusus = DB::table('ptk')
                 ->leftJoin('kompetensi_khusus', 'ptk.id', '=', 'kompetensi_khusus.ptk_id')
@@ -46,21 +45,35 @@ class KompetensiKhususPtkController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('kompetensi-khusus-ptk.index', compact('kompetensiKhusus', 'isPtk'));
         }
+
+        return view('kompetensi-khusus-ptk.index', compact('kompetensiKhusus', 'isPtk', 'isAdmin', 'prefix'));
+    }
+
+    public function show($ptk_id)
+    {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        $ptk = Ptk::findOrFail($ptk_id);
+        $kompetensiKhusus = KompetensiKhususPtk::where('ptk_id', $ptk_id)->get();
+
+        return view('kompetensi-khusus-ptk.show', compact('ptk', 'kompetensiKhusus', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('kompetensi-khusus-ptk.create', compact('ptkId', 'ptk'));
+            return view('kompetensi-khusus-ptk.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('kompetensi-khusus-ptk.create', compact('ptks'));
+            return view('kompetensi-khusus-ptk.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -78,24 +91,20 @@ class KompetensiKhususPtkController extends Controller
 
         KompetensiKhususPtk::create($validated);
 
-        return redirect()->route('kompetensi-khusus-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kompetensi-khusus-ptk.index')
             ->with('success', 'Data kompetensi khusus PTK berhasil ditambahkan.');
     }
 
-    public function show($ptk_id)
+    public function edit(KompetensiKhususPtk $kompetensiKhususPtk)
     {
-        $kompetensiKhusus = KompetensiKhususPtk::where('ptk_id', $ptk_id)->get();
-        $ptk = Ptk::findOrFail($ptk_id);
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $ptk = Ptk::findOrFail($kompetensiKhususPtk->ptk_id);
 
-        return view('kompetensi-khusus-ptk.show', compact('kompetensiKhusus', 'ptk'));
-    }
-
-    public function edit($id)
-    {
-        $kompetensiKhusus = KompetensiKhususPtk::findOrFail($id);
-        $ptk = Ptk::findOrFail($kompetensiKhusus->ptk_id);
-
-        return view('kompetensi-khusus-ptk.edit', compact('kompetensiKhusus', 'ptk'));
+        return view('kompetensi-khusus-ptk.edit', compact('kompetensiKhususPtk', 'ptk', 'prefix'));
     }
 
     public function update(Request $request, KompetensiKhususPtk $kompetensiKhususPtk)
@@ -112,7 +121,10 @@ class KompetensiKhususPtkController extends Controller
 
         $kompetensiKhususPtk->update($validated);
 
-        return redirect()->route('kompetensi-khusus-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kompetensi-khusus-ptk.index')
             ->with('success', 'Data kompetensi khusus PTK berhasil diperbarui.');
     }
 
@@ -120,7 +132,10 @@ class KompetensiKhususPtkController extends Controller
     {
         $kompetensiKhususPtk->delete();
 
-        return redirect()->route('kompetensi-khusus-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kompetensi-khusus-ptk.index')
             ->with('success', 'Data kompetensi khusus PTK berhasil dihapus.');
     }
 }

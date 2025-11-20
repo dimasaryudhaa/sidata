@@ -14,6 +14,8 @@ class RiwayatKarirController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $riwayatKarir = DB::table('riwayat_karir')
@@ -38,8 +40,6 @@ class RiwayatKarirController extends Controller
                 ->orderBy('riwayat_karir.tgl_sk_kerja', 'desc')
                 ->paginate(12);
 
-            return view('riwayat-karir.index', compact('riwayatKarir', 'isPtk'));
-
         } else {
             $riwayatKarir = DB::table('ptk')
                 ->leftJoin('riwayat_karir', 'ptk.id', '=', 'riwayat_karir.ptk_id')
@@ -49,23 +49,26 @@ class RiwayatKarirController extends Controller
                     DB::raw('COUNT(riwayat_karir.id) as jumlah_riwayat_karir')
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
-                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->orderBy('ptk.nama_lengkap')
                 ->paginate(12);
-
-            return view('riwayat-karir.index', compact('riwayatKarir', 'isPtk'));
         }
+
+        return view('riwayat-karir.index', compact('riwayatKarir', 'isPtk', 'isAdmin', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('riwayat-karir.create', compact('ptkId', 'ptk'));
+            return view('riwayat-karir.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('riwayat-karir.create', compact('ptks'));
+            return view('riwayat-karir.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -88,22 +91,41 @@ class RiwayatKarirController extends Controller
 
         RiwayatKarir::create($validated);
 
-        return redirect()->route('riwayat-karir.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'riwayat-karir.index')
             ->with('success', 'Data riwayat karir berhasil ditambahkan.');
     }
 
     public function show($ptk_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $riwayatKarir = RiwayatKarir::where('ptk_id', $ptk_id)->get();
         $ptk = Ptk::findOrFail($ptk_id);
 
-        return view('riwayat-karir.show', compact('riwayatKarir', 'ptk'));
+        return view('riwayat-karir.show', compact('riwayatKarir', 'ptk', 'prefix'));
     }
 
     public function edit(RiwayatKarir $riwayatKarir)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::orderBy('nama_lengkap')->get();
-        return view('riwayat-karir.edit', compact('riwayatKarir', 'ptks'));
+
+        return view('riwayat-karir.edit', compact(
+            'riwayatKarir',
+            'ptks',
+            'isAdmin',
+            'isPtk',
+            'prefix'
+        ));
     }
 
     public function update(Request $request, RiwayatKarir $riwayatKarir)
@@ -125,7 +147,11 @@ class RiwayatKarirController extends Controller
 
         $riwayatKarir->update($validated);
 
-        return redirect()->route('riwayat-karir.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'riwayat-karir.index')
             ->with('success', 'Data riwayat karir berhasil diperbarui.');
     }
 
@@ -133,7 +159,11 @@ class RiwayatKarirController extends Controller
     {
         $riwayatKarir->delete();
 
-        return redirect()->route('riwayat-karir.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'riwayat-karir.index')
             ->with('success', 'Data riwayat karir berhasil dihapus.');
     }
 }

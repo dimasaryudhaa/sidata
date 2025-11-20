@@ -1,10 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Tambah Kompetensi PTK</h1>
 
-    <form action="{{ route('kompetensi-ptk.store') }}" method="POST">
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
+<div class="container">
+    <h1 class="mb-4">Tambah Kompetensi PTK</h1>
+
+    <form action="{{ route($prefix. 'kompetensi-ptk.store') }}" method="POST">
         @csrf
         <div class="row">
             <div class="col-md-6">
@@ -36,10 +43,12 @@
                 </div>
             </div>
         </div>
+
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('kompetensi-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix. 'kompetensi-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>
 </div>
+
 @endsection

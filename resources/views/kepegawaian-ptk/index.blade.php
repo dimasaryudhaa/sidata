@@ -1,33 +1,43 @@
 @extends('layouts.app')
 
 @section('content')
+
 <style>
-.table thead th {
-    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-    color: white !important;
-    border: none !important;
-    vertical-align: middle !important;
-    font-weight: 600;
-}
-.btn-no-border {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    padding: 0;
-}
-.btn-no-border:focus,
-.btn-no-border:active,
-.btn-no-border:hover {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-}
+    .table thead th {
+        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+        color: white !important;
+        border: none !important;
+        vertical-align: middle !important;
+        font-weight: 600;
+    }
+
+    .btn-no-border {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0;
+    }
+
+    .btn-no-border:focus,
+    .btn-no-border:active,
+    .btn-no-border:hover {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
 </style>
 
+@php
+    $user = Auth::user();
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isPtk ? 'ptk.' : 'admin.';
+@endphp
+
 <div class="container">
-    {{-- Alert sukses --}}
+
     @if(session('success'))
-        <div id="successAlert" class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
+        <div id="successAlert"
+            class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
             style="z-index:1050; min-width:320px;">
             <div class="d-flex justify-content-center mb-3">
                 <div class="d-flex justify-content-center align-items-center"
@@ -51,8 +61,8 @@
         </script>
     @endif
 
-    {{-- Tampilan Admin --}}
     @if(!$isPtk)
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <form class="d-flex mb-3" style="gap:0.5rem;">
                 <input type="text" id="search" class="form-control form-control-sm"
@@ -64,14 +74,14 @@
             <table class="table table-bordered" id="kepegawaianPtkTable">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">No</th>
+                        <th style="width:50px;">No</th>
                         <th>Nama PTK</th>
                         <th>Status Kepegawaian</th>
                         <th>NIP</th>
                         <th>Jenis PTK</th>
                         <th>Pangkat/Golongan</th>
                         <th>Sumber Gaji</th>
-                        <th style="width: 80px;">Aksi</th>
+                        <th style="width:80px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,26 +95,30 @@
                             <td>{{ $item->pangkat_golongan ?? '-' }}</td>
                             <td>{{ $item->sumber_gaji ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('kepegawaian-ptk.edit', ['kepegawaian_ptk' => $item->ptk_id]) }}"
-                                    class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
-                                </a>
+                                @if($item->kepegawaian_id)
+                                    <a href="{{ route($prefix.'kepegawaian-ptk.edit', ['kepegawaian_ptk' => $item->kepegawaian_id]) }}"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
+                                    </a>
 
-                                @if($item->kepegawaian_id ?? false)
-                                    <form action="{{ route('kepegawaian-ptk.destroy', $item->kepegawaian_id) }}"
-                                          method="POST" class="d-inline">
+                                    <form action="{{ route($prefix.'kepegawaian-ptk.destroy', $item->kepegawaian_id) }}"
+                                        method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
                                             onclick="return confirm('Yakin ingin menghapus data kepegawaian PTK ini?')">
-                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus"
-                                                 style="width:20px; height:20px;">
+                                            <img src="{{ asset('images/delete.png') }}" style="width:20px; height:20px;">
                                         </button>
                                     </form>
+
                                 @else
+                                    <a href="{{ route($prefix.'kepegawaian-ptk.edit', ['kepegawaian_ptk' => $item->ptk_id]) }}"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
+                                    </a>
+
                                     <button class="btn btn-sm btn-no-border" disabled>
-                                        <img src="{{ asset('images/delete.png') }}" alt="Hapus Nonaktif"
-                                             style="width:20px; height:20px; opacity:0.5;">
+                                        <img src="{{ asset('images/delete.png') }}" style="width:20px; height:20px; opacity:0.5;">
                                     </button>
                                 @endif
                             </td>
@@ -122,6 +136,7 @@
             document.getElementById('search').addEventListener('keyup', function() {
                 let filter = this.value.toLowerCase();
                 let rows = document.querySelectorAll('#kepegawaianPtkTable tbody tr');
+
                 rows.forEach(row => {
                     let nama = row.querySelector('.nama_lengkap').textContent.toLowerCase();
                     row.style.display = nama.includes(filter) ? '' : 'none';
@@ -130,11 +145,12 @@
         </script>
 
     @else
+
         @php $dataPtk = $data->first(); @endphp
 
         @if($dataPtk && $dataPtk->kepegawaian_id)
             <div class="d-flex justify-content-start align-items-center mb-3">
-                <a href="{{ route('kepegawaian-ptk.edit', ['kepegawaian_ptk' => $dataPtk->kepegawaian_id]) }}"
+                <a href="{{ route($prefix.'kepegawaian-ptk.edit', ['kepegawaian_ptk' => $dataPtk->kepegawaian_id]) }}"
                     class="btn btn-primary px-4"
                     style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
                     <i class="bi bi-pencil-square me-2"></i> Edit
@@ -151,66 +167,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Status Kepegawaian</td>
-                        <td>{{ $dataPtk->status_kepegawaian ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>NIP</td>
-                        <td>{{ $dataPtk->nip ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>NIY/NIGK</td>
-                        <td>{{ $dataPtk->niy_nigk ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>NUPTK</td>
-                        <td>{{ $dataPtk->nuptk ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Jenis PTK</td>
-                        <td>{{ $dataPtk->jenis_ptk ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>SK Pengangkatan</td>
-                        <td>{{ $dataPtk->sk_pengangkatan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>TMT Pengangkatan</td>
-                        <td>{{ $dataPtk->tmt_pengangkatan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Lembaga Pengangkat</td>
-                        <td>{{ $dataPtk->lembaga_pengangkat ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>SK CPNS</td>
-                        <td>{{ $dataPtk->sk_cpns ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>TMT PNS</td>
-                        <td>{{ $dataPtk->tmt_pns ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Pangkat/Golongan</td>
-                        <td>{{ $dataPtk->pangkat_golongan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Sumber Gaji</td>
-                        <td>{{ $dataPtk->sumber_gaji ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Kartu Pegawai</td>
-                        <td>{{ $dataPtk->kartu_pegawai ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Kartu Keluarga</td>
-                        <td>{{ $dataPtk->kartu_keluarga ?? '-' }}</td>
-                    </tr>
+
+                    <tr><td>Status Kepegawaian</td><td>{{ $dataPtk->status_kepegawaian ?? '-' }}</td></tr>
+                    <tr><td>NIP</td><td>{{ $dataPtk->nip ?? '-' }}</td></tr>
+                    <tr><td>NIY/NIGK</td><td>{{ $dataPtk->niy_nigk ?? '-' }}</td></tr>
+                    <tr><td>NUPTK</td><td>{{ $dataPtk->nuptk ?? '-' }}</td></tr>
+                    <tr><td>Jenis PTK</td><td>{{ $dataPtk->jenis_ptk ?? '-' }}</td></tr>
+                    <tr><td>SK Pengangkatan</td><td>{{ $dataPtk->sk_pengangkatan ?? '-' }}</td></tr>
+                    <tr><td>TMT Pengangkatan</td><td>{{ $dataPtk->tmt_pengangkatan ?? '-' }}</td></tr>
+                    <tr><td>Lembaga Pengangkat</td><td>{{ $dataPtk->lembaga_pengangkat ?? '-' }}</td></tr>
+                    <tr><td>SK CPNS</td><td>{{ $dataPtk->sk_cpns ?? '-' }}</td></tr>
+                    <tr><td>TMT PNS</td><td>{{ $dataPtk->tmt_pns ?? '-' }}</td></tr>
+                    <tr><td>Pangkat/Golongan</td><td>{{ $dataPtk->pangkat_golongan ?? '-' }}</td></tr>
+                    <tr><td>Sumber Gaji</td><td>{{ $dataPtk->sumber_gaji ?? '-' }}</td></tr>
+                    <tr><td>Kartu Pegawai</td><td>{{ $dataPtk->kartu_pegawai ?? '-' }}</td></tr>
+                    <tr><td>Kartu Keluarga</td><td>{{ $dataPtk->kartu_keluarga ?? '-' }}</td></tr>
+
                 </tbody>
             </table>
-
         </div>
+
     @endif
+
 </div>
+
 @endsection

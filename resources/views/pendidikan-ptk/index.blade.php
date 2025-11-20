@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
     .table thead th {
         background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -26,11 +33,6 @@
         background: transparent !important;
     }
 </style>
-
-@php
-    $user = Auth::user();
-    $isPtk = $user->role === 'ptk';
-@endphp
 
 <div class="container">
 
@@ -92,7 +94,8 @@
                             <td>{{ $item->tahun_lulus ?? '-' }}</td>
                             <td>{{ $item->rata_rata_ujian ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('pendidikan-ptk.edit', ['pendidikan_ptk' => $item->pendidikan_id]) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route($prefix.'pendidikan-ptk.edit', ['pendidikan_ptk' => $item->pendidikan_id]) }}"
+                                   class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
                             </td>
@@ -102,7 +105,7 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $pendidikanPtk->links('pagination::bootstrap-5') }}
         </div>
 
@@ -131,10 +134,12 @@
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
                             <td>{{ $item->jumlah_pendidikan ?? 0 }}</td>
                             <td>
-                                <a href="{{ route('pendidikan-ptk.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route($prefix.'pendidikan-ptk.show', $item->ptk_id) }}"
+                                   class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/view.png') }}" alt="Lihat Pendidikan" style="width:20px; height:20px;">
                                 </a>
-                                <a href="{{ route('pendidikan-ptk.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route($prefix.'pendidikan-ptk.create', ['ptk_id' => $item->ptk_id]) }}"
+                                   class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Pendidikan" style="width:20px; height:20px;">
                                 </a>
                             </td>
@@ -144,12 +149,12 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $pendidikanPtk->links('pagination::bootstrap-5') }}
         </div>
 
         <script>
-            document.getElementById('search').addEventListener('keyup', function() {
+            document.getElementById('search')?.addEventListener('keyup', function() {
                 let filter = this.value.toLowerCase();
                 let rows = document.querySelectorAll('#pendidikanPtkTable tbody tr');
 

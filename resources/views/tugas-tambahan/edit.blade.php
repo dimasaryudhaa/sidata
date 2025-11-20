@@ -3,17 +3,32 @@
 @section('content')
 
 <div class="container">
-    <h3>Edit Tugas Tambahan</h3>
-    <form action="{{ route('tugas-tambahan.update', $tugasTambahan->id) }}" method="POST">
+
+    <h1 class="mb-4">{{ $tugasTambahan->id ? 'Edit Tugas Tambahan' : 'Tambah Tugas Tambahan' }}</h1>
+
+    @php
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin' : 'ptk';
+    @endphp
+
+    <form action="{{ $tugasTambahan->id
+            ? route($prefix . '.tugas-tambahan.update', $tugasTambahan->id)
+            : route($prefix . '.tugas-tambahan.store')
+        }}" method="POST">
+
         @csrf
-        @method('PUT')
+        @if($tugasTambahan->id)
+            @method('PUT')
+        @endif
 
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama PTK</label>
                     <input type="text" class="form-control"
-                           value="{{ $ptk->nama_lengkap ?? $tugasTambahan->ptk->nama_lengkap }}" readonly>
+                           value="{{ $ptk->nama_lengkap ?? $tugasTambahan->ptk->nama_lengkap }}"
+                           readonly>
                     <input type="hidden" name="ptk_id"
                            value="{{ $ptk->id ?? $tugasTambahan->ptk_id }}">
                 </div>
@@ -49,14 +64,21 @@
                     <input type="date" name="tst_tambahan" class="form-control"
                            value="{{ $tugasTambahan->tst_tambahan }}">
                 </div>
+
             </div>
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('tugas-tambahan.index') }}" class="btn btn-secondary me-2">Batal</a>
-            <button type="submit" class="btn btn-success">Perbarui</button>
+            <a href="{{ route($prefix . '.tugas-tambahan.index') }}"
+               class="btn btn-secondary me-2">Kembali</a>
+
+            <button type="submit" class="btn btn-success">
+                {{ $tugasTambahan->id ? 'Perbarui' : 'Simpan' }}
+            </button>
         </div>
+
     </form>
+
 </div>
 
 @endsection

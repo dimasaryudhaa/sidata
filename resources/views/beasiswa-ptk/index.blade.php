@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
     .table thead th {
         background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -27,11 +34,6 @@
     }
 </style>
 
-@php
-    $user = Auth::user();
-    $isPtk = $user->role === 'ptk';
-@endphp
-
 <div class="container">
 
     @if(session('success'))
@@ -40,8 +42,8 @@
             style="z-index:1050; min-width:320px;">
             <div class="d-flex justify-content-center mb-3">
                 <div class="d-flex justify-content-center align-items-center"
-                    style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
-                    <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
+                     style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
+                     <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
                 </div>
             </div>
             <h5 class="fw-bold mb-1">Success</h5>
@@ -84,8 +86,8 @@
                             <td>{{ $item->tahun_akhir ?? '-' }}</td>
                             <td>{{ $item->masih_menerima ? 'Ya' : 'Tidak' }}</td>
                             <td>
-                                <a href="{{ route('beasiswa-ptk.edit', ['beasiswa_ptk' => $item->beasiswa_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'beasiswa-ptk.edit', ['beasiswa_ptk' => $item->beasiswa_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px;height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -94,16 +96,13 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $beasiswaPtk->links('pagination::bootstrap-5') }}
         </div>
 
     @else
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <form class="d-flex mb-3" style="gap:0.5rem;">
-                <input type="text" id="search" class="form-control form-control-sm"
-                       placeholder="Cari Nama PTK..." style="max-width:250px;">
-            </form>
+            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width:250px;">
         </div>
 
         <div class="table-responsive rounded-3 overflow-hidden mt-3">
@@ -111,7 +110,7 @@
                 <thead class="text-white">
                     <tr>
                         <th style="width:50px;">No</th>
-                        <th style="width: 500px;">Nama PTK</th>
+                        <th style="width:500px;">Nama PTK</th>
                         <th>Jumlah Beasiswa</th>
                         <th style="width:80px;">Aksi</th>
                     </tr>
@@ -123,11 +122,11 @@
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
                             <td>{{ $item->jumlah_beasiswa ?? 0 }}</td>
                             <td>
-                                <a href="{{ route('beasiswa-ptk.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Beasiswa" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'beasiswa-ptk.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Beasiswa" style="width:20px;height:20px;">
                                 </a>
-                                <a href="{{ route('beasiswa-ptk.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Beasiswa" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'beasiswa-ptk.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Beasiswa" style="width:20px;height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -136,22 +135,21 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="mt-3">
             {{ $beasiswaPtk->links('pagination::bootstrap-5') }}
         </div>
 
         <script>
             document.getElementById('search').addEventListener('keyup', function() {
                 let filter = this.value.toLowerCase();
-                let rows = document.querySelectorAll('#beasiswaPtkTable tbody tr');
-
-                rows.forEach(row => {
+                document.querySelectorAll('#beasiswaPtkTable tbody tr').forEach(row => {
                     let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
                     row.style.display = nama.includes(filter) ? '' : 'none';
                 });
             });
         </script>
     @endif
+
 </div>
 
 @endsection

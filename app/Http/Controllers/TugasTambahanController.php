@@ -14,6 +14,8 @@ class TugasTambahanController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $tugasTambahan = DB::table('tugas_tambahan')
@@ -32,8 +34,6 @@ class TugasTambahanController extends Controller
                 ->orderBy('tugas_tambahan.tmt_tambahan', 'desc')
                 ->paginate(12);
 
-            return view('tugas-tambahan.index', compact('tugasTambahan', 'isPtk'));
-
         } else {
             $tugasTambahan = DB::table('ptk')
                 ->leftJoin('tugas_tambahan', 'ptk.id', '=', 'tugas_tambahan.ptk_id')
@@ -45,21 +45,24 @@ class TugasTambahanController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('tugas-tambahan.index', compact('tugasTambahan', 'isPtk'));
         }
+
+        return view('tugas-tambahan.index', compact('tugasTambahan', 'isPtk', 'isAdmin', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('tugas-tambahan.create', compact('ptkId', 'ptk'));
+            return view('tugas-tambahan.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('tugas-tambahan.create', compact('ptks'));
+            return view('tugas-tambahan.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -76,7 +79,11 @@ class TugasTambahanController extends Controller
 
         TugasTambahan::create($validated);
 
-        return redirect()->route('tugas-tambahan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'tugas-tambahan.index')
             ->with('success', 'Data tugas tambahan berhasil ditambahkan.');
     }
 
@@ -90,8 +97,18 @@ class TugasTambahanController extends Controller
 
     public function edit(TugasTambahan $tugasTambahan)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
         $ptks = Ptk::orderBy('nama_lengkap')->get();
-        return view('tugas-tambahan.edit', compact('tugasTambahan', 'ptks'));
+
+        return view('tugas-tambahan.edit', [
+            'tugasTambahan' => $tugasTambahan,
+            'ptks' => $ptks,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+        ]);
     }
 
     public function update(Request $request, TugasTambahan $tugasTambahan)
@@ -107,7 +124,11 @@ class TugasTambahanController extends Controller
 
         $tugasTambahan->update($validated);
 
-        return redirect()->route('tugas-tambahan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'tugas-tambahan.index')
             ->with('success', 'Data tugas tambahan berhasil diperbarui.');
     }
 
@@ -115,7 +136,11 @@ class TugasTambahanController extends Controller
     {
         $tugasTambahan->delete();
 
-        return redirect()->route('tugas-tambahan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'tugas-tambahan.index')
             ->with('success', 'Data tugas tambahan berhasil dihapus.');
     }
 }

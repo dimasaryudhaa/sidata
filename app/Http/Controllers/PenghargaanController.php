@@ -14,6 +14,8 @@ class PenghargaanController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $penghargaanPtk = DB::table('penghargaan')
@@ -31,9 +33,6 @@ class PenghargaanController extends Controller
                 )
                 ->orderBy('penghargaan.tahun', 'desc')
                 ->paginate(12);
-
-            return view('penghargaan.index', compact('penghargaanPtk', 'isPtk'));
-
         } else {
             $penghargaanPtk = DB::table('ptk')
                 ->leftJoin('penghargaan', 'ptk.id', '=', 'penghargaan.ptk_id')
@@ -45,21 +44,35 @@ class PenghargaanController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('penghargaan.index', compact('penghargaanPtk', 'isPtk'));
         }
+
+        return view('penghargaan.index', compact('penghargaanPtk', 'isPtk', 'isAdmin', 'prefix'));
+    }
+
+    public function show($ptk_id)
+    {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        $ptk = Ptk::findOrFail($ptk_id);
+        $penghargaan = Penghargaan::where('ptk_id', $ptk_id)->get();
+
+        return view('penghargaan.show', compact('ptk', 'penghargaan', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('penghargaan.create', compact('ptkId', 'ptk'));
+            return view('penghargaan.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('penghargaan.create', compact('ptks'));
+            return view('penghargaan.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -76,24 +89,20 @@ class PenghargaanController extends Controller
 
         Penghargaan::create($validated);
 
-        return redirect()->route('penghargaan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'penghargaan.index')
             ->with('success', 'Data penghargaan berhasil ditambahkan.');
     }
 
-    public function show($ptk_id)
+    public function edit(Penghargaan $penghargaan)
     {
-        $penghargaan = Penghargaan::where('ptk_id', $ptk_id)->get();
-        $ptk = Ptk::findOrFail($ptk_id);
-
-        return view('penghargaan.show', compact('penghargaan', 'ptk'));
-    }
-
-    public function edit($id)
-    {
-        $penghargaan = Penghargaan::findOrFail($id);
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
         $ptk = Ptk::findOrFail($penghargaan->ptk_id);
 
-        return view('penghargaan.edit', compact('penghargaan', 'ptk'));
+        return view('penghargaan.edit', compact('penghargaan', 'ptk', 'prefix'));
     }
 
     public function update(Request $request, Penghargaan $penghargaan)
@@ -109,7 +118,10 @@ class PenghargaanController extends Controller
 
         $penghargaan->update($validated);
 
-        return redirect()->route('penghargaan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'penghargaan.index')
             ->with('success', 'Data penghargaan berhasil diperbarui.');
     }
 
@@ -117,7 +129,10 @@ class PenghargaanController extends Controller
     {
         $penghargaan->delete();
 
-        return redirect()->route('penghargaan.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'penghargaan.index')
             ->with('success', 'Data penghargaan berhasil dihapus.');
     }
 }

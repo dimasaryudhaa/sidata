@@ -2,6 +2,11 @@
 
 @section('content')
 
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+@endphp
+
 <style>
 .table thead th {
     background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
@@ -56,16 +61,26 @@
                     <td>{{ $item->tmt_kerja ?? '-' }}</td>
                     <td>{{ $item->tst_kerja ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('riwayat-karir.edit', $item->id) }}" class="btn btn-sm btn-no-border">
-                            <img src="{{ asset('images/edit.png') }}" alt="Edit Riwayat Karir" style="width:20px; height:20px;">
+
+                        <a href="{{ route($prefix.'riwayat-karir.edit', $item->id) }}"
+                           class="btn btn-sm btn-no-border">
+                            <img src="{{ asset('images/edit.png') }}"
+                                 alt="Edit Riwayat Karir"
+                                 style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('riwayat-karir.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+
+                        <form action="{{ route($prefix.'riwayat-karir.destroy', $item->id) }}"
+                              method="POST" class="d-inline"
+                              onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/delete.png') }}" alt="Hapus Riwayat Karir" style="width:20px; height:20px;">
+                                <img src="{{ asset('images/delete.png') }}"
+                                     alt="Hapus Riwayat Karir"
+                                     style="width:20px; height:20px;">
                             </button>
                         </form>
+
                     </td>
                 </tr>
                 @empty
@@ -76,7 +91,11 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('riwayat-karir.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'riwayat-karir.index') }}" class="btn btn-sm btn-secondary mt-3">
+        Kembali
+    </a>
+
 </div>
 
 @endsection

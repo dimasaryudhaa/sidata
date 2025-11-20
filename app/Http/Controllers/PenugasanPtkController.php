@@ -52,12 +52,18 @@ class PenugasanPtkController extends Controller
         }
     }
 
+
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::all();
         $data = new PenugasanPtk();
-        return view('penugasan-ptk.edit', compact('data', 'ptks'));
+
+        return view('penugasan-ptk.edit', compact('data', 'ptks', 'prefix'));
     }
+
 
     public function store(Request $request)
     {
@@ -71,14 +77,24 @@ class PenugasanPtkController extends Controller
 
         PenugasanPtk::create($validated);
 
-        return redirect()->route('penugasan-ptk.index')->with('success', 'Penugasan PTK berhasil ditambahkan.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'penugasan-ptk.index')
+            ->with('success', 'Penugasan PTK berhasil ditambahkan.');
     }
+
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
         $penugasan = PenugasanPtk::find($id);
 
         if (!$penugasan) {
+            // id bukan penugasan → berarti id PTK
             $ptk = Ptk::findOrFail($id);
             $existing = PenugasanPtk::where('ptk_id', $ptk->id)->first();
 
@@ -92,18 +108,20 @@ class PenugasanPtkController extends Controller
             $ptk = Ptk::find($penugasan->ptk_id);
         }
 
-        $semuaPtk = Ptk::all();
+        $ptks = Ptk::all();
 
         return view('penugasan-ptk.edit', [
             'data' => $penugasan,
-            'ptks' => $semuaPtk,
+            'ptks' => $ptks,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $penugasan = PenugasanPtk::findOrFail($id);
 
+    public function update(Request $request, PenugasanPtk $penugasan_ptk)
+    {
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'nomor_surat_tugas' => 'required|string|max:100',
@@ -112,16 +130,27 @@ class PenugasanPtkController extends Controller
             'status_sekolah_induk' => 'required|boolean',
         ]);
 
-        $penugasan->update($validated);
+        $penugasan_ptk->update($validated);
 
-        return redirect()->route('penugasan-ptk.index')->with('success', 'Penugasan PTK berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'penugasan-ptk.index')
+            ->with('success', 'Penugasan PTK berhasil diperbarui.');
     }
+
 
     public function destroy($id)
     {
         $penugasan = PenugasanPtk::findOrFail($id);
+
         PenugasanPtk::where('ptk_id', $penugasan->ptk_id)->delete();
 
-        return redirect()->route('penugasan-ptk.index')->with('success', 'Penugasan PTK berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'penugasan-ptk.index')
+            ->with('success', 'Penugasan PTK berhasil dihapus.');
     }
 }

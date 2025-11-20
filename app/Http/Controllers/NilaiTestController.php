@@ -14,6 +14,8 @@ class NilaiTestController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $nilaiTest = DB::table('nilai_test')
@@ -28,13 +30,10 @@ class NilaiTestController extends Controller
                     'nilai_test.penyelenggara',
                     'nilai_test.tahun',
                     'nilai_test.skor',
-                    'nilai_test.nomor_peserta',
+                    'nilai_test.nomor_peserta'
                 )
                 ->orderBy('nilai_test.tahun', 'desc')
                 ->paginate(12);
-
-            return view('nilai-test.index', compact('nilaiTest', 'isPtk'));
-
         } else {
             $nilaiTest = DB::table('ptk')
                 ->leftJoin('nilai_test', 'ptk.id', '=', 'nilai_test.ptk_id')
@@ -44,23 +43,36 @@ class NilaiTestController extends Controller
                     DB::raw('COUNT(nilai_test.id) as jumlah_nilai_test')
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
-                ->orderBy('ptk.nama_lengkap', 'asc')
+                ->orderBy('ptk.nama_lengkap')
                 ->paginate(12);
-
-            return view('nilai-test.index', compact('nilaiTest', 'isPtk'));
         }
+
+        return view('nilai-test.index', compact('nilaiTest', 'isPtk', 'isAdmin', 'prefix'));
+    }
+
+    public function show($ptk_id)
+    {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        $ptk = Ptk::findOrFail($ptk_id);
+        $nilaiTest = NilaiTest::where('ptk_id', $ptk_id)->get();
+
+        return view('nilai-test.show', compact('ptk', 'nilaiTest', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('nilai-test.create', compact('ptkId', 'ptk'));
+            return view('nilai-test.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('nilai-test.create', compact('ptks'));
+            return view('nilai-test.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -78,24 +90,23 @@ class NilaiTestController extends Controller
 
         NilaiTest::create($validated);
 
-        return redirect()->route('nilai-test.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'nilai-test.index')
             ->with('success', 'Data nilai test berhasil ditambahkan.');
     }
 
-    public function show($ptk_id)
+    public function edit(NilaiTest $nilaiTest)
     {
-        $nilaiTest = NilaiTest::where('ptk_id', $ptk_id)->get();
-        $ptk = Ptk::findOrFail($ptk_id);
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
-        return view('nilai-test.show', compact('nilaiTest', 'ptk'));
-    }
-
-    public function edit($id)
-    {
-        $nilaiTest = NilaiTest::findOrFail($id);
+        $ptks = Ptk::orderBy('nama_lengkap')->get();
         $ptk = Ptk::findOrFail($nilaiTest->ptk_id);
 
-        return view('nilai-test.edit', compact('nilaiTest', 'ptk'));
+        return view('nilai-test.edit', compact('nilaiTest', 'ptks', 'ptk', 'isAdmin', 'prefix'));
     }
 
     public function update(Request $request, NilaiTest $nilaiTest)
@@ -112,7 +123,10 @@ class NilaiTestController extends Controller
 
         $nilaiTest->update($validated);
 
-        return redirect()->route('nilai-test.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'nilai-test.index')
             ->with('success', 'Data nilai test berhasil diperbarui.');
     }
 
@@ -120,7 +134,10 @@ class NilaiTestController extends Controller
     {
         $nilaiTest->delete();
 
-        return redirect()->route('nilai-test.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'nilai-test.index')
             ->with('success', 'Data nilai test berhasil dihapus.');
     }
 }

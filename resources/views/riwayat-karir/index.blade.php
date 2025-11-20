@@ -3,33 +3,35 @@
 @section('content')
 
 <style>
-    .table thead th {
-        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-        color: white !important;
-        border: none !important;
-        vertical-align: middle !important;
-        font-weight: 600;
-    }
+.table thead th {
+    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+    color: white !important;
+    border: none !important;
+    vertical-align: middle !important;
+    font-weight: 600;
+}
 
-    .btn-no-border {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        padding: 0;
-    }
+.btn-no-border {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0;
+}
 
-    .btn-no-border:focus,
-    .btn-no-border:active,
-    .btn-no-border:hover {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-    }
+.btn-no-border:focus,
+.btn-no-border:active,
+.btn-no-border:hover {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
 </style>
 
 @php
     $user = Auth::user();
     $isPtk = $user->role === 'ptk';
+    $isAdmin = $user->role === 'admin';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
 @endphp
 
 <div class="container">
@@ -92,8 +94,9 @@
                             <td>{{ $item->tst_kerja ?? '-' }}</td>
                             <td>{{ $item->tempat_kerja ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('riwayat-karir.edit', ['riwayat_karir' => $item->riwayat_karir_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'riwayat-karir.edit', $item->riwayat_karir_id) }}"
+                                   class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -109,7 +112,8 @@
     @else
         <div class="d-flex justify-content-between align-items-center mb-3">
             <form class="d-flex mb-3" style="gap:0.5rem;">
-                <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width:250px;">
+                <input type="text" id="search" class="form-control form-control-sm"
+                       placeholder="Cari Nama PTK..." style="max-width:250px;">
             </form>
         </div>
 
@@ -130,11 +134,14 @@
                             <td class="nama_ptk">{{ $item->nama_lengkap ?? '-' }}</td>
                             <td>{{ $item->jumlah_riwayat_karir ?? 0 }}</td>
                             <td>
-                                <a href="{{ route('riwayat-karir.show', $item->ptk_id) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/view.png') }}" alt="Lihat Riwayat Karir" style="width:20px; height:20px;">
+                                <a href="{{ route($prefix.'riwayat-karir.show', $item->ptk_id) }}"
+                                   class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" style="width:20px; height:20px;">
                                 </a>
-                                <a href="{{ route('riwayat-karir.create', ['ptk_id' => $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/tambah2.png') }}" alt="Tambah Riwayat Karir" style="width:20px; height:20px;">
+
+                                <a href="{{ route($prefix.'riwayat-karir.create', ['ptk_id' => $item->ptk_id]) }}"
+                                   class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/tambah2.png') }}" style="width:20px; height:20px;">
                                 </a>
                             </td>
                         </tr>
@@ -158,7 +165,9 @@
                 });
             });
         </script>
+
     @endif
+
 </div>
 
 @endsection

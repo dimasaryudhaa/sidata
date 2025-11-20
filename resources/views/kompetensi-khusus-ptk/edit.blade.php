@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Edit Kompetensi Khusus PTK</h1>
 
-    <form action="{{ route('kompetensi-khusus-ptk.update', $kompetensiKhusus->id) }}" method="POST">
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $prefix = $isAdmin ? 'admin.' : 'ptk.';
+@endphp
+
+<div class="container">
+    <h2 class="mb-4">Edit Kompetensi Khusus PTK</h2>
+
+    <form action="{{ route($prefix.'kompetensi-khusus-ptk.update', $kompetensiKhususPtk->id) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -12,28 +20,30 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama PTK</label>
-                    <input type="text" class="form-control" value="{{ $ptk->nama_lengkap ?? $kompetensi->ptk->nama_lengkap }}" readonly>
-                    <input type="hidden" name="ptk_id" value="{{ $ptk->id ?? $kompetensi->ptk_id }}">
+                    <input type="text" class="form-control"
+                        value="{{ $ptk->nama_lengkap ?? $kompetensiKhususPtk->ptk->nama_lengkap }}" readonly>
+                    <input type="hidden" name="ptk_id" value="{{ $ptk->id ?? $kompetensiKhususPtk->ptk_id }}">
                 </div>
 
                 <div class="mb-3">
                     <label>Punya Lisensi Kepala Sekolah</label>
                     <select name="punya_lisensi_kepala_sekolah" class="form-control" required>
                         <option value="">-- Pilih --</option>
-                        <option value="1" {{ $kompetensiKhusus->punya_lisensi_kepala_sekolah == 1 ? 'selected' : '' }}>Ya</option>
-                        <option value="0" {{ $kompetensiKhusus->punya_lisensi_kepala_sekolah == 0 ? 'selected' : '' }}>Tidak</option>
+                        <option value="1" {{ $kompetensiKhususPtk->punya_lisensi_kepala_sekolah == 1 ? 'selected' : '' }}>Ya</option>
+                        <option value="0" {{ $kompetensiKhususPtk->punya_lisensi_kepala_sekolah == 0 ? 'selected' : '' }}>Tidak</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label>Nomor Unik Kepala Sekolah</label>
                     <input type="text" name="nomor_unik_kepala_sekolah" class="form-control"
-                    value="{{ $kompetensiKhusus->nomor_unik_kepala_sekolah }}">
+                        value="{{ old('nomor_unik_kepala_sekolah', $kompetensiKhususPtk->nomor_unik_kepala_sekolah) }}">
                 </div>
+
                 <div class="mb-3">
                     <label>Keahlian Lab/Oratorium</label>
                     <input type="text" name="keahlian_lab_oratorium" class="form-control"
-                    value="{{ $kompetensiKhusus->keahlian_lab_oratorium }}">
+                        value="{{ old('keahlian_lab_oratorium', $kompetensiKhususPtk->keahlian_lab_oratorium) }}">
                 </div>
             </div>
 
@@ -51,7 +61,7 @@
                             ];
                         @endphp
                         @foreach($options as $option)
-                            <option value="{{ $option }}" {{ $kompetensiKhusus->mampu_menangani == $option ? 'selected' : '' }}>
+                            <option value="{{ $option }}" {{ $kompetensiKhususPtk->mampu_menangani == $option ? 'selected' : '' }}>
                                 {{ $option }}
                             </option>
                         @endforeach
@@ -62,8 +72,8 @@
                     <label>Keahlian Braile</label>
                     <select name="keahlian_braile" class="form-control" required>
                         <option value="">-- Pilih --</option>
-                        <option value="1" {{ $kompetensiKhusus->keahlian_braile == 1 ? 'selected' : '' }}>Ya</option>
-                        <option value="0" {{ $kompetensiKhusus->keahlian_braile == 0 ? 'selected' : '' }}>Tidak</option>
+                        <option value="1" {{ $kompetensiKhususPtk->keahlian_braile == 1 ? 'selected' : '' }}>Ya</option>
+                        <option value="0" {{ $kompetensiKhususPtk->keahlian_braile == 0 ? 'selected' : '' }}>Tidak</option>
                     </select>
                 </div>
 
@@ -71,17 +81,18 @@
                     <label>Keahlian Bahasa Isyarat</label>
                     <select name="keahlian_bahasa_isyarat" class="form-control" required>
                         <option value="">-- Pilih --</option>
-                        <option value="1" {{ $kompetensiKhusus->keahlian_bahasa_isyarat == 1 ? 'selected' : '' }}>Ya</option>
-                        <option value="0" {{ $kompetensiKhusus->keahlian_bahasa_isyarat == 0 ? 'selected' : '' }}>Tidak</option>
+                        <option value="1" {{ $kompetensiKhususPtk->keahlian_bahasa_isyarat == 1 ? 'selected' : '' }}>Ya</option>
+                        <option value="0" {{ $kompetensiKhususPtk->keahlian_bahasa_isyarat == 0 ? 'selected' : '' }}>Tidak</option>
                     </select>
                 </div>
             </div>
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('kompetensi-khusus-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'kompetensi-khusus-ptk.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
     </form>
 </div>
+
 @endsection

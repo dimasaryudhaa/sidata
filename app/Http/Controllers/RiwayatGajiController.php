@@ -14,6 +14,8 @@ class RiwayatGajiController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
 
         if ($isPtk) {
             $riwayatGaji = DB::table('riwayat_gaji')
@@ -34,8 +36,6 @@ class RiwayatGajiController extends Controller
                 ->orderBy('riwayat_gaji.tanggal_sk', 'desc')
                 ->paginate(12);
 
-            return view('riwayat-gaji.index', compact('riwayatGaji', 'isPtk'));
-
         } else {
             $riwayatGaji = DB::table('ptk')
                 ->leftJoin('riwayat_gaji', 'ptk.id', '=', 'riwayat_gaji.ptk_id')
@@ -47,21 +47,24 @@ class RiwayatGajiController extends Controller
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('riwayat-gaji.index', compact('riwayatGaji', 'isPtk'));
         }
+
+        return view('riwayat-gaji.index', compact('riwayatGaji', 'isPtk', 'isAdmin', 'prefix'));
     }
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptkId = $request->query('ptk_id');
 
         if ($ptkId) {
             $ptk = Ptk::findOrFail($ptkId);
-            return view('riwayat-gaji.create', compact('ptkId', 'ptk'));
+            return view('riwayat-gaji.create', compact('ptkId', 'ptk', 'prefix'));
         } else {
             $ptks = Ptk::orderBy('nama_lengkap')->get();
-            return view('riwayat-gaji.create', compact('ptks'));
+            return view('riwayat-gaji.create', compact('ptks', 'prefix'));
         }
     }
 
@@ -80,22 +83,41 @@ class RiwayatGajiController extends Controller
 
         RiwayatGaji::create($validated);
 
-        return redirect()->route('riwayat-gaji.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'riwayat-gaji.index')
             ->with('success', 'Data riwayat gaji berhasil ditambahkan.');
     }
 
     public function show($ptk_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $riwayatGaji = RiwayatGaji::where('ptk_id', $ptk_id)->get();
         $ptk = Ptk::findOrFail($ptk_id);
 
-        return view('riwayat-gaji.show', compact('riwayatGaji', 'ptk'));
+        return view('riwayat-gaji.show', compact('riwayatGaji', 'ptk', 'prefix'));
     }
 
     public function edit(RiwayatGaji $riwayatGaji)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+        $prefix = $isAdmin ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::orderBy('nama_lengkap')->get();
-        return view('riwayat-gaji.edit', compact('riwayatGaji', 'ptks'));
+
+        return view('riwayat-gaji.edit', [
+            'riwayatGaji' => $riwayatGaji,
+            'ptks' => $ptks,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'prefix' => $prefix
+        ]);
     }
 
     public function update(Request $request, RiwayatGaji $riwayatGaji)
@@ -113,7 +135,11 @@ class RiwayatGajiController extends Controller
 
         $riwayatGaji->update($validated);
 
-        return redirect()->route('riwayat-gaji.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'riwayat-gaji.index')
             ->with('success', 'Data riwayat gaji berhasil diperbarui.');
     }
 
@@ -121,7 +147,11 @@ class RiwayatGajiController extends Controller
     {
         $riwayatGaji->delete();
 
-        return redirect()->route('riwayat-gaji.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()
+            ->route($prefix.'riwayat-gaji.index')
             ->with('success', 'Data riwayat gaji berhasil dihapus.');
     }
 }

@@ -73,44 +73,59 @@ class KepegawaianPtkController extends Controller
         }
     }
 
+
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
         $ptks = Ptk::all();
         $data = new KepegawaianPtk();
-        return view('kepegawaian-ptk.edit', compact('data', 'ptks'));
+
+        return view('kepegawaian-ptk.edit', compact('data', 'ptks', 'prefix'));
     }
+
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
-            'status_kepegawaian' => 'required|string|in:PNS,PNS Diperbantukan,PNS Depag,GTY/PTY,GTT/PTT Propinsi,GTT/PTT Kab/Kota,Guru Bantu Pusat,Guru Honor Sekolah,Tenaga Honor,CPNS,PPPK,PPNPN,Kontrak Kerja WNA',
-            'nip' => 'required|string|max:18',
-            'niy_nigk' => 'required|string|max:50',
-            'nuptk' => 'required|string|max:50',
-            'jenis_ptk' => 'required|string|in:Kepala Sekolah,Guru,Tenaga Kependidikan',
-            'sk_pengangkatan' => 'required|string|max:100',
-            'tmt_pengangkatan' => 'required|date',
-            'lembaga_pengangkat' => 'required|string|in:Pemerintah Pusat,Pemerintah Provinsi,Pemerintah Kab/Kota,Ketua Yayasan,Kepala Sekolah,Komite Sekolah,Lainnya',
-            'sk_cpns' => 'required|string|max:100',
-            'tmt_pns' => 'required|date',
-            'pangkat_golongan' => 'required|string|max:50',
-            'sumber_gaji' => 'required|string|in:APBN,APBD Provinsi,APBD Kab/Kota,Yayasan,Sekolah,Lembaga Donor,Lainnya',
-            'kartu_pegawai' => 'required|string|max:50',
-            'kartu_keluarga' => 'required|string|max:50',
+            'status_kepegawaian' => 'required|string',
+            'nip' => 'nullable|string|max:18',
+            'niy_nigk' => 'nullable|string|max:50',
+            'nuptk' => 'nullable|string|max:50',
+            'jenis_ptk' => 'required|string',
+            'sk_pengangkatan' => 'nullable|string|max:100',
+            'tmt_pengangkatan' => 'nullable|date',
+            'lembaga_pengangkat' => 'nullable|string',
+            'sk_cpns' => 'nullable|string|max:100',
+            'tmt_pns' => 'nullable|date',
+            'pangkat_golongan' => 'nullable|string|max:50',
+            'sumber_gaji' => 'nullable|string',
+            'kartu_pegawai' => 'nullable|string|max:50',
+            'kartu_keluarga' => 'nullable|string|max:50',
         ]);
 
         KepegawaianPtk::create($validated);
 
-        return redirect()->route('kepegawaian-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kepegawaian-ptk.index')
             ->with('success', 'Data kepegawaian PTK berhasil ditambahkan.');
     }
 
+
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isPtk = $user->role === 'ptk';
+
         $kepegawaian = KepegawaianPtk::find($id);
 
         if (!$kepegawaian) {
+            // jika id bukan id kepegawaian → berarti id PTK
             $ptk = Ptk::findOrFail($id);
 
             $existing = KepegawaianPtk::where('ptk_id', $ptk->id)->first();
@@ -121,6 +136,8 @@ class KepegawaianPtkController extends Controller
                 $kepegawaian = new KepegawaianPtk();
                 $kepegawaian->ptk_id = $ptk->id;
             }
+        } else {
+            $ptk = Ptk::find($kepegawaian->ptk_id);
         }
 
         $ptks = Ptk::all();
@@ -128,43 +145,53 @@ class KepegawaianPtkController extends Controller
         return view('kepegawaian-ptk.edit', [
             'data' => $kepegawaian,
             'ptks' => $ptks,
+            'isAdmin' => $isAdmin,
+            'isPtk' => $isPtk,
+            'ptk' => $ptk,
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $kepegawaian = KepegawaianPtk::findOrFail($id);
 
+    public function update(Request $request, KepegawaianPtk $kepegawaian_ptk)
+    {
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
-            'status_kepegawaian' => 'required|string|in:PNS,PNS Diperbantukan,PNS Depag,GTY/PTY,GTT/PTT Propinsi,GTT/PTT Kab/Kota,Guru Bantu Pusat,Guru Honor Sekolah,Tenaga Honor,CPNS,PPPK,PPNPN,Kontrak Kerja WNA',
-            'nip' => 'required|string|max:18',
-            'niy_nigk' => 'required|string|max:50',
-            'nuptk' => 'required|string|max:50',
-            'jenis_ptk' => 'required|string|in:Kepala Sekolah,Guru,Tenaga Kependidikan',
-            'sk_pengangkatan' => 'required|string|max:100',
-            'tmt_pengangkatan' => 'required|date',
-            'lembaga_pengangkat' => 'required|string|in:Pemerintah Pusat,Pemerintah Provinsi,Pemerintah Kab/Kota,Ketua Yayasan,Kepala Sekolah,Komite Sekolah,Lainnya',
-            'sk_cpns' => 'required|string|max:100',
-            'tmt_pns' => 'required|date',
-            'pangkat_golongan' => 'required|string|max:50',
-            'sumber_gaji' => 'required|string|in:APBN,APBD Provinsi,APBD Kab/Kota,Yayasan,Sekolah,Lembaga Donor,Lainnya',
-            'kartu_pegawai' => 'required|string|max:50',
-            'kartu_keluarga' => 'required|string|max:50',
+            'status_kepegawaian' => 'required|string',
+            'nip' => 'nullable|string|max:18',
+            'niy_nigk' => 'nullable|string|max:50',
+            'nuptk' => 'nullable|string|max:50',
+            'jenis_ptk' => 'required|string',
+            'sk_pengangkatan' => 'nullable|string|max:100',
+            'tmt_pengangkatan' => 'nullable|date',
+            'lembaga_pengangkat' => 'nullable|string',
+            'sk_cpns' => 'nullable|string|max:100',
+            'tmt_pns' => 'nullable|date',
+            'pangkat_golongan' => 'nullable|string|max:50',
+            'sumber_gaji' => 'nullable|string',
+            'kartu_pegawai' => 'nullable|string|max:50',
+            'kartu_keluarga' => 'nullable|string|max:50',
         ]);
 
-        $kepegawaian->update($validated);
+        $kepegawaian_ptk->update($validated);
 
-        return redirect()->route('kepegawaian-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kepegawaian-ptk.index')
             ->with('success', 'Data kepegawaian PTK berhasil diperbarui.');
     }
+
 
     public function destroy($id)
     {
         $kepegawaian = KepegawaianPtk::findOrFail($id);
+
         KepegawaianPtk::where('ptk_id', $kepegawaian->ptk_id)->delete();
 
-        return redirect()->route('kepegawaian-ptk.index')
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'kepegawaian-ptk.index')
             ->with('success', 'Data kepegawaian PTK berhasil dihapus.');
     }
 }
