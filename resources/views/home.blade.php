@@ -5,9 +5,12 @@
 @php
     $user = auth()->user();
     $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $isSiswa = $user->role === 'siswa';
 @endphp
 
 <div class="container dashboard-containerr">
+
     @if(session('success'))
         <div id="successAlert"
              class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
@@ -34,124 +37,42 @@
         </script>
     @endif
 
-    <div class="row">
-
-        <div class="col-md-3">
-            @if ($isAdmin)
+    @if($isAdmin)
+        <div class="row">
+            {{-- Kartu Jumlah Siswa --}}
+            <div class="col-md-3">
                 <a href="{{ route('siswa.index') }}" style="text-decoration: none; color: inherit;">
-            @endif
-                <div class="card mb-3 shadow {{ $isAdmin ? 'hoverable' : 'disabled-card' }}"
-                     style="height: 100px; border-radius: 12px; overflow: hidden;">
-                    <div class="d-flex h-100">
-                        <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
-                             style="background-color: white;">
-                            <p class="mb-0">Jumlah Siswa</p>
-                            <h3 class="mb-0">{{ $jumlahSiswa }}</h3>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center w-25"
-                             style="background-color: #0770d3; color: white; font-size: 2rem;">
-                            <i class="bi bi-people"></i>
-                        </div>
-                    </div>
-                </div>
-            @if ($isAdmin)
-                </a>
-            @endif
-        </div>
-
-        <div class="col-md-3">
-            @if ($isAdmin)
-                <a href="{{ route('jurusan.index') }}" style="text-decoration: none; color: inherit;">
-            @endif
-                <div class="card mb-3 shadow {{ $isAdmin ? 'hoverable' : 'disabled-card' }}"
-                     style="height: 100px; border-radius: 12px; overflow: hidden;">
-                    <div class="d-flex h-100">
-                        <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
-                             style="background-color: white;">
-                            <p class="mb-0">Jumlah Jurusan</p>
-                            <h3 class="mb-0">{{ $jumlahJurusan }}</h3>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center w-25"
-                             style="background-color: #0770d3; color: white; font-size: 2rem;">
-                            <i class="bi bi-server"></i>
+                    <div class="card mb-3 shadow hoverable"
+                         style="height: 100px; border-radius: 12px; overflow: hidden;">
+                        <div class="d-flex h-100">
+                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
+                                 style="background-color: white;">
+                                <p class="mb-0">Jumlah Siswa</p>
+                                <h3 class="mb-0">{{ $jumlahSiswa }}</h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-25"
+                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-people"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @if ($isAdmin)
                 </a>
-            @endif
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            @if ($isAdmin)
-                <a href="{{ route('rombel.index') }}" style="text-decoration: none; color: inherit;">
-            @endif
-                <div class="card mb-3 shadow {{ $isAdmin ? 'hoverable' : 'disabled-card' }}"
-                     style="height: 100px; border-radius: 12px; overflow: hidden;">
-                    <div class="d-flex h-100">
-                        <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
-                             style="background-color: white;">
-                            <p class="mb-0">Jumlah Rombel</p>
-                            <h3 class="mb-0">{{ $jumlahRombel }}</h3>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center w-25"
-                             style="background-color: #0770d3; color: white; font-size: 2rem;">
-                            <i class="bi bi-journal"></i>
-                        </div>
-                    </div>
-                </div>
-            @if ($isAdmin)
-                </a>
-            @endif
+    @elseif($isPtk)
+        <div class="text-center mt-5">
+            <h2>Selamat datang, {{ $user->name }}!</h2>
+            <p>Ini adalah halaman dashboard Anda sebagai PTK.</p>
         </div>
-
-        <div class="col-md-3">
-            @if ($isAdmin)
-                <a href="{{ route('rayon.index') }}" style="text-decoration: none; color: inherit;">
-            @endif
-                <div class="card mb-3 shadow {{ $isAdmin ? 'hoverable' : 'disabled-card' }}"
-                     style="height: 100px; border-radius: 12px; overflow: hidden;">
-                    <div class="d-flex h-100">
-                        <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
-                             style="background-color: white;">
-                            <p class="mb-0">Jumlah Rayon</p>
-                            <h3 class="mb-0">{{ $jumlahRayon }}</h3>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center w-25"
-                             style="background-color: #0770d3; color: white; font-size: 2rem;">
-                            <i class="bi bi-door-open"></i>
-                        </div>
-                    </div>
-                </div>
-            @if ($isAdmin)
-                </a>
-            @endif
+    @elseif($isSiswa)
+        <div class="text-center mt-5">
+            <h2>Selamat datang, {{ $user->name }}!</h2>
+            <p>Ini adalah halaman dashboard Anda sebagai Siswa.</p>
         </div>
+    @endif
 
-        <div class="col-md-3">
-            @if ($isAdmin)
-                <a href="{{ route('ptk.index') }}" style="text-decoration: none; color: inherit;">
-            @endif
-                <div class="card mb-3 shadow {{ $isAdmin ? 'hoverable' : 'disabled-card' }}"
-                     style="height: 100px; border-radius: 12px; overflow: hidden;">
-                    <div class="d-flex h-100">
-                        <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
-                             style="background-color: white;">
-                            <p class="mb-0">Jumlah PTK</p>
-                            <h3 class="mb-0">{{ $jumlahPtk }}</h3>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center w-25"
-                             style="background-color: #0770d3; color: white; font-size: 2rem;">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                    </div>
-                </div>
-            @if ($isAdmin)
-                </a>
-            @endif
-        </div>
-
-    </div>
 </div>
 
 @endsection

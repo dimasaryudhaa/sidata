@@ -159,7 +159,7 @@ class AkunPtkController extends Controller
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()
-            ->route($prefix.'.akun-ptk.index')
+            ->route($prefix.'akun-ptk.index')
             ->with('success', 'Akun PTK dan user berhasil diperbarui.');
     }
 

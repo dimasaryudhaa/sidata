@@ -34,6 +34,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'ptk')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('ptk.ptk.index') }}" class="btn btn-primary">Ptk</a>
+            <a href="{{ route('ptk.akun-ptk.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('ptk.kontak-ptk.index') }}" class="btn btn-primary">Kontak</a>
+            <a href="{{ route('ptk.dokumen-ptk.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('ptk.anak-ptk.index') }}" class="btn btn-primary">Anak</a>
+            <a href="{{ route('ptk.keluarga-ptk.index') }}" class="btn btn-primary">Keluarga</a>
+            <a href="{{ route('ptk.tunjangan.index') }}" class="btn btn-primary">Tunjangan</a>
+            <a href="{{ route('ptk.kesejahteraan-ptk.index') }}" class="btn btn-primary">Kesejahteraan</a>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-start mb-3" style="gap:0.5rem;">
         @if(!$isPtk)
             <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama PTK..." style="max-width: 250px;">

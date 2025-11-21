@@ -35,6 +35,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'ptk')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('ptk.ptk.index') }}" class="btn btn-primary">Ptk</a>
+            <a href="{{ route('ptk.akun-ptk.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('ptk.kontak-ptk.index') }}" class="btn btn-primary">Kontak</a>
+            <a href="{{ route('ptk.dokumen-ptk.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('ptk.anak-ptk.index') }}" class="btn btn-primary">Anak</a>
+            <a href="{{ route('ptk.keluarga-ptk.index') }}" class="btn btn-primary">Keluarga</a>
+            <a href="{{ route('ptk.tunjangan.index') }}" class="btn btn-primary">Tunjangan</a>
+            <a href="{{ route('ptk.kesejahteraan-ptk.index') }}" class="btn btn-primary">Kesejahteraan</a>
+        </div>
+    @endif
+
     @if(session('success'))
         <div id="successAlert"
             class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"

@@ -160,7 +160,7 @@ class TunjanganController extends Controller
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()
-            ->route($prefix.'.tunjangan.index')
+            ->route($prefix.'tunjangan.index')
             ->with('success', 'Data tunjangan berhasil diperbarui.');
     }
 

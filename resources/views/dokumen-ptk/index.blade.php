@@ -41,33 +41,46 @@
     }
 </style>
 
-@if(session('success'))
-    <div id="successAlert"
-         class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
-         style="z-index:1050; min-width:320px;">
-        <div class="d-flex justify-content-center mb-3">
-            <div class="d-flex justify-content-center align-items-center"
-                 style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
-                <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
-            </div>
-        </div>
-        <h5 class="fw-bold mb-1">Success</h5>
-        <p class="text-muted mb-0">{{ session('success') }}</p>
-    </div>
-
-    <script>
-        setTimeout(() => {
-            const alertBox = document.getElementById('successAlert');
-            if (alertBox) {
-                alertBox.style.transition = 'opacity 0.5s ease';
-                alertBox.style.opacity = '0';
-                setTimeout(() => alertBox.remove(), 500);
-            }
-        }, 5000);
-    </script>
-@endif
-
 <div class="container">
+
+    @if(auth()->user()->role === 'ptk')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('ptk.ptk.index') }}" class="btn btn-primary">Ptk</a>
+            <a href="{{ route('ptk.akun-ptk.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('ptk.kontak-ptk.index') }}" class="btn btn-primary">Kontak</a>
+            <a href="{{ route('ptk.dokumen-ptk.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('ptk.anak-ptk.index') }}" class="btn btn-primary">Anak</a>
+            <a href="{{ route('ptk.keluarga-ptk.index') }}" class="btn btn-primary">Keluarga</a>
+            <a href="{{ route('ptk.tunjangan.index') }}" class="btn btn-primary">Tunjangan</a>
+            <a href="{{ route('ptk.kesejahteraan-ptk.index') }}" class="btn btn-primary">Kesejahteraan</a>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div id="successAlert"
+            class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
+            style="z-index:1050; min-width:320px;">
+            <div class="d-flex justify-content-center mb-3">
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width:80px; height:80px; background-color:#d4edda; border-radius:50%;">
+                    <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
+                </div>
+            </div>
+            <h5 class="fw-bold mb-1">Success</h5>
+            <p class="text-muted mb-0">{{ session('success') }}</p>
+        </div>
+
+        <script>
+            setTimeout(() => {
+                const alertBox = document.getElementById('successAlert');
+                if (alertBox) {
+                    alertBox.style.transition = 'opacity 0.5s ease';
+                    alertBox.style.opacity = '0';
+                    setTimeout(() => alertBox.remove(), 500);
+                }
+            }, 5000);
+        </script>
+    @endif
 
     @if(isset($isPtk) && $isPtk && isset($ptk))
         <div class="mb-3">

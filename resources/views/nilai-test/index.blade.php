@@ -34,6 +34,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'ptk')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('ptk.diklat.index') }}" class="btn btn-primary">Diklat</a>
+            <a href="{{ route('ptk.nilai-test.index') }}" class="btn btn-primary">Nilai Test</a>
+            <a href="{{ route('ptk.pendidikan-ptk.index') }}" class="btn btn-primary">Pendidikan</a>
+            <a href="{{ route('ptk.sertifikat-ptk.index') }}" class="btn btn-primary">Sertifikat</a>
+            <a href="{{ route('ptk.beasiswa-ptk.index') }}" class="btn btn-primary">Beasiswa</a>
+            <a href="{{ route('ptk.penghargaan.index') }}" class="btn btn-primary">Penghargaan</a>
+            <a href="{{ route('ptk.kompetensi-ptk.index') }}" class="btn btn-primary">Kompetensi</a>
+            <a href="{{ route('ptk.kompetensi-khusus-ptk.index') }}" class="btn btn-primary">Kompetensi Khusus</a>
+        </div>
+    @endif
+
     @if(session('success'))
         <div id="successAlert"
             class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"

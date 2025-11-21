@@ -135,7 +135,7 @@ class KeluargaPtkController extends Controller
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()
-            ->route($prefix.'.keluarga-ptk.index')
+            ->route($prefix.'keluarga-ptk.index')
             ->with('success', 'Data keluarga PTK berhasil diperbarui.');
     }
 

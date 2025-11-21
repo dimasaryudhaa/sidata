@@ -143,7 +143,7 @@ class KontakPtkController extends Controller
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()
-            ->route($prefix.'.kontak-ptk.index')
+            ->route($prefix.'kontak-ptk.index')
             ->with('success', 'Data kontak PTK berhasil diperbarui.');
     }
 

@@ -280,56 +280,6 @@
                         </li>
                     @endif
 
-                    @if (auth()->user()->role === 'ptk')
-                        <li><a href="{{ route('ptk.master-ptk.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Ptk</a></li>
-                        <li class="has-submenu">
-                            <a href="#" onclick="toggleSubmenu(event)">
-                                <i class="bi bi-person-badge me-2"></i>Data PTK
-                            </a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('ptk.ptk.index') }}"><i class="bi bi-person-fill me-2"></i>Ptk</a></li>
-                                <li><a href="{{ route('ptk.akun-ptk.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
-                                <li><a href="{{ route('ptk.kontak-ptk.index') }}"><i class="bi bi-telephone me-2"></i>Kontak</a></li>
-                                <li><a href="{{ route('ptk.dokumen-ptk.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
-                                <li><a href="{{ route('ptk.anak-ptk.index') }}"><i class="bi bi-people-fill me-2"></i>Anak</a></li>
-                                <li><a href="{{ route('ptk.keluarga-ptk.index') }}"><i class="bi bi-house me-2"></i>Keluarga</a></li>
-                                <li><a href="{{ route('ptk.tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
-                                <li><a href="{{ route('ptk.kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="has-submenu">
-                            <a href="#" onclick="toggleSubmenu(event)">
-                                <i class="bi bi-clock-history me-2"></i>Riwayat & Karir PTK
-                            </a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('ptk.penugasan-ptk.index') }}"><i class="bi bi-pencil-square me-2"></i>Penugasan</a></li>
-                                <li><a href="{{ route('ptk.kepegawaian-ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Kepegawaian</a></li>
-                                <li><a href="{{ route('ptk.tugas-tambahan.index') }}"><i class="bi bi-plus-square me-2"></i>Tugas Tambahan</a></li>
-                                <li><a href="{{ route('ptk.riwayat-gaji.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Gaji</a></li>
-                                <li><a href="{{ route('ptk.riwayat-karir.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat Karir</a></li>
-                                <li><a href="{{ route('ptk.riwayat-jabatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Jabatan</a></li>
-                                <li><a href="{{ route('ptk.riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
-                                <li><a href="{{ route('ptk.riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="has-submenu">
-                            <a href="#" onclick="toggleSubmenu(event)">
-                                <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi PTK
-                            </a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('ptk.diklat.index') }}"><i class="bi bi-book me-2"></i>Diklat</a></li>
-                                <li><a href="{{ route('ptk.nilai-test.index') }}"><i class="bi bi-book me-2"></i>Nilai Test</a></li>
-                                <li><a href="{{ route('ptk.pendidikan-ptk.index') }}"><i class="bi bi-book me-2"></i>Pendidikan</a></li>
-                                <li><a href="{{ route('ptk.sertifikat-ptk.index') }}"><i class="bi bi-award me-2"></i>Sertifikat</a></li>
-                                <li><a href="{{ route('ptk.beasiswa-ptk.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                                <li><a href="{{ route('ptk.penghargaan.index') }}"><i class="bi bi-trophy me-2"></i>Penghargaan</a></li>
-                                <li><a href="{{ route('ptk.kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
-                                <li><a href="{{ route('ptk.kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
-                            </ul>
-                        </li>
-                    @endif
 
                     @if (auth()->user()->role === 'siswa')
                         <li><a href="{{ route('master-siswa.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Siswa</a></li>
@@ -376,14 +326,38 @@
             </div>
         </div>
 
+        @if(auth()->user()->role === 'ptk')
+            <nav class="bg-white border-bottom mb-3">
+                <div class="container-fluid d-flex flex-wrap gap-2 py-2">
+
+                    <div class="d-flex">
+                        <a href="{{ route('ptk.ptk.index') }}" class="btn btn-outline-primary">
+                            Data PTK
+                        </a>
+                    </div>
+
+                    <div>
+                        <a href="{{ route('ptk.penugasan-ptk.index') }}" class="btn btn-outline-primary">
+                            Riwayat & Karir Ptk
+                        </a>
+                    </div>
+
+                    <div>
+                        <a href="{{ route('ptk.diklat.index') }}" class="btn btn-outline-primary">
+                            Pendidikan & Kompetensi PTK
+                        </a>
+                    </div>
+
+                </div>
+            </nav>
+        @endif
+
         <div class="content-area">
             <div class="scrollable-content">
                 @yield('content')
             </div>
         </div>
     </div>
-
-
 
     <script>
         function toggleSubmenu(event) {
