@@ -60,7 +60,7 @@
             @endphp
             @if($dataPtk)
                 <div class="d-flex justify-content-start align-items-center mb-3">
-                    <a href="{{ route('ptk.edit', ['ptk' => $dataPtk->id ?? Auth::user()->ptk->id]) }}"
+                    <a href="{{ route('ptk.ptk.edit', ['ptk' => $dataPtk->id ?? Auth::user()->ptk->id]) }}"
                     class="btn btn-primary px-4"
                     style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
                         <i class="bi bi-pencil-square me-2"></i> Edit

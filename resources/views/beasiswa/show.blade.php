@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+@endphp
 
 <style>
 .table thead th {
@@ -49,19 +53,20 @@
                 @forelse($beasiswa as $index => $b)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $b->jenis_beasiswa }}</td>
+                    <td>{{ $b->jenis_beasiswa ?? '-' }}</td>
                     <td>{{ $b->keterangan ?? '-' }}</td>
                     <td>{{ $b->tahun_mulai ?? '-' }}</td>
                     <td>{{ $b->tahun_selesai ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('beasiswa.edit', $b->peserta_didik_id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'beasiswa.edit', $b->id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('beasiswa.destroy', $b->peserta_didik_id) }}" method="POST" class="d-inline">
+
+                        <form action="{{ route($prefix.'beasiswa.destroy', $b->id) }}" method="POST" class="d-inline"
+                              onsubmit="return confirm('Yakin ingin menghapus data beasiswa ini?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-no-border"
-                                onclick="return confirm('Yakin ingin menghapus semua data beasiswa siswa ini?')">
+                            <button type="submit" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                             </button>
                         </form>
@@ -75,7 +80,8 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('beasiswa.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'beasiswa.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
 </div>
 
 @endsection

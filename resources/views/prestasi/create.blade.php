@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
+
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isSiswa = $user->role === 'siswa';
+    $prefix = $isAdmin ? 'admin.' : 'siswa.';
+@endphp
+
 <div class="container">
     <h1>Tambah Prestasi Siswa</h1>
 
-    <form action="{{ route('prestasi.store') }}" method="POST">
+    <form action="{{ route($prefix . 'prestasi.store') }}" method="POST">
         @csrf
 
         <div class="row">
@@ -12,15 +20,20 @@
                 <div class="mb-3">
                     <label>Nama Siswa</label>
                     @if(isset($siswaId))
-                        <input type="text" class="form-control" value="{{ $siswa->nama_lengkap }}" disabled>
+                        <input type="text" class="form-control" value="{{ $siswa->nama_lengkap }}" readonly>
                         <input type="hidden" name="peserta_didik_id" value="{{ $siswaId }}">
-                    @else
+
+                    @elseif($isAdmin)
                         <select name="peserta_didik_id" class="form-control" required>
-                            <option value="">Pilih Siswa</option>
-                            @foreach($siswa as $s)
+                            <option value="">-- Pilih Siswa --</option>
+                            @foreach($siswas as $s)
                                 <option value="{{ $s->id }}">{{ $s->nama_lengkap }}</option>
                             @endforeach
                         </select>
+
+                    @else
+                        <input type="text" class="form-control" value="{{ $user->nama_lengkap }}" readonly>
+                        <input type="hidden" name="peserta_didik_id" value="{{ $user->id }}">
                     @endif
                 </div>
 
@@ -39,10 +52,7 @@
                     <label>Tingkat Prestasi</label>
                     <select name="tingkat_prestasi" class="form-control" required>
                         <option value="">Pilih Tingkat</option>
-                        @php
-                            $tingkat = ['Sekolah','Kecamatan','Kabupaten','Provinsi','Nasional','Internasional'];
-                        @endphp
-                        @foreach($tingkat as $t)
+                        @foreach(['Sekolah','Kecamatan','Kabupaten','Provinsi','Nasional','Internasional'] as $t)
                             <option value="{{ $t }}">{{ $t }}</option>
                         @endforeach
                     </select>
@@ -69,13 +79,16 @@
                     <label>Peringkat</label>
                     <input type="number" name="peringkat" class="form-control">
                 </div>
+
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-3">
-            <a href="{{ route('prestasi.index') }}" class="btn btn-secondary me-2">Kembali</a>
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{{ route($prefix.'prestasi.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
+
     </form>
 </div>
+
 @endsection

@@ -5,10 +5,7 @@
 @php
     $user = Auth::user();
     $role = $user->role;
-
-    // prefix otomatis
     $prefix = $role === 'admin' ? 'admin.' : ($role === 'ptk' ? 'ptk.' : 'siswa.');
-
     $isEdit = isset($siswa->id);
 @endphp
 

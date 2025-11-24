@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+@endphp
 
 <style>
 .table thead th {
@@ -58,14 +62,15 @@
                     <td>{{ $p->penyelenggara }}</td>
                     <td>{{ $p->peringkat ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('prestasi.edit', $p->id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'prestasi.edit', $p->id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit Prestasi" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('prestasi.destroy', $p->id) }}" method="POST" class="d-inline">
+
+                        <form action="{{ route($prefix.'prestasi.destroy', $p->id) }}" method="POST" class="d-inline"
+                            onsubmit="return confirm('Yakin ingin menghapus prestasi ini?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-no-border"
-                                onclick="return confirm('Yakin ingin menghapus prestasi ini?')">
+                            <button type="submit" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/delete.png') }}" alt="Hapus Prestasi" style="width:20px; height:20px;">
                             </button>
                         </form>
@@ -79,7 +84,8 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('prestasi.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'prestasi.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
 </div>
 
 @endsection

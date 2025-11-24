@@ -1,20 +1,32 @@
 @extends('layouts.app')
 
 @section('content')
+
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $isSiswa = $user->role === 'siswa';
+    $prefix = $isAdmin ? 'admin.' : 'siswa.';
+@endphp
+
 <div class="container">
-    <h1>Edit Beasiswa Siswa</h1>
-        <form action="{{ $beasiswa->id ? route('beasiswa.update', $beasiswa->id) : route('beasiswa.store') }}" method="POST">
+    <h2 class="mb-4">Edit Data Beasiswa Siswa</h2>
+
+    <form action="{{ route($prefix . 'beasiswa.update', $beasiswa->id) }}" method="POST">
         @csrf
         @method('PUT')
 
         <div class="row">
+
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama Siswa</label>
-                    <input type="text" class="form-control" value="{{ $beasiswa->siswa->nama_lengkap ?? '-' }}" readonly>
-                    <input type="hidden" name="peserta_didik_id" value="{{ $beasiswa->peserta_didik_id }}">
+                    <input type="text" class="form-control"
+                           value="{{ $siswa->nama_lengkap ?? $beasiswa->siswa->nama_lengkap }}"
+                           readonly>
+                    <input type="hidden" name="peserta_didik_id"
+                           value="{{ $siswa->id ?? $beasiswa->peserta_didik_id }}">
                 </div>
-
                 <div class="mb-3">
                     <label>Jenis Beasiswa</label>
                     <select name="jenis_beasiswa" class="form-control" required>
@@ -27,27 +39,35 @@
 
                 <div class="mb-3">
                     <label>Keterangan</label>
-                    <input type="text" name="keterangan" class="form-control" value="{{ $beasiswa->keterangan }}">
+                    <input type="text" name="keterangan" class="form-control"
+                           value="{{ old('keterangan', $beasiswa->keterangan) }}">
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Tahun Mulai</label>
-                    <input type="number" name="tahun_mulai" class="form-control" placeholder="YYYY" value="{{ $beasiswa->tahun_mulai }}">
+                    <input type="number" name="tahun_mulai" class="form-control"
+                           value="{{ old('tahun_mulai', $beasiswa->tahun_mulai) }}"
+                           placeholder="YYYY" required>
                 </div>
 
                 <div class="mb-3">
                     <label>Tahun Selesai</label>
-                    <input type="number" name="tahun_selesai" class="form-control" placeholder="YYYY" value="{{ $beasiswa->tahun_selesai }}">
+                    <input type="number" name="tahun_selesai" class="form-control"
+                           value="{{ old('tahun_selesai', $beasiswa->tahun_selesai) }}"
+                           placeholder="YYYY" required>
                 </div>
+
             </div>
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('beasiswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix . 'beasiswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
+
     </form>
 </div>
+
 @endsection

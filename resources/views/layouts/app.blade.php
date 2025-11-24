@@ -207,14 +207,14 @@
                             <ul class="submenu">
                                 <li><a href="{{ route('admin.siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
                                 <li><a href="{{ route('admin.akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
-                                <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
-                                <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
-                                <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                                <li><a href="{{ route('prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
-                                <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
-                                <li><a href="{{ route('registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
-                                <li><a href="{{ route('kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
-                                <li><a href="{{ route('kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
+                                <li><a href="{{ route('admin.dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('admin.periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
+                                <li><a href="{{ route('admin.beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('admin.prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
+                                <li><a href="{{ route('admin.orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
+                                <li><a href="{{ route('admin.registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
+                                <li><a href="{{ route('admin.kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
+                                <li><a href="{{ route('admin.kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
                                 <li><a href="{{ route('pendaftaran-keluar.index') }}"><i class="bi bi-box-arrow-right me-2"></i>Pendaftaran Keluar</a></li>
                             </ul>
                         </li>
@@ -281,7 +281,7 @@
                     @endif
 
 
-                    @if (auth()->user()->role === 'siswa')
+                    {{-- @if (auth()->user()->role === 'siswa')
                         <li><a href="{{ route('siswa.master-siswa.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Siswa</a></li>
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
@@ -290,17 +290,17 @@
                             <ul class="submenu">
                                 <li><a href="{{ route('siswa.siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
                                 <li><a href="{{ route('siswa.akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
-                                <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
-                                <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
-                                <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
-                                <li><a href="{{ route('prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
-                                <li><a href="{{ route('orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
-                                <li><a href="{{ route('registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
-                                <li><a href="{{ route('kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
-                                <li><a href="{{ route('kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
+                                <li><a href="{{ route('siswa.dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
+                                <li><a href="{{ route('siswa.periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
+                                <li><a href="{{ route('siswa.beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
+                                <li><a href="{{ route('siswa.prestasi.index') }}"><i class="bi bi-award me-2"></i>Prestasi</a></li>
+                                <li><a href="{{ route('siswa.orang-tua.index') }}"><i class="bi bi-people-fill me-2"></i>Orang Tua Siswa</a></li>
+                                <li><a href="{{ route('siswa.registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
+                                <li><a href="{{ route('siswa.kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
+                                <li><a href="{{ route('siswa.kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
                             </ul>
                         </li>
-                    @endif
+                    @endif --}}
                 @endguest
             </ul>
         </div>
@@ -331,6 +331,12 @@
                 <div class="container-fluid d-flex flex-wrap gap-2 py-2">
 
                     <div class="d-flex">
+                        <a href="{{ route('ptk.master-ptk.index') }}" class="btn btn-outline-primary">
+                            Master Ptk
+                        </a>
+                    </div>
+
+                    <div class="d-flex">
                         <a href="{{ route('ptk.ptk.index') }}" class="btn btn-outline-primary">
                             Data PTK
                         </a>
@@ -345,6 +351,26 @@
                     <div>
                         <a href="{{ route('ptk.diklat.index') }}" class="btn btn-outline-primary">
                             Pendidikan & Kompetensi PTK
+                        </a>
+                    </div>
+
+                </div>
+            </nav>
+        @endif
+
+        @if(auth()->user()->role === 'siswa')
+            <nav class="bg-white border-bottom mb-3">
+                <div class="container-fluid d-flex flex-wrap gap-2 py-2">
+
+                    <div class="d-flex">
+                        <a href="{{ route('siswa.master-siswa.index') }}" class="btn btn-outline-primary">
+                            Master Siswa
+                        </a>
+                    </div>
+
+                    <div class="d-flex">
+                        <a href="{{ route('siswa.siswa.index') }}" class="btn btn-outline-primary">
+                            Data Siswa
                         </a>
                     </div>
 

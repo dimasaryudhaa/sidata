@@ -15,6 +15,7 @@ class KontakSiswaController extends Controller
     {
         $user = Auth::user();
         $isSiswa = $user->role === 'siswa';
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
         $rombels = collect();
 
@@ -23,56 +24,38 @@ class KontakSiswaController extends Controller
                 ->join('peserta_didik', 'kontak_peserta_didik.peserta_didik_id', '=', 'peserta_didik.id')
                 ->join('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
                 ->where('akun_siswa.email', $user->email)
-                ->select(
-                    'kontak_peserta_didik.id as kontak_id',
-                    'peserta_didik.id as siswa_id',
-                    'kontak_peserta_didik.no_hp',
-                    'kontak_peserta_didik.email',
-                    'kontak_peserta_didik.alamat_jalan',
-                    'kontak_peserta_didik.rt',
-                    'kontak_peserta_didik.rw',
-                    'kontak_peserta_didik.kelurahan',
-                    'kontak_peserta_didik.kecamatan',
-                    'kontak_peserta_didik.kode_pos',
-                    'kontak_peserta_didik.tempat_tinggal',
-                    'kontak_peserta_didik.moda_transportasi',
-                    'kontak_peserta_didik.anak_ke'
-                )
-                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->select('kontak_peserta_didik.*', 'peserta_didik.nama_lengkap')
+                ->orderBy('peserta_didik.nama_lengkap')
                 ->paginate(12);
 
-            return view('kontak-siswa.index', compact('data', 'isSiswa'));
+            return view('kontak-siswa.index', compact('data', 'isSiswa', 'prefix'));
         } else {
             $data = DB::table('peserta_didik')
                 ->leftJoin('kontak_peserta_didik', 'peserta_didik.id', '=', 'kontak_peserta_didik.peserta_didik_id')
                 ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
                 ->select(
                     'peserta_didik.id as siswa_id',
-                    'peserta_didik.rombel_id',
                     'peserta_didik.nama_lengkap',
                     'peserta_didik.rombel_id',
-                    'kontak_peserta_didik.id as kontak_id',
-                    'kontak_peserta_didik.no_hp',
-                    'kontak_peserta_didik.email',
-                    'kontak_peserta_didik.alamat_jalan',
-                    'kontak_peserta_didik.rt',
-                    'kontak_peserta_didik.rw',
-                    'kontak_peserta_didik.kelurahan',
-                    'kontak_peserta_didik.kecamatan'
+                    'rombel.nama_rombel',
+                    'kontak_peserta_didik.*'
                 )
-                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->orderBy('peserta_didik.nama_lengkap')
                 ->paginate(12);
 
             $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
 
-            return view('kontak-siswa.index', compact('data', 'rombels', 'isSiswa'));
+            return view('kontak-siswa.index', compact('data', 'rombels', 'isSiswa', 'prefix'));
         }
     }
 
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $siswa = Siswa::all();
-        return view('kontak-siswa.create', compact('siswa', 'rombel'));
+        return view('kontak-siswa.create', compact('siswa', 'prefix'));
     }
 
     public function store(Request $request)
@@ -93,25 +76,25 @@ class KontakSiswaController extends Controller
         ]);
 
         KontakSiswa::create($validated);
-        return redirect()->route('kontak-siswa.index')->with('success', 'Data kontak siswa berhasil ditambahkan.');
+
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'kontak-siswa.index')
+            ->with('success', 'Data kontak siswa berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $kontak = KontakSiswa::find($id);
 
         if (!$kontak) {
             $siswa = Siswa::findOrFail($id);
             $existing = KontakSiswa::where('peserta_didik_id', $siswa->id)->first();
 
-            if ($existing) {
-                $kontak = $existing;
-            } else {
-                $kontak = new KontakSiswa();
-                $kontak->peserta_didik_id = $siswa->id;
-            }
-        } else {
-            $siswa = Siswa::find($kontak->peserta_didik_id);
+            $kontak = $existing ?? new KontakSiswa(['peserta_didik_id' => $siswa->id]);
         }
 
         $semuaSiswa = Siswa::all();
@@ -119,11 +102,14 @@ class KontakSiswaController extends Controller
         return view('kontak-siswa.edit', [
             'data' => $kontak,
             'siswa' => $semuaSiswa,
+            'prefix' => $prefix
         ]);
     }
 
-    public function update(Request $request, KontakSiswa $kontak_siswa)
+    public function update(Request $request, $id)
     {
+        $kontak = KontakSiswa::findOrFail($id);
+
         $validated = $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'no_hp' => 'nullable|string|max:20',
@@ -139,8 +125,12 @@ class KontakSiswaController extends Controller
             'anak_ke' => 'nullable|integer',
         ]);
 
-        $kontak_siswa->update($validated);
-        return redirect()->route('kontak-siswa.index')->with('success', 'Data kontak siswa berhasil diperbarui.');
+        $kontak->update($validated);
+
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'kontak-siswa.index')
+            ->with('success', 'Data kontak siswa berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -148,6 +138,9 @@ class KontakSiswaController extends Controller
         $kontak = KontakSiswa::findOrFail($id);
         KontakSiswa::where('peserta_didik_id', $kontak->peserta_didik_id)->delete();
 
-        return redirect()->route('kontak-siswa.index')->with('success', 'Data kontak siswa berhasil dihapus!');
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'kontak-siswa.index')
+            ->with('success', 'Data kontak siswa berhasil dihapus.');
     }
 }

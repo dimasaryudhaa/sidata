@@ -53,13 +53,15 @@ class DokumenSiswaController extends Controller
     public function create(Request $request)
     {
         $pesertaDidikId = $request->query('peserta_didik_id');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
         if ($pesertaDidikId) {
             $siswa = Siswa::findOrFail($pesertaDidikId);
-            return view('dokumen-siswa.create', compact('pesertaDidikId', 'siswa'));
+            return view('dokumen-siswa.create', compact('pesertaDidikId', 'siswa', 'prefix'));
         } else {
             $siswa = Siswa::all();
-            return view('dokumen-siswa.create', compact('siswa'));
+            return view('dokumen-siswa.create', compact('siswa', 'prefix'));
         }
     }
 
@@ -67,25 +69,31 @@ class DokumenSiswaController extends Controller
     {
         $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
-            'akte_kelahiran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'kartu_keluarga' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'ktp_ayah' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'ktp_ibu' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'ijazah_sd' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'ijazah_smp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'akte_kelahiran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'kartu_keluarga' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ktp_ayah' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ktp_ibu' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ijazah_sd' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ijazah_smp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
-        $files = ['akte_kelahiran','kartu_keluarga','ktp_ayah','ktp_ibu','ijazah_sd','ijazah_smp'];
+        $fields = ['akte_kelahiran','kartu_keluarga','ktp_ayah','ktp_ibu','ijazah_sd','ijazah_smp'];
 
         $data = ['peserta_didik_id' => $request->peserta_didik_id];
 
-        foreach ($files as $field) {
-            $data[$field] = $request->file($field)->store('dokumen_siswa', 'public');
+        foreach ($fields as $field) {
+            if ($request->hasFile($field)) {
+                $data[$field] = $request->file($field)->store('dokumen_siswa', 'public');
+            }
         }
 
         DokumenSiswa::create($data);
 
-        return redirect()->route('dokumen-siswa.index')->with('success', 'Dokumen siswa berhasil diunggah.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'dokumen-siswa.index')
+                        ->with('success', 'Dokumen siswa berhasil diunggah.');
     }
 
     public function show($peserta_didik_id)
@@ -98,26 +106,40 @@ class DokumenSiswaController extends Controller
 
     public function edit($peserta_didik_id)
     {
-        $dokumen = DokumenSiswa::firstOrNew(['peserta_didik_id' => $peserta_didik_id]);
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isSiswa = $user->role === 'siswa';
 
-        return view('dokumen-siswa.edit', compact('dokumen'));
+        $dokumen = DokumenSiswa::firstOrNew(['peserta_didik_id' => $peserta_didik_id]);
+        $siswa = Siswa::findOrFail($peserta_didik_id);
+
+        return view('dokumen-siswa.edit', [
+            'dokumen' => $dokumen,
+            'isAdmin' => $isAdmin,
+            'isSiswa' => $isSiswa,
+            'siswa' => $siswa,
+        ]);
     }
 
     public function update(Request $request, $peserta_didik_id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $request->validate([
-            'akte_kelahiran' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'kartu_keluarga' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'ktp_ayah' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'ktp_ibu' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'ijazah_sd' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'ijazah_smp' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'akte_kelahiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'kartu_keluarga' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ktp_ayah' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ktp_ibu' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ijazah_sd' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'ijazah_smp' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $dokumen = DokumenSiswa::firstOrNew(['peserta_didik_id' => $peserta_didik_id]);
 
-        foreach (['akte_kelahiran', 'kartu_keluarga', 'ktp_ayah', 'ktp_ibu', 'ijazah_sd', 'ijazah_smp'] as $field) {
+        foreach (['akte_kelahiran','kartu_keluarga','ktp_ayah','ktp_ibu','ijazah_sd','ijazah_smp'] as $field) {
             if ($request->hasFile($field)) {
+
                 if ($dokumen->$field && Storage::disk('public')->exists($dokumen->$field)) {
                     Storage::disk('public')->delete($dokumen->$field);
                 }
@@ -128,16 +150,16 @@ class DokumenSiswaController extends Controller
 
         $dokumen->save();
 
-        return redirect()->route('dokumen-siswa.index')->with('success', 'Dokumen siswa berhasil diperbarui.');
+        return redirect()->route($prefix.'dokumen-siswa.index')
+            ->with('success', 'Dokumen siswa berhasil diperbarui.');
     }
-
 
     public function destroy($peserta_didik_id)
     {
         $dokumen = DokumenSiswa::where('peserta_didik_id', $peserta_didik_id)->first();
 
         if ($dokumen) {
-            foreach (['akte_kelahiran', 'kartu_keluarga', 'ktp_ayah', 'ktp_ibu', 'ijazah_sd', 'ijazah_smp'] as $field) {
+            foreach (['akte_kelahiran','kartu_keluarga','ktp_ayah','ktp_ibu','ijazah_sd','ijazah_smp'] as $field) {
                 if ($dokumen->$field && Storage::disk('public')->exists($dokumen->$field)) {
                     Storage::disk('public')->delete($dokumen->$field);
                 }
@@ -145,6 +167,10 @@ class DokumenSiswaController extends Controller
             $dokumen->delete();
         }
 
-        return redirect()->route('dokumen-siswa.index')->with('success', 'Dokumen siswa berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'dokumen-siswa.index')
+            ->with('success', 'Dokumen siswa berhasil dihapus.');
     }
 }

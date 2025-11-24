@@ -15,31 +15,35 @@
     box-shadow: none !important;
     background: transparent !important;
 }
+.btn-no-border:hover,
+.btn-no-border:focus,
+.btn-no-border:active {
+    background: transparent !important;
+    box-shadow: none !important;
+}
 </style>
 
 @php
     $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
     $isSiswa = $user->role === 'siswa';
+    $prefix = $isAdmin ? 'admin.' : 'siswa.';
 @endphp
 
 <div class="container">
-    @if(!$isSiswa)
-        <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
-            <input type="text" id="search" class="form-control form-control-sm" placeholder="Cari Nama Siswa" style="max-width: 200px;">
-            <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
-                <option value="">Semua Rombel</option>
-                @foreach($rombels as $rombel)
-                    <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
-                @endforeach
-            </select>
-        </div>
-    @else
-        <div class="d-flex justify-content-start align-items-center mb-3">
-            <a href="{{ route('registrasi-siswa.edit', ['registrasi_siswa' => $data[0]->siswa_id ?? Auth::user()->id]) }}"
-               class="btn btn-primary px-4"
-               style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
-                <i class="bi bi-pencil-square me-2"></i> Edit
-            </a>
+
+    @if(auth()->user()->role === 'siswa')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('siswa.siswa.index') }}" class="btn btn-primary">Siswa</a>
+            <a href="{{ route('siswa.akun-siswa.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('siswa.dokumen-siswa.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('siswa.periodik.index') }}" class="btn btn-primary">Periodik</a>
+            <a href="{{ route('siswa.beasiswa.index') }}" class="btn btn-primary">Beasiswa</a>
+            <a href="{{ route('siswa.prestasi.index') }}" class="btn btn-primary">Prestasi</a>
+            <a href="{{ route('siswa.orang-tua.index') }}" class="btn btn-primary">Orang Tua</a>
+            <a href="{{ route('siswa.registrasi-siswa.index') }}" class="btn btn-primary">Registrasi</a>
+            <a href="{{ route('siswa.kesejahteraan-siswa.index') }}" class="btn btn-primary">Kesejahteraan</a>
+            <a href="{{ route('siswa.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
         </div>
     @endif
 
@@ -69,107 +73,141 @@
         </script>
     @endif
 
+    @if(!$isSiswa)
+        <div class="d-flex justify-content-start align-items-center mb-3" style="gap: 0.5rem;">
+            <input type="text" id="search" class="form-control form-control-sm"
+                placeholder="Cari Nama Siswa..." style="max-width: 200px;">
+
+            <select id="rombelFilter" class="form-control form-control-sm" style="max-width: 200px;">
+                <option value="">Semua Rombel</option>
+                @foreach($rombels as $rombel)
+                    <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
+                @endforeach
+            </select>
+        </div>
+
+    @else
+        @php $detail = $data->first(); @endphp
+        <div class="d-flex mb-3">
+            <a href="{{ route($prefix.'registrasi-siswa.edit', $detail->siswa_id) }}"
+                class="btn btn-primary px-4"
+                style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border-radius:6px;">
+                <i class="bi bi-pencil-square me-2"></i> Edit
+            </a>
+        </div>
+    @endif
+
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
-    <table class="table table-bordered" id="registrasiTable">
-        <thead class="text-white" style="background:linear-gradient(180deg,#0770d3,#007efd,#55a6f8);">
-            <tr>
-                @if(!$isSiswa)
-                    <th style="width:50px;">No</th>
-                    <th>Nama Siswa</th>
-                    <th>Jenis Pendaftaran</th>
-                    <th>Tanggal Masuk</th>
-                    <th>Sekolah Asal</th>
-                    <th style="width:80px;">Aksi</th>
-                @else
-                    <th style="width:50px;">No</th>
-                    <th>Data Registrasi</th>
-                    <th>Keterangan</th>
-                @endif
-            </tr>
-        </thead>
+        <table class="table table-bordered" id="registrasiTable">
+            <thead class="text-white">
+                <tr>
+                    @if(!$isSiswa)
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Jenis Pendaftaran</th>
+                        <th>Tanggal Masuk</th>
+                        <th>Sekolah Asal</th>
+                        <th>Aksi</th>
+                    @else
+                        <th>Data Registrasi</th>
+                        <th>Keterangan</th>
+                    @endif
+                </tr>
+            </thead>
 
-        <tbody>
-            @foreach($data as $index => $item)
-                @if(!$isSiswa)
-                    <tr data-rombel="{{ $item->rombel_id ?? '' }}">
-                        <td>{{ $data->firstItem() + $index }}</td>
-                        <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
-                        <td>{{ $item->jenis_pendaftaran ?? '-' }}</td>
-                        <td>{{ $item->tanggal_masuk ?? '-' }}</td>
-                        <td>{{ $item->sekolah_asal ?? '-' }}</td>
-                        <td>
-                            <a href="{{ route('registrasi-siswa.edit', ['registrasi_siswa' => $item->siswa_id]) }}" class="btn btn-sm btn-no-border">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px;height:20px;">
-                            </a>
+            <tbody>
+                @foreach($data as $index => $item)
 
-                            @if($item->registrasi_id)
-                                <form action="{{ route('registrasi-siswa.destroy', $item->registrasi_id) }}" method="POST" class="d-inline">
+                    @if(!$isSiswa)
+                        <tr data-rombel="{{ $item->rombel_id }}">
+                            <td>{{ $data->firstItem() + $index }}</td>
+                            <td class="nama_siswa">{{ $item->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $item->jenis_pendaftaran ?? '-' }}</td>
+                            <td>{{ $item->tanggal_masuk ?? '-' }}</td>
+                            <td>{{ $item->sekolah_asal ?? '-' }}</td>
+
+                            <td>
+                                <a href="{{ route($prefix.'registrasi-siswa.edit', $item->siswa_id) }}"
+                                    class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/edit.png') }}" style="width:20px;height:20px;">
+                                </a>
+
+                                @if($item->registrasi_id)
+                                <form action="{{ route($prefix.'registrasi-siswa.destroy', $item->registrasi_id) }}"
+                                      method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-no-border"
-                                        onclick="return confirm('Yakin ingin menghapus data registrasi siswa ini?')">
-                                        <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px;height:20px;">
+                                    <button class="btn btn-sm btn-no-border"
+                                        onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <img src="{{ asset('images/delete.png') }}" style="width:20px;height:20px;">
                                     </button>
                                 </form>
-                            @endif
-                        </td>
-                    </tr>
-                @else
-                    <tr>
-                        <td>{{ $index * 3 + 1 }}</td>
-                        <td>Informasi Pendaftaran</td>
-                        <td>
-                            <strong>Jenis Pendaftaran:</strong> {{ $item->jenis_pendaftaran ?? '-' }}<br>
-                            <strong>Tanggal Masuk:</strong> {{ $item->tanggal_masuk ?? '-' }}<br>
-                            <strong>Sekolah Asal:</strong> {{ $item->sekolah_asal ?? '-' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ $index * 3 + 2 }}</td>
-                        <td>Nomor Dokumen</td>
-                        <td>
-                            <strong>No Peserta UN:</strong> {{ $item->no_peserta_un ?? '-' }}<br>
-                            <strong>No Seri Ijazah:</strong> {{ $item->no_seri_ijazah ?? '-' }}<br>
-                            <strong>No SKHUN:</strong> {{ $item->no_skhun ?? '-' }}
-                        </td>
-                    </tr>
-                @endif
-            @endforeach
-        </tbody>
-    </table>
+                                @endif
+                            </td>
+                        </tr>
+
+                    @else
+
+                        <tr>
+                            <td>Informasi Pendaftaran</td>
+                            <td>
+                                <strong>Jenis Pendaftaran:</strong> {{ $item->jenis_pendaftaran ?? '-' }}<br>
+                                <strong>Tanggal Masuk:</strong> {{ $item->tanggal_masuk ?? '-' }}<br>
+                                <strong>Sekolah Asal:</strong> {{ $item->sekolah_asal ?? '-' }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Nomor Dokumen</td>
+                            <td>
+                                <strong>No Peserta UN:</strong> {{ $item->no_peserta_un ?? '-' }}<br>
+                                <strong>No Seri Ijazah:</strong> {{ $item->no_seri_ijazah ?? '-' }}<br>
+                                <strong>No SKHUN:</strong> {{ $item->no_skhun ?? '-' }}
+                            </td>
+                        </tr>
+
+                    @endif
+
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
-    <div class="d-flex justify-content-center mt-3">
-        {{ $data->links() }}
+    @if(!$isSiswa)
+    <div class="mt-3">
+        {{ $data->links('pagination::bootstrap-5') }}
     </div>
+    @endif
+
 </div>
 
 @if(!$isSiswa)
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('search');
-    const rombelSelect = document.getElementById('rombelFilter');
-    const rows = document.querySelectorAll('#registrasiTable tbody tr');
+const searchInput = document.getElementById('search');
+const rombelSelect = document.getElementById('rombelFilter');
+const rows = document.querySelectorAll('#registrasiTable tbody tr');
 
-    function filterTable() {
-        const searchValue = searchInput.value.toLowerCase();
-        const rombelValue = rombelSelect.value;
+function filterTable() {
+    const searchValue = searchInput.value.toLowerCase();
+    const rombelValue = rombelSelect.value;
 
-        rows.forEach(row => {
-            const nama = row.querySelector('.nama_siswa')?.textContent.toLowerCase() || '';
-            const rombel = row.getAttribute('data-rombel');
-            const matchesNama = nama.includes(searchValue);
-            const matchesRombel = rombelValue === '' || rombel === rombelValue;
-            row.style.display = (matchesNama && matchesRombel) ? '' : 'none';
-        });
-    }
+    rows.forEach(row => {
+        const namaCell = row.querySelector('.nama_siswa');
+        if (!namaCell) return;
 
-    searchInput.addEventListener('keyup', filterTable);
-    rombelSelect.addEventListener('change', filterTable);
-});
+        const nama = namaCell.textContent.toLowerCase();
+        const rombel = row.getAttribute('data-rombel');
+
+        row.style.display =
+            (nama.includes(searchValue) &&
+            (rombelValue === '' || rombel === rombelValue))
+            ? '' : 'none';
+    });
+}
+
+searchInput.addEventListener('keyup', filterTable);
+rombelSelect.addEventListener('change', filterTable);
 </script>
 @endif
 
-
 @endsection
-

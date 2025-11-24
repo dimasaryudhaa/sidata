@@ -35,6 +35,21 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'siswa')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('siswa.siswa.index') }}" class="btn btn-primary">Siswa</a>
+            <a href="{{ route('siswa.akun-siswa.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('siswa.dokumen-siswa.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('siswa.periodik.index') }}" class="btn btn-primary">Periodik</a>
+            <a href="{{ route('siswa.beasiswa.index') }}" class="btn btn-primary">Beasiswa</a>
+            <a href="{{ route('siswa.prestasi.index') }}" class="btn btn-primary">Prestasi</a>
+            <a href="{{ route('siswa.orang-tua.index') }}" class="btn btn-primary">Orang Tua</a>
+            <a href="{{ route('siswa.registrasi-siswa.index') }}" class="btn btn-primary">Registrasi</a>
+            <a href="{{ route('siswa.kesejahteraan-siswa.index') }}" class="btn btn-primary">Kesejahteraan</a>
+            <a href="{{ route('siswa.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-start mb-3" style="gap:0.5rem;">
         @if(!$isSiswa)
             <input type="text" id="search" class="form-control form-control-sm"

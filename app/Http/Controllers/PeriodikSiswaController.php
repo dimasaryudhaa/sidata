@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PeriodikSiswa;
 use App\Models\Siswa;
-use App\Models\Rombel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PeriodikSiswaController extends Controller
 {
-
     public function index()
     {
         $user = Auth::user();
         $isSiswa = $user->role === 'siswa';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'siswa.';
+
+        $rombels = DB::table('rombel')->select('id', 'nama_rombel')->get();
 
         if ($isSiswa) {
             $periodik = DB::table('data_periodik')
@@ -36,35 +38,36 @@ class PeriodikSiswaController extends Controller
                 )
                 ->paginate(12);
 
-            return view('periodik.index', compact('periodik', 'isSiswa'));
-        } else {
-            $query = DB::table('peserta_didik')
-                ->leftJoin('data_periodik', 'peserta_didik.id', '=', 'data_periodik.peserta_didik_id')
-                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
-                ->select(
-                    'peserta_didik.id as siswa_id',
-                    'peserta_didik.rombel_id',
-                    'peserta_didik.nama_lengkap',
-                    'peserta_didik.rombel_id',
-                    'data_periodik.id as periodik_id',
-                    'data_periodik.tinggi_badan_cm',
-                    'data_periodik.berat_badan_kg',
-                    'data_periodik.lingkar_kepala_cm',
-                    'data_periodik.jarak_sebenarnya_km'
-                )
-                ->orderBy('peserta_didik.nama_lengkap', 'asc');
-
-            $periodik = $query->paginate(12);
-            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
-
-            return view('periodik.index', compact('periodik', 'rombels', 'isSiswa'));
+            return view('periodik.index', compact('periodik', 'isSiswa', 'isAdmin'));
         }
+
+        $periodik = DB::table('peserta_didik')
+            ->leftJoin('data_periodik', 'peserta_didik.id', '=', 'data_periodik.peserta_didik_id')
+            ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+            ->select(
+                'peserta_didik.id as siswa_id',
+                'peserta_didik.rombel_id',
+                'peserta_didik.nama_lengkap',
+                'data_periodik.id as periodik_id',
+                'data_periodik.tinggi_badan_cm',
+                'data_periodik.berat_badan_kg',
+                'data_periodik.lingkar_kepala_cm',
+                'data_periodik.jarak_sebenarnya_km'
+            )
+            ->orderBy('peserta_didik.nama_lengkap')
+            ->paginate(12);
+
+        return view('periodik.index', compact('periodik', 'isSiswa', 'isAdmin', 'rombels'));
     }
 
     public function create()
     {
-        $siswa = Siswa::all();
-        return view('periodik.create', compact('siswa'));
+        $siswas = Siswa::all();
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return view('periodik.create', compact('siswas', 'prefix'));
     }
 
     public function store(Request $request)
@@ -83,34 +86,40 @@ class PeriodikSiswaController extends Controller
 
         PeriodikSiswa::create($request->all());
 
-        return redirect()->route('periodik.index')->with('success', 'Data periodik berhasil ditambahkan.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'periodik.index')
+            ->with('success', 'Data periodik berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $periodik = PeriodikSiswa::find($id);
 
         if (!$periodik) {
-            $siswa = Siswa::findOrFail($id);
-            $existing = PeriodikSiswa::where('peserta_didik_id', $siswa->id)->first();
+            $siswaModel = Siswa::findOrFail($id);
+            $existing = PeriodikSiswa::where('peserta_didik_id', $siswaModel->id)->first();
 
             if ($existing) {
                 $periodik = $existing;
-
             } else {
                 $periodik = new PeriodikSiswa();
-                $periodik->peserta_didik_id = $siswa->id;
+                $periodik->peserta_didik_id = $siswaModel->id;
             }
-
         } else {
-            $siswa = Siswa::find($periodik->peserta_didik_id);
+            $siswaModel = Siswa::find($periodik->peserta_didik_id);
         }
 
-        $semuaSiswa = Siswa::all();
+        $siswas = Siswa::all();
 
         return view('periodik.edit', [
             'periodik' => $periodik,
-            'siswa' => $semuaSiswa,
+            'siswa' => $siswas,
+            'prefix' => $prefix
         ]);
     }
 
@@ -130,16 +139,23 @@ class PeriodikSiswaController extends Controller
 
         $periodik->update($request->all());
 
-        return redirect()->route('periodik.index')->with('success', 'Data periodik berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'periodik.index')
+            ->with('success', 'Data periodik berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-
         $periodik = PeriodikSiswa::findOrFail($id);
+
         PeriodikSiswa::where('peserta_didik_id', $periodik->peserta_didik_id)->delete();
 
-        return redirect()->route('periodik.index')->with('success', 'Semua data periodik siswa berhasil dihapus.');
-    }
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
+        return redirect()->route($prefix.'periodik.index')
+            ->with('success', 'Semua data periodik siswa berhasil dihapus.');
+    }
 }

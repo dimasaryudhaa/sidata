@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+
+@php
+    $prefix = auth()->user()->role === 'admin' ? 'admin' : 'siswa';
+@endphp
+
 <div class="container">
     <h4>{{ $siswa->nama_lengkap }}</h4>
 
@@ -37,6 +42,12 @@
                             @if($file)
                                 @if(Str::endsWith($file, ['.jpg', '.jpeg', '.png', '.gif']))
                                     <img src="{{ asset('storage/' . $file) }}" alt="{{ $nama }}" style="max-width:100px; max-height:100px;">
+
+                                @elseif(Str::endsWith($file, ['.pdf']))
+                                    <a href="{{ asset('storage/' . $file) }}" target="_blank">Lihat PDF</a>
+
+                                @else
+                                    <span class="text-muted">File tidak didukung</span>
                                 @endif
                             @else
                                 <span class="text-muted">Belum diunggah</span>
@@ -48,6 +59,7 @@
         </table>
     </div>
 
-    <a href="{{ route('dokumen-siswa.index') }}" class="btn btn-secondary mt-2">Kembali</a>
+    <a href="{{ route($prefix . '.dokumen-siswa.index') }}" class="btn btn-secondary mt-2">Kembali</a>
 </div>
+
 @endsection

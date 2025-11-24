@@ -15,8 +15,7 @@ class RegistrasiSiswaController extends Controller
     {
         $user = Auth::user();
         $isSiswa = $user->role === 'siswa';
-
-        $rombels = collect();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
         if ($isSiswa) {
             $data = DB::table('registrasi_peserta_didik')
@@ -37,34 +36,37 @@ class RegistrasiSiswaController extends Controller
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
 
-            return view('registrasi-siswa.index', compact('data', 'isSiswa'));
-        } else {
-            $data = DB::table('peserta_didik')
-                ->leftJoin('registrasi_peserta_didik', 'peserta_didik.id', '=', 'registrasi_peserta_didik.peserta_didik_id')
-                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
-                ->select(
-                    'peserta_didik.id as siswa_id',
-                    'peserta_didik.rombel_id',
-                    'peserta_didik.nama_lengkap',
-                    'registrasi_peserta_didik.id as registrasi_id',
-                    'registrasi_peserta_didik.jenis_pendaftaran',
-                    'registrasi_peserta_didik.tanggal_masuk',
-                    'registrasi_peserta_didik.sekolah_asal',
-                    'peserta_didik.rombel_id'
-                )
-                ->orderBy('peserta_didik.nama_lengkap', 'asc')
-                ->paginate(12);
-
-            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
-
-            return view('registrasi-siswa.index', compact('data', 'rombels', 'isSiswa'));
+            return view('registrasi-siswa.index', compact('data', 'isSiswa', 'prefix'));
         }
+
+        $data = DB::table('peserta_didik')
+            ->leftJoin('registrasi_peserta_didik', 'peserta_didik.id', '=', 'registrasi_peserta_didik.peserta_didik_id')
+            ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+            ->select(
+                'peserta_didik.id as siswa_id',
+                'peserta_didik.rombel_id',
+                'peserta_didik.nama_lengkap',
+                'registrasi_peserta_didik.id as registrasi_id',
+                'registrasi_peserta_didik.jenis_pendaftaran',
+                'registrasi_peserta_didik.tanggal_masuk',
+                'registrasi_peserta_didik.sekolah_asal',
+                'rombel.nama_rombel'
+            )
+            ->orderBy('peserta_didik.nama_lengkap', 'asc')
+            ->paginate(12);
+
+        $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+        return view('registrasi-siswa.index', compact('data', 'rombels', 'isSiswa', 'prefix'));
     }
 
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $siswa = Siswa::all();
-        return view('registrasi-siswa.create', compact('siswa'));
+        return view('registrasi-siswa.create', compact('siswa', 'prefix'));
     }
 
     public function store(Request $request)
@@ -80,11 +82,18 @@ class RegistrasiSiswaController extends Controller
         ]);
 
         RegistrasiSiswa::create($request->all());
-        return redirect()->route('registrasi-siswa.index')->with('success', 'Data registrasi siswa berhasil ditambahkan.');
+
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'registrasi-siswa.index')
+            ->with('success', 'Data registrasi siswa berhasil ditambahkan!');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $registrasi = RegistrasiSiswa::find($id);
 
         if (!$registrasi) {
@@ -106,10 +115,11 @@ class RegistrasiSiswaController extends Controller
         return view('registrasi-siswa.edit', [
             'data' => $registrasi,
             'siswa' => $semuaSiswa,
+            'prefix' => $prefix,
         ]);
     }
 
-    public function update(Request $request, RegistrasiSiswa $registrasi_siswa)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
@@ -121,15 +131,26 @@ class RegistrasiSiswaController extends Controller
             'no_skhun' => 'nullable|string|max:50',
         ]);
 
-        $registrasi_siswa->update($request->all());
-        return redirect()->route('registrasi-siswa.index')->with('success', 'Data registrasi siswa berhasil diperbarui.');
+        $registrasi = RegistrasiSiswa::findOrFail($id);
+
+        $registrasi->update($request->all());
+
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'registrasi-siswa.index')
+            ->with('success', 'Data registrasi siswa berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $registrasi = RegistrasiSiswa::findOrFail($id);
+
         RegistrasiSiswa::where('peserta_didik_id', $registrasi->peserta_didik_id)->delete();
 
-        return redirect()->route('registrasi-siswa.index')->with('success', 'Data registrasi siswa berhasil dihapus!');
+        return redirect()->route($prefix.'registrasi-siswa.index')
+            ->with('success', 'Data registrasi siswa berhasil dihapus!');
     }
 }

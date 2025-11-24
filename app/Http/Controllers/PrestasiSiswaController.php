@@ -5,57 +5,93 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PrestasiSiswa;
 use App\Models\Siswa;
-use App\Models\Rombel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PrestasiSiswaController extends Controller
 {
-
     public function index()
     {
         $user = Auth::user();
         $isSiswa = $user->role === 'siswa';
+        $isAdmin = $user->role === 'admin';
+        $prefix = $isAdmin ? 'admin.' : 'siswa.';
 
         if ($isSiswa) {
-            $prestasi = PrestasiSiswa::join('akun_siswa', 'prestasi.peserta_didik_id', '=', 'akun_siswa.peserta_didik_id')
+            $prestasi = DB::table('prestasi')
+                ->join('akun_siswa', 'prestasi.peserta_didik_id', '=', 'akun_siswa.peserta_didik_id')
                 ->where('akun_siswa.email', $user->email)
                 ->select('prestasi.*')
+                ->orderBy('tahun_prestasi', 'desc')
                 ->paginate(12);
 
-            return view('prestasi.index', compact('prestasi', 'isSiswa'));
-        } else {
-            $query = DB::table('peserta_didik')
-                ->leftJoin('prestasi', 'peserta_didik.id', '=', 'prestasi.peserta_didik_id')
-                ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
-                ->select(
-                    'peserta_didik.id as siswa_id',
-                    'peserta_didik.nama_lengkap',
-                    'peserta_didik.rombel_id',
-                    DB::raw('COUNT(prestasi.id) as jumlah_prestasi')
-                )
-                ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
-                ->orderBy('peserta_didik.nama_lengkap', 'asc');
-
-            $prestasi = $query->paginate(12);
-            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
-
-            return view('prestasi.index', compact('prestasi', 'rombels', 'isSiswa'));
+            return view('prestasi.index', compact(
+                'prestasi',
+                'isSiswa',
+                'isAdmin',
+                'prefix'
+            ));
         }
+
+        $prestasi = DB::table('peserta_didik')
+            ->leftJoin('prestasi', 'peserta_didik.id', '=', 'prestasi.peserta_didik_id')
+            ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+            ->select(
+                'peserta_didik.id as siswa_id',
+                'peserta_didik.nama_lengkap',
+                'peserta_didik.rombel_id',
+                'rombel.nama_rombel',
+                DB::raw('COUNT(prestasi.id) as jumlah_prestasi')
+            )
+            ->groupBy(
+                'peserta_didik.id',
+                'peserta_didik.nama_lengkap',
+                'peserta_didik.rombel_id',
+                'rombel.nama_rombel'
+            )
+            ->orderBy('peserta_didik.nama_lengkap', 'asc')
+            ->paginate(12);
+
+        $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+        return view('prestasi.index', compact(
+            'prestasi',
+            'rombels',
+            'isSiswa',
+            'isAdmin',
+            'prefix'
+        ));
     }
+
+
+    public function show($siswa_id)
+    {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        $siswa = Siswa::findOrFail($siswa_id);
+        $prestasi = PrestasiSiswa::where('peserta_didik_id', $siswa_id)->get();
+
+        return view('prestasi.show', compact('prestasi', 'siswa', 'prefix'));
+    }
+
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $siswaId = $request->query('siswa_id');
 
         if ($siswaId) {
             $siswa = Siswa::findOrFail($siswaId);
-            return view('prestasi.create', compact('siswaId', 'siswa'));
-        } else {
-            $siswa = Siswa::all();
-            return view('prestasi.create', compact('siswa'));
+            return view('prestasi.create', compact('siswaId', 'siswa', 'prefix'));
         }
+
+        $siswa = Siswa::orderBy('nama_lengkap')->get();
+        return view('prestasi.create', compact('siswa', 'prefix'));
     }
+
 
     public function store(Request $request)
     {
@@ -66,27 +102,38 @@ class PrestasiSiswaController extends Controller
             'nama_prestasi' => 'required|string|max:255',
             'tahun_prestasi' => 'required|digits:4|integer',
             'penyelenggara' => 'required|string|max:255',
-            'peringkat' => 'nullable|integer',
+            'peringkat' => 'nullable|integer'
         ]);
 
         PrestasiSiswa::create($request->all());
-        return redirect()->route('prestasi.index')->with('success', 'Data prestasi berhasil ditambahkan.');
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix . 'prestasi.index')
+            ->with('success', 'Data prestasi berhasil ditambahkan.');
     }
 
-    public function show($siswa_id)
-    {
-        $prestasi = PrestasiSiswa::where('peserta_didik_id', $siswa_id)->get();
-        $siswa = Siswa::findOrFail($siswa_id);
-
-        return view('prestasi.show', compact('prestasi', 'siswa'));
-    }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isSiswa = $user->role === 'siswa';
+        $prefix = $isAdmin ? 'admin.' : 'siswa.';
+
         $prestasi = PrestasiSiswa::findOrFail($id);
-        $siswa = Siswa::all();
-        return view('prestasi.edit', compact('prestasi', 'siswa'));
+        $siswa = Siswa::findOrFail($prestasi->peserta_didik_id);
+
+        return view('prestasi.edit', compact(
+            'prestasi',
+            'siswa',
+            'isAdmin',
+            'isSiswa',
+            'prefix'
+        ));
     }
+
 
     public function update(Request $request, $id)
     {
@@ -100,18 +147,25 @@ class PrestasiSiswaController extends Controller
             'peringkat' => 'nullable|integer',
         ]);
 
-        PrestasiSiswa::updateOrCreate(
-            ['peserta_didik_id' => $request->peserta_didik_id],
-            $request->only('jenis_prestasi', 'tingkat_prestasi', 'nama_prestasi', 'tahun_prestasi', 'penyelenggara', 'peringkat')
-        );
+        $prestasi = PrestasiSiswa::findOrFail($id);
+        $prestasi->update($request->all());
 
-        return redirect()->route('prestasi.index')->with('success', 'Data prestasi berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix . 'prestasi.index')
+            ->with('success', 'Data prestasi berhasil diperbarui.');
     }
 
 
-    public function destroy($siswa_id)
+    public function destroy($id)
     {
-        PrestasiSiswa::where('peserta_didik_id', $siswa_id)->delete();
-        return redirect()->route('prestasi.index')->with('success', 'Semua data prestasi siswa berhasil dihapus.');
+        PrestasiSiswa::findOrFail($id)->delete();
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix . 'prestasi.index')
+            ->with('success', 'Data prestasi berhasil dihapus.');
     }
 }

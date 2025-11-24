@@ -1,28 +1,34 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = Auth::user();
+    $isAdmin = $user->role === 'admin';
+    $prefix = $isAdmin ? 'admin.' : 'siswa.';
+@endphp
+
 <div class="container">
     <h1>Tambah Kesejahteraan Siswa</h1>
 
-    <form action="{{ route('kesejahteraan-siswa.store') }}" method="POST">
+    <form action="{{ route($prefix . 'kesejahteraan-siswa.store') }}" method="POST">
         @csrf
         <div class="row">
-            <!-- Kolom Kiri -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama Siswa</label>
                     @if(isset($siswaId))
-                        <!-- Jika siswa sudah ditentukan -->
-                        <input type="text" class="form-control" value="{{ $siswa->nama_lengkap }}" onlyread>
+                        <input type="text" class="form-control" value="{{ $siswa->nama_lengkap }}" readonly>
                         <input type="hidden" name="peserta_didik_id" value="{{ $siswaId }}">
-                    @else
-                        <!-- Jika memilih dari dropdown -->
+                    @elseif($isAdmin)
                         <select name="peserta_didik_id" class="form-control" required>
                             <option value="">Pilih Siswa</option>
                             @foreach($siswa as $s)
                                 <option value="{{ $s->id }}">{{ $s->nama_lengkap }}</option>
                             @endforeach
                         </select>
+                    @else
+                        <input type="text" class="form-control" value="{{ $user->nama_lengkap }}" readonly>
+                        <input type="hidden" name="peserta_didik_id" value="{{ $user->id }}">
                     @endif
                 </div>
 
@@ -39,7 +45,6 @@
                 </div>
             </div>
 
-            <!-- Kolom Kanan -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>No Kartu</label>
@@ -53,8 +58,8 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-3">
-            <a href="{{ route('kesejahteraan-siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{{ route($prefix.'kesejahteraan-siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>

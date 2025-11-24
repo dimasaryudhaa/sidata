@@ -64,8 +64,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('admin')->name('admin.')->group(function () {
 
+        //siswa
         Route::resource('siswa', SiswaController::class);
         Route::resource('akun-siswa', AkunSiswaController::class);
+        Route::resource('dokumen-siswa', DokumenSiswaController::class);
+        Route::resource('periodik', PeriodikSiswaController::class);
+        Route::resource('beasiswa', BeasiswaSiswaController::class);
+        Route::resource('prestasi', PrestasiSiswaController::class);
+        Route::resource('orang-tua', OrangTuaController::class);
+        Route::resource('registrasi-siswa', RegistrasiSiswaController::class);
+        Route::resource('kesejahteraan-siswa', KesejahteraanSiswaController::class);
+        Route::resource('kontak-siswa', KontakSiswaController::class);
 
         //ptk
         Route::resource('ptk', PtkController::class);
@@ -133,22 +142,19 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('master-siswa', MasterSiswaController::class);
         Route::resource('siswa', SiswaController::class);
         Route::resource('akun-siswa', AkunSiswaController::class);
+        Route::resource('dokumen-siswa', DokumenSiswaController::class);
+        Route::resource('periodik', PeriodikSiswaController::class);
+        Route::resource('beasiswa', BeasiswaSiswaController::class);
+        Route::resource('prestasi', PrestasiSiswaController::class);
+        Route::resource('orang-tua', OrangTuaController::class);
+        Route::resource('registrasi-siswa', RegistrasiSiswaController::class);
+        Route::resource('kesejahteraan-siswa', KesejahteraanSiswaController::class);
+         Route::resource('kontak-siswa', KontakSiswaController::class);
     });
 
 
     //profile
     Route::resource('profile', ProfileController::class);
-
-    // siswa
-    Route::resource('dokumen-siswa', DokumenSiswaController::class);
-    Route::resource('kontak-siswa', KontakSiswaController::class);
-    Route::resource('periodik', PeriodikSiswaController::class);
-    Route::resource('ptk', PtkController::class);
-    Route::resource('beasiswa', BeasiswaSiswaController::class);
-    Route::resource('prestasi', PrestasiSiswaController::class);
-    Route::resource('orang-tua', OrangTuaController::class);
-    Route::resource('registrasi-siswa', RegistrasiSiswaController::class);
-    Route::resource('kesejahteraan-siswa', KesejahteraanSiswaController::class);
     Route::resource('pendaftaran-keluar', PendaftaranKeluarController::class);
 
     //akademik

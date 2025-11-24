@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $user = auth()->user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+@endphp
 
 <style>
 .table thead th {
@@ -52,14 +56,13 @@
                     <td>{{ $k->no_kartu ?? '-' }}</td>
                     <td>{{ $k->nama_di_kartu ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('kesejahteraan-siswa.edit', $k->peserta_didik_id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'kesejahteraan-siswa.edit', $k->id) }}" class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                         </a>
-                        <form action="{{ route('kesejahteraan-siswa.destroy', $k->peserta_didik_id) }}" method="POST" class="d-inline">
+                        <form action="{{ route($prefix.'kesejahteraan-siswa.destroy', $k->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data kesejahteraan ini?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-no-border"
-                                onclick="return confirm('Yakin ingin menghapus semua data kesejahteraan siswa ini?')">
+                            <button type="submit" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                             </button>
                         </form>
@@ -73,7 +76,8 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('kesejahteraan-siswa.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
+    <a href="{{ route($prefix.'kesejahteraan-siswa.index') }}" class="btn btn-sm btn-secondary mt-3">Kembali</a>
 </div>
 
 @endsection
