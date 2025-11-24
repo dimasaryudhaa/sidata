@@ -15,7 +15,6 @@ class SiswaController extends Controller
     {
         $user = Auth::user();
         $isSiswa = $user->role === 'siswa';
-        $rombels = collect();
 
         if ($isSiswa) {
 
@@ -44,6 +43,7 @@ class SiswaController extends Controller
                 ->paginate(1);
 
             return view('siswa.index', compact('siswa', 'isSiswa'));
+
         } else {
 
             $siswa = DB::table('peserta_didik')
@@ -57,7 +57,7 @@ class SiswaController extends Controller
                     'peserta_didik.nisn',
                     'peserta_didik.rombel_id',
                     'rayon.nama_rayon',
-                    'rombel.nama_rombel',
+                    'rombel.nama_rombel'
                 )
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
@@ -68,12 +68,18 @@ class SiswaController extends Controller
         }
     }
 
+
     public function create()
     {
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
         $rayons = Rayon::all();
         $rombels = Rombel::all();
-        return view('siswa.create', compact('rayons', 'rombels'));
+
+        return view('siswa.create', compact('rayons', 'rombels', 'prefix'));
     }
+
 
     public function store(Request $request)
     {
@@ -86,32 +92,55 @@ class SiswaController extends Controller
 
         Siswa::create($request->all());
 
-        return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil ditambahkan!');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'siswa.index')
+            ->with('success', 'Data siswa berhasil ditambahkan!');
     }
 
-    public function show(Siswa $siswa)
-    {
-        return view('siswa.show', compact('siswa'));
-    }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isSiswa = $user->role === 'siswa';
+
         $siswa = Siswa::findOrFail($id);
         $rombels = Rombel::all();
         $rayons = Rayon::all();
 
-        return view('siswa.edit', compact('siswa', 'rombels', 'rayons'));
+        return view('siswa.edit', compact('siswa', 'rombels', 'rayons', 'isAdmin', 'isSiswa'));
     }
+
 
     public function update(Request $request, Siswa $siswa)
     {
+        $request->validate([
+            'nama_lengkap' => 'required',
+            'jenis_kelamin' => 'required',
+            'rayon_id' => 'required|exists:rayon,id',
+            'rombel_id' => 'required|exists:rombel,id',
+        ]);
+
         $siswa->update($request->all());
-        return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil diperbarui!');
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'siswa.index')
+            ->with('success', 'Data siswa berhasil diperbarui!');
     }
+
 
     public function destroy(Siswa $siswa)
     {
         $siswa->delete();
-        return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil dihapus!');
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'siswa.index')
+            ->with('success', 'Data siswa berhasil dihapus!');
     }
 }

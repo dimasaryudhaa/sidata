@@ -205,8 +205,8 @@
                                 <i class="bi bi-people me-2"></i>Data Siswa
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
-                                <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('admin.siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
+                                <li><a href="{{ route('admin.akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
                                 <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
                                 <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
                                 <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>
@@ -282,14 +282,14 @@
 
 
                     @if (auth()->user()->role === 'siswa')
-                        <li><a href="{{ route('master-siswa.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Siswa</a></li>
+                        <li><a href="{{ route('siswa.master-siswa.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Siswa</a></li>
                         <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-person-badge me-2"></i>Data Siswa
                             </a>
                             <ul class="submenu">
-                                <li><a href="{{ route('siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
-                                <li><a href="{{ route('akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
+                                <li><a href="{{ route('siswa.siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
+                                <li><a href="{{ route('siswa.akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
                                 <li><a href="{{ route('dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
                                 <li><a href="{{ route('periodik.index') }}"><i class="bi bi-calendar-check me-2"></i>Periodik</a></li>
                                 <li><a href="{{ route('beasiswa.index') }}"><i class="bi bi-cash-stack me-2"></i>Beasiswa</a></li>

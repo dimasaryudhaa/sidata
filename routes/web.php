@@ -63,6 +63,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('siswa.dashboard');
 
     Route::prefix('admin')->name('admin.')->group(function () {
+
+        Route::resource('siswa', SiswaController::class);
+        Route::resource('akun-siswa', AkunSiswaController::class);
+
         //ptk
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
@@ -123,16 +127,19 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tunjangan', TunjanganController::class);
     });
 
+    Route::prefix('siswa')->name('siswa.')->group(function () {
+        Route::get('/master-siswa/{id}/cetak', [MasterSiswaController::class, 'cetakPDF'])
+            ->name('master-siswa.cetak');
+        Route::resource('master-siswa', MasterSiswaController::class);
+        Route::resource('siswa', SiswaController::class);
+        Route::resource('akun-siswa', AkunSiswaController::class);
+    });
+
 
     //profile
     Route::resource('profile', ProfileController::class);
 
     // siswa
-    Route::get('/master-siswa/{id}/cetak', [MasterSiswaController::class, 'cetakPDF'])
-    ->name('master-siswa.cetak');
-    Route::resource('master-siswa', MasterSiswaController::class);
-    Route::resource('siswa', SiswaController::class);
-    Route::resource('akun-siswa', AkunSiswaController::class);
     Route::resource('dokumen-siswa', DokumenSiswaController::class);
     Route::resource('kontak-siswa', KontakSiswaController::class);
     Route::resource('periodik', PeriodikSiswaController::class);

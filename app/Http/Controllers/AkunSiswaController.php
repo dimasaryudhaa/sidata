@@ -15,6 +15,7 @@ class AkunSiswaController extends Controller
     {
         $user = Auth::user();
         $isSiswa = $user->role === 'siswa';
+        $isAdmin = $user->role === 'admin';
 
         if ($isSiswa) {
             $data = DB::table('akun_siswa')
@@ -29,7 +30,6 @@ class AkunSiswaController extends Controller
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
 
-            return view('akun-siswa.index', compact('data', 'isSiswa'));
         } else {
             $data = DB::table('peserta_didik')
                 ->leftJoin('akun_siswa', 'peserta_didik.id', '=', 'akun_siswa.peserta_didik_id')
@@ -41,15 +41,19 @@ class AkunSiswaController extends Controller
                 )
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
-
-            return view('akun-siswa.index', compact('data', 'isSiswa'));
         }
+
+        return view('akun-siswa.index', compact('data', 'isSiswa', 'isAdmin'));
     }
 
     public function create()
     {
         $siswas = Siswa::all();
-        return view('akun-siswa.create', compact('siswas'));
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return view('akun-siswa.create', compact('siswas', 'prefix'));
     }
 
     public function store(Request $request)
@@ -62,7 +66,7 @@ class AkunSiswaController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        $akun = AkunSiswa::create($validated);
+        AkunSiswa::create($validated);
 
         $siswa = Siswa::find($validated['peserta_didik_id']);
 
@@ -75,15 +79,24 @@ class AkunSiswaController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('akun-siswa.index')->with('success', 'Akun siswa berhasil ditambahkan ke tabel users.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'akun-siswa.index')
+            ->with('success', 'Akun siswa berhasil ditambahkan ke tabel users.');
     }
 
     public function edit($id)
     {
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
+        $isSiswa = $user->role === 'siswa';
+
         $akun = AkunSiswa::find($id);
 
         if (!$akun) {
             $siswa = Siswa::findOrFail($id);
+
             $existing = AkunSiswa::where('peserta_didik_id', $siswa->id)->first();
 
             if ($existing) {
@@ -96,11 +109,14 @@ class AkunSiswaController extends Controller
             $siswa = Siswa::find($akun->peserta_didik_id);
         }
 
-        $semuaSiswa = Siswa::all();
+        $siswas = Siswa::all();
 
         return view('akun-siswa.edit', [
             'data' => $akun,
-            'siswas' => $semuaSiswa,
+            'siswas' => $siswas,
+            'isAdmin' => $isAdmin,
+            'isSiswa' => $isSiswa,
+            'siswa' => $siswa,
         ]);
     }
 
@@ -138,7 +154,11 @@ class AkunSiswaController extends Controller
             ->where('email', $oldEmail)
             ->update($updateData);
 
-        return redirect()->route('akun-siswa.index')->with('success', 'Akun siswa dan user berhasil diperbarui.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'akun-siswa.index')
+            ->with('success', 'Akun siswa dan user berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -149,6 +169,10 @@ class AkunSiswaController extends Controller
 
         $akun->delete();
 
-        return redirect()->route('akun-siswa.index')->with('success', 'Akun siswa dan user berhasil dihapus.');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        return redirect()->route($prefix.'akun-siswa.index')
+            ->with('success', 'Akun siswa dan user berhasil dihapus.');
     }
 }

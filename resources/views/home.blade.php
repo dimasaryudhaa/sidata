@@ -39,9 +39,8 @@
 
     @if($isAdmin)
         <div class="row">
-            {{-- Kartu Jumlah Siswa --}}
             <div class="col-md-3">
-                <a href="{{ route('siswa.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('admin.siswa.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -49,6 +48,50 @@
                                  style="background-color: white;">
                                 <p class="mb-0">Jumlah Siswa</p>
                                 <h3 class="mb-0">{{ $jumlahSiswa }}</h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-25"
+                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex h-100">
+                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
+                                 style="background-color: white;">
+                                <p class="mb-0">Jumlah Ptk</p>
+                                <h3 class="mb-0">{{ $jumlahPtk }}</h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-25"
+                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex h-100">
+                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
+                                 style="background-color: white;">
+                                <p class="mb-0">Jumlah Jurusan</p>
+                                <h3 class="mb-0">{{ $jumlahJurusan }}</h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-25"
+                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex h-100">
+                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
+                                 style="background-color: white;">
+                                <p class="mb-0">Jumlah Rayon</p>
+                                <h3 class="mb-0">{{ $jumlahRayon }}</h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-25"
+                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex h-100">
+                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
+                                 style="background-color: white;">
+                                <p class="mb-0">Jumlah Rombel</p>
+                                <h3 class="mb-0">{{ $jumlahRombel }}</h3>
                             </div>
                             <div class="d-flex justify-content-center align-items-center w-25"
                                  style="background-color: #0770d3; color: white; font-size: 2rem;">
@@ -63,13 +106,11 @@
 
     @elseif($isPtk)
         <div class="text-center mt-5">
-            <h2>Selamat datang, {{ $user->name }}!</h2>
-            <p>Ini adalah halaman dashboard Anda sebagai PTK.</p>
+            <h2>Selamat Datang {{ $user->name }}!</h2>
         </div>
     @elseif($isSiswa)
         <div class="text-center mt-5">
-            <h2>Selamat datang, {{ $user->name }}!</h2>
-            <p>Ini adalah halaman dashboard Anda sebagai Siswa.</p>
+            <h2>Selamat Datang {{ $user->name }}!</h2>
         </div>
     @endif
 

@@ -23,7 +23,7 @@
     <h3 class="mb-4 fw-bold text-center">Data Lengkap Peserta Didik</h3>
 
     <div class="text-end mb-3">
-        <a href="{{ route('master-siswa.cetak', $siswa->id) }}"
+        <a href="{{ route('siswa.master-siswa.cetak', $siswa->id) }}"
            class="btn btn-success" target="_blank">
             <i class="bi bi-file-earmark-pdf"></i> Cetak PDF
         </a>

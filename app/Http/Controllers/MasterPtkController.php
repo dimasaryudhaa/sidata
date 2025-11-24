@@ -9,9 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class MasterPtkController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $user = Auth::user();

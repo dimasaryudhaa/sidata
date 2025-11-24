@@ -14,7 +14,7 @@
 <div class="container">
     <h1 class="mb-4">Tambah Peserta Didik</h1>
 
-    <form action="{{ route('siswa.store') }}" method="POST">
+    <form action="{{ route($prefix.'siswa.store') }}" method="POST">
         @csrf
 
         <div class="row">
@@ -82,7 +82,7 @@
                         <option value="Islam">Islam</option>
                         <option value="Kristen">Kristen</option>
                         <option value="Katolik">Katolik</option>
-                        <option value="Hindu">Hindu</option>x
+                        <option value="Hindu">Hindu</option>
                         <option value="Buddha">Buddha</option>
                         <option value="Konghucu">Konghucu</option>
                     </select>
@@ -120,7 +120,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>
