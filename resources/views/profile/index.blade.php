@@ -43,6 +43,13 @@
     }
 </style>
 
+@php
+    $user = auth()->user();
+    $isAdmin = $user->role === 'admin';
+    $isPtk = $user->role === 'ptk';
+    $isSiswa = $user->role === 'siswa';
+@endphp
+
 <div class="profile-container">
     <div class="row align-items-center">
         <div class="col-md-4 profile-left">

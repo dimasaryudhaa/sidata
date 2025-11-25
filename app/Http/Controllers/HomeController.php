@@ -7,6 +7,7 @@ use App\Models\Jurusan;
 use App\Models\Rombel;
 use App\Models\Rayon;
 use App\Models\Ptk;
+use App\Models\BeasiswaSiswa;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -25,7 +26,7 @@ class HomeController extends Controller
             default:
                 abort(403);
         }
-    } 
+    }
 
     public function admin()
     {
@@ -53,9 +54,14 @@ class HomeController extends Controller
     {
         $user = Auth::user();
 
+        $siswaId = $user->siswa->id ?? null;
+
+        $jumlahBeasiswa = BeasiswaSiswa::where('peserta_didik_id', $siswaId)->count();
+
         return view('home', [
             'role' => 'siswa',
             'user' => $user,
+            'jumlahBeasiswa' => $jumlahBeasiswa,
         ]);
     }
 }

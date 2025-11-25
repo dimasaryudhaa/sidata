@@ -64,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('admin')->name('admin.')->group(function () {
 
+        Route::resource('profile', ProfileController::class);
+
         //siswa
         Route::resource('siswa', SiswaController::class);
         Route::resource('akun-siswa', AkunSiswaController::class);
@@ -140,6 +142,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('kompetensi-ptk', KompetensiPtkController::class);
         Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
         Route::resource('tunjangan', TunjanganController::class);
+        Route::resource('profile', ProfileController::class);
     });
 
     Route::prefix('siswa')->name('siswa.')->group(function () {
@@ -155,14 +158,11 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('orang-tua', OrangTuaController::class);
         Route::resource('registrasi-siswa', RegistrasiSiswaController::class);
         Route::resource('kesejahteraan-siswa', KesejahteraanSiswaController::class);
-         Route::resource('kontak-siswa', KontakSiswaController::class);
+        Route::resource('kontak-siswa', KontakSiswaController::class);
+        Route::resource('profile', ProfileController::class);
     });
 
 
-    //profile
-    Route::resource('profile', ProfileController::class);
     Route::resource('pendaftaran-keluar', PendaftaranKeluarController::class);
-
-    //akademik
 
 });

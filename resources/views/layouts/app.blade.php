@@ -328,18 +328,40 @@
                 <i class="bi bi-person-circle"></i>
             </a>
 
+            @php
+                $user = auth()->user();
+                switch($user->role) {
+                    case 'admin':
+                        $profileRoute = route('admin.profile.index');
+                        break;
+                    case 'ptk':
+                        $profileRoute = route('ptk.profile.index');
+                        break;
+                    case 'siswa':
+                        $profileRoute = route('siswa.profile.index');
+                        break;
+                    default:
+                        $profileRoute = route('profile.index');
+                }
+            @endphp
+
             <div id="profileDropdown"
                 class="position-absolute bg-white border rounded shadow"
                 style="display:none; min-width:150px; top:80%; right:5; z-index:1050;">
-                <a href="{{ route('profile.index') }}" class="d-block px-3 py-2 text-decoration-none text-dark">Profile</a>
-                 <form action="{{ route('logout') }}" method="POST" id="logout-form">
+
+                <a href="{{ $profileRoute }}" class="d-block px-3 py-2 text-decoration-none text-dark">
+                    Profile
+                </a>
+
+                <form action="{{ route('logout') }}" method="POST" id="logout-form">
                     @csrf
                     <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                       style="display: block; padding: 0.75rem 1rem; text-decoration: none; transition: 0.2s;">
+                    style="display: block; padding: 0.75rem 1rem; text-decoration: none; transition: 0.2s;">
                         Logout
                     </a>
                 </form>
             </div>
+
         </div>
 
         {{-- @if(auth()->user()->role === 'ptk')
