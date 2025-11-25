@@ -10,13 +10,17 @@ class RayonController extends Controller
 {
     public function index()
     {
-        $rayon = Rayon::with('ptk')->orderBy('nama_rayon', 'asc')->paginate(12);
+        $rayon = Rayon::with('ptk')
+            ->orderBy('nama_rayon', 'asc')
+            ->paginate(12);
+
         return view('rayon.index', compact('rayon'));
     }
 
     public function create()
     {
-        $ptks = Ptk::all();
+        $ptks = Ptk::orderBy('nama_lengkap', 'asc')->get();
+
         return view('rayon.create', compact('ptks'));
     }
 
@@ -28,12 +32,16 @@ class RayonController extends Controller
         ]);
 
         Rayon::create($request->all());
-        return redirect()->route('rayon.index')->with('success', 'Rayon berhasil ditambahkan.');
+
+        return redirect()->route('admin.rayon.index')
+            ->with('success', 'Rayon berhasil ditambahkan.');
     }
 
     public function edit(Rayon $rayon)
     {
-        return view('rayon.edit', compact('rayon'));
+        $ptks = Ptk::orderBy('nama_lengkap', 'asc')->get();
+
+        return view('rayon.edit', compact('rayon', 'ptks'));
     }
 
     public function update(Request $request, Rayon $rayon)
@@ -44,12 +52,16 @@ class RayonController extends Controller
         ]);
 
         $rayon->update($request->all());
-        return redirect()->route('rayon.index')->with('success', 'Rayon berhasil diupdate.');
+
+        return redirect()->route('admin.rayon.index')
+            ->with('success', 'Rayon berhasil diupdate.');
     }
 
     public function destroy(Rayon $rayon)
     {
         $rayon->delete();
-        return redirect()->route('rayon.index')->with('success', 'Rayon berhasil dihapus.');
+
+        return redirect()->route('admin.rayon.index')
+            ->with('success', 'Rayon berhasil dihapus.');
     }
 }

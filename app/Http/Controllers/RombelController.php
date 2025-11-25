@@ -16,7 +16,7 @@ class RombelController extends Controller
 
     public function create()
     {
-        $jurusan = Jurusan::all(); 
+        $jurusan = Jurusan::all();
         return view('rombel.create', compact('jurusan'));
     }
 
@@ -28,7 +28,7 @@ class RombelController extends Controller
         ]);
 
         Rombel::create($request->all());
-        return redirect()->route('rombel.index')->with('success', 'Rombel berhasil ditambahkan.');
+        return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil ditambahkan.');
     }
 
     public function edit(Rombel $rombel)
@@ -45,12 +45,12 @@ class RombelController extends Controller
         ]);
 
         $rombel->update($request->all());
-        return redirect()->route('rombel.index')->with('success', 'Rombel berhasil diupdate.');
+        return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil diupdate.');
     }
 
     public function destroy(Rombel $rombel)
     {
         $rombel->delete();
-        return redirect()->route('rombel.index')->with('success', 'Rombel berhasil dihapus.');
+        return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil dihapus.');
     }
 }

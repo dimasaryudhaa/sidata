@@ -25,7 +25,7 @@ class JurusanController extends Controller
         ]);
 
         Jurusan::create($request->all());
-        return redirect()->route('jurusan.index')->with('success', 'Jurusan berhasil ditambahkan.');
+        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil ditambahkan.');
     }
 
     public function edit(Jurusan $jurusan)
@@ -40,12 +40,12 @@ class JurusanController extends Controller
         ]);
 
         $jurusan->update($request->all());
-        return redirect()->route('jurusan.index')->with('success', 'Jurusan berhasil diupdate.');
+        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil diupdate.');
     }
 
     public function destroy(Jurusan $jurusan)
     {
         $jurusan->delete();
-        return redirect()->route('jurusan.index')->with('success', 'Jurusan berhasil dihapus.');
+        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil dihapus.');
     }
 }

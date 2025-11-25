@@ -3,13 +3,13 @@
 @section('content')
 <div class="container">
     <h1>Tambah Semester</h1>
-    <form action="{{ route('semester.store') }}" method="POST">
+    <form action="{{ route('admin.semester.store') }}" method="POST">
         @csrf
 
         <div class="mb-3">
             <label>Nama Semester</label>
             <select name="nama_semester" class="form-control" required>
-                <option value="">-- Pilih Semester --</option>
+                <option value="">Pilih Semester</option>
                 <option value="Ganjil">Ganjil</option>
                 <option value="Genap">Genap</option>
             </select>

@@ -34,6 +34,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.diklat.index') }}" class="btn btn-primary">Diklat</a>
+            <a href="{{ route('admin.nilai-test.index') }}" class="btn btn-primary">Nilai Test</a>
+            <a href="{{ route('admin.pendidikan-ptk.index') }}" class="btn btn-primary">Pendidikan</a>
+            <a href="{{ route('admin.sertifikat-ptk.index') }}" class="btn btn-primary">Sertifikat</a>
+            <a href="{{ route('admin.beasiswa-ptk.index') }}" class="btn btn-primary">Beasiswa</a>
+            <a href="{{ route('admin.penghargaan.index') }}" class="btn btn-primary">Penghargaan</a>
+            <a href="{{ route('admin.kompetensi-ptk.index') }}" class="btn btn-primary">Kompetensi</a>
+            <a href="{{ route('admin.kompetensi-khusus-ptk.index') }}" class="btn btn-primary">Kompetensi Khusus</a>
+        </div>
+    @endif
+
     @if(auth()->user()->role === 'ptk')
         <div class="mb-3 d-flex flex-wrap gap-2">
             <a href="{{ route('ptk.diklat.index') }}" class="btn btn-primary">Diklat</a>

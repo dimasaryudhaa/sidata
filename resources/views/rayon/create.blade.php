@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Tambah Rayon</h1>
-    <form action="{{ route('rayon.store') }}" method="POST">
+    <form action="{{ route('admin.rayon.store') }}" method="POST">
         @csrf
         <div class="mb-3">
             <label>PTK</label>

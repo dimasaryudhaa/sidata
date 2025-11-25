@@ -36,6 +36,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.ptk.index') }}" class="btn btn-primary">Ptk</a>
+            <a href="{{ route('admin.akun-ptk.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('admin.kontak-ptk.index') }}" class="btn btn-primary">Kontak</a>
+            <a href="{{ route('admin.dokumen-ptk.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('admin.anak-ptk.index') }}" class="btn btn-primary">Anak</a>
+            <a href="{{ route('admin.keluarga-ptk.index') }}" class="btn btn-primary">Keluarga</a>
+            <a href="{{ route('admin.tunjangan.index') }}" class="btn btn-primary">Tunjangan</a>
+            <a href="{{ route('admin.kesejahteraan-ptk.index') }}" class="btn btn-primary">Kesejahteraan</a>
+        </div>
+    @endif
+
     @if(auth()->user()->role === 'ptk')
         <div class="mb-3 d-flex flex-wrap gap-2">
             <a href="{{ route('ptk.ptk.index') }}" class="btn btn-primary">Ptk</a>
@@ -87,7 +100,7 @@
                         <th>Jenis Kelamin</th>
                         <th>Tempat, Tanggal Lahir</th>
                         <th>Tahun Masuk</th>
-                        <th style="width:100px;">Aksi</th>
+                        <th style="width:80px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -151,7 +164,7 @@
                         <th style="width:50px;">No</th>
                         <th style="width: 500px">Nama PTK</th>
                         <th>Jumlah Anak</th>
-                        <th style="width:100px;">Aksi</th>
+                        <th style="width:80px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

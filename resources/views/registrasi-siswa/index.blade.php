@@ -32,6 +32,21 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.siswa.index') }}" class="btn btn-primary">Siswa</a>
+            <a href="{{ route('admin.akun-siswa.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('admin.dokumen-siswa.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('admin.periodik.index') }}" class="btn btn-primary">Periodik</a>
+            <a href="{{ route('admin.beasiswa.index') }}" class="btn btn-primary">Beasiswa</a>
+            <a href="{{ route('admin.prestasi.index') }}" class="btn btn-primary">Prestasi</a>
+            <a href="{{ route('admin.orang-tua.index') }}" class="btn btn-primary">Orang Tua</a>
+            <a href="{{ route('admin.registrasi-siswa.index') }}" class="btn btn-primary">Registrasi</a>
+            <a href="{{ route('admin.kesejahteraan-siswa.index') }}" class="btn btn-primary">Kesejahteraan</a>
+            <a href="{{ route('admin.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
+        </div>
+    @endif
+
     @if(auth()->user()->role === 'siswa')
         <div class="mb-3 d-flex flex-wrap gap-2">
             <a href="{{ route('siswa.siswa.index') }}" class="btn btn-primary">Siswa</a>
@@ -102,12 +117,12 @@
             <thead class="text-white">
                 <tr>
                     @if(!$isSiswa)
-                        <th>No</th>
+                        <th style="width: 50px;">No</th>
                         <th>Nama Siswa</th>
                         <th>Jenis Pendaftaran</th>
                         <th>Tanggal Masuk</th>
                         <th>Sekolah Asal</th>
-                        <th>Aksi</th>
+                        <th style="width: 80px;">Aksi</th>
                     @else
                         <th>Data Registrasi</th>
                         <th>Keterangan</th>
@@ -125,24 +140,24 @@
                             <td>{{ $item->jenis_pendaftaran ?? '-' }}</td>
                             <td>{{ $item->tanggal_masuk ?? '-' }}</td>
                             <td>{{ $item->sekolah_asal ?? '-' }}</td>
-
                             <td>
-                                <a href="{{ route($prefix.'registrasi-siswa.edit', $item->siswa_id) }}"
-                                    class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" style="width:20px;height:20px;">
-                                </a>
-
-                                @if($item->registrasi_id)
-                                <form action="{{ route($prefix.'registrasi-siswa.destroy', $item->registrasi_id) }}"
-                                      method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-no-border"
-                                        onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                        <img src="{{ asset('images/delete.png') }}" style="width:20px;height:20px;">
-                                    </button>
-                                </form>
-                                @endif
+                                <div class="d-flex align-items-center gap-1">
+                                    <a href="{{ route($prefix.'registrasi-siswa.edit', $item->siswa_id) }}"
+                                    class="btn btn-sm btn-no-border p-1">
+                                        <img src="{{ asset('images/edit.png') }}" style="width:20px;height:20px;">
+                                    </a>
+                                    @if($item->registrasi_id)
+                                    <form action="{{ route($prefix.'registrasi-siswa.destroy', $item->registrasi_id) }}"
+                                        method="POST" class="m-0 p-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-no-border p-1"
+                                                onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                            <img src="{{ asset('images/delete.png') }}" style="width:20px;height:20px;">
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
 

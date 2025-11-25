@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Edit Rombel</h1>
-    <form action="{{ route('rombel.update', $rombel->id) }}" method="POST">
+    <form action="{{ route('admin.rombel.update', $rombel->id) }}" method="POST">
         @csrf
         @method('PUT')
         <div class="mb-3">
@@ -19,8 +19,8 @@
             <input type="text" name="nama_rombel" class="form-control" value="{{ $rombel->nama_rombel }}" required>
         </div>
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('rombel.index') }}" class="btn btn-secondary me-2">Kembali</a>
-            <button type="submit" class="btn btn-success">Update</button>
+            <a href="{{ route('admin.rombel.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <button type="submit" class="btn btn-success">Perbarui</button>
         </div>
     </form>
 </div>

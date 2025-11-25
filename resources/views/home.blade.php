@@ -54,6 +54,13 @@
                                 <i class="bi bi-people"></i>
                             </div>
                         </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ route('admin.ptk.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="card mb-3 shadow hoverable"
+                         style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
                             <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
                                  style="background-color: white;">
@@ -61,21 +68,17 @@
                                 <h3 class="mb-0">{{ $jumlahPtk }}</h3>
                             </div>
                             <div class="d-flex justify-content-center align-items-center w-25"
-                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
-                                <i class="bi bi-people"></i>
+                                style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-person-badge"></i>
                             </div>
                         </div>
-                        <div class="d-flex h-100">
-                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
-                                 style="background-color: white;">
-                                <p class="mb-0">Jumlah Jurusan</p>
-                                <h3 class="mb-0">{{ $jumlahJurusan }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center w-25"
-                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
-                                <i class="bi bi-people"></i>
-                            </div>
-                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ route('admin.rayon.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="card mb-3 shadow hoverable"
+                         style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
                             <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
                                  style="background-color: white;">
@@ -84,9 +87,16 @@
                             </div>
                             <div class="d-flex justify-content-center align-items-center w-25"
                                  style="background-color: #0770d3; color: white; font-size: 2rem;">
-                                <i class="bi bi-people"></i>
+                                <i class="bi bi-geo"></i>
                             </div>
                         </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ route('admin.rombel.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="card mb-3 shadow hoverable"
+                         style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
                             <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
                                  style="background-color: white;">
@@ -101,7 +111,24 @@
                     </div>
                 </a>
             </div>
-
+            <div class="col-md-3">
+                <a href="{{ route('admin.rayon.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="card mb-3 shadow hoverable"
+                         style="height: 100px; border-radius: 12px; overflow: hidden;">
+                        <div class="d-flex h-100">
+                            <div class="d-flex flex-column justify-content-center align-items-start w-75 p-3"
+                                 style="background-color: white;">
+                                <p class="mb-0">Jumlah Jurusan</p>
+                                <h3 class="mb-0">{{ $jumlahJurusan }}</h3>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center w-25"
+                                 style="background-color: #0770d3; color: white; font-size: 2rem;">
+                                <i class="bi bi-building"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
 
     @elseif($isPtk)

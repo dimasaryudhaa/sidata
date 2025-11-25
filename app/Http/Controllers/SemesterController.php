@@ -28,7 +28,7 @@ class SemesterController extends Controller
         ]);
 
         Semester::create($request->all());
-        return redirect()->route('semester.index')->with('success', 'Semester berhasil ditambahkan.');
+        return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil ditambahkan.');
     }
 
     public function edit(Semester $semester)
@@ -44,12 +44,12 @@ class SemesterController extends Controller
         ]);
 
         $semester->update($request->all());
-        return redirect()->route('semester.index')->with('success', 'Semester berhasil diupdate.');
+        return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil diupdate.');
     }
 
     public function destroy(Semester $semester)
     {
         $semester->delete();
-        return redirect()->route('semester.index')->with('success', 'Semester berhasil dihapus.');
+        return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil dihapus.');
     }
 }

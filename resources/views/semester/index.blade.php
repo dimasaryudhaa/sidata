@@ -29,8 +29,17 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.jurusan.index') }}" class="btn btn-primary">Jurusan</a>
+            <a href="{{ route('admin.rayon.index') }}" class="btn btn-primary">Rayon</a>
+            <a href="{{ route('admin.rombel.index') }}" class="btn btn-primary">Rombel</a>
+            <a href="{{ route('admin.semester.index') }}" class="btn btn-primary">Semester</a>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('semester.create') }}" class="btn btn-sm btn-no-border">
+        <a href="{{ route('admin.semester.create') }}" class="btn btn-sm btn-no-border">
             <img src="{{ asset('images/tambah.png') }}" alt="Tambah Jurusan" style="width:50px; height:50px; margin-right:5px;">
         </a>
 
@@ -82,10 +91,10 @@
                         <td class="nama_semester">{{ $s->nama_semester }}</td>
                         <td>{{ $s->tahun_ajaran }}</td>
                         <td class="">
-                            <a href="{{ route('semester.edit', $s->id) }}" class="btn btn-sm btn-no-border">
+                            <a href="{{ route('admin.semester.edit', $s->id) }}" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/edit.png') }}" alt="Edit Semester" style="width:20px; height:20px; margin-right:5px;">
                             </a>
-                            <form action="{{ route('semester.destroy', $s->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('admin.semester.destroy', $s->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-no-border"

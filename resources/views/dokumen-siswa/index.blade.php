@@ -73,6 +73,21 @@ setTimeout(() => {
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.siswa.index') }}" class="btn btn-primary">Siswa</a>
+            <a href="{{ route('admin.akun-siswa.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('admin.dokumen-siswa.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('admin.periodik.index') }}" class="btn btn-primary">Periodik</a>
+            <a href="{{ route('admin.beasiswa.index') }}" class="btn btn-primary">Beasiswa</a>
+            <a href="{{ route('admin.prestasi.index') }}" class="btn btn-primary">Prestasi</a>
+            <a href="{{ route('admin.orang-tua.index') }}" class="btn btn-primary">Orang Tua</a>
+            <a href="{{ route('admin.registrasi-siswa.index') }}" class="btn btn-primary">Registrasi</a>
+            <a href="{{ route('admin.kesejahteraan-siswa.index') }}" class="btn btn-primary">Kesejahteraan</a>
+            <a href="{{ route('admin.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
+        </div>
+    @endif
+
     @if(auth()->user()->role === 'siswa')
         <div class="mb-3 d-flex flex-wrap gap-2">
             <a href="{{ route('siswa.siswa.index') }}" class="btn btn-primary">Siswa</a>
@@ -181,10 +196,10 @@ setTimeout(() => {
     <table class="table table-bordered" id="dokumenTable">
         <thead class="text-white">
             <tr>
-                <th width="50">No</th>
+                <th style="width: 50px">No</th>
                 <th>Nama Siswa</th>
                 <th>Status</th>
-                <th width="80">Aksi</th>
+                <th style="width: 80px;">Aksi</th>
             </tr>
         </thead>
         <tbody>

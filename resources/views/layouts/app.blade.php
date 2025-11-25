@@ -200,7 +200,8 @@
 
 
                     @if (auth()->user()->role === 'admin')
-                        <li class="has-submenu">
+                        <li><a href="{{ route('admin.siswa.index') }}"><i class="bi bi-person-badge me-2"></i>Data Siswa</a></li>
+                        {{-- <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-people me-2"></i>Data Siswa
                             </a>
@@ -217,9 +218,11 @@
                                 <li><a href="{{ route('admin.kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
                                 <li><a href="{{ route('pendaftaran-keluar.index') }}"><i class="bi bi-box-arrow-right me-2"></i>Pendaftaran Keluar</a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
-                        <li class="has-submenu">
+                        <li><a href="{{ route('admin.jurusan.index') }}"><i class="bi bi-book me-2"></i>Akademik</a></li>
+
+                        {{-- <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-book me-2"></i>Akademik
                             </a>
@@ -229,9 +232,11 @@
                                 <li><a href="{{ route('rombel.index') }}"><i class="bi bi-people me-2"></i>Rombel</a></li>
                                 <li><a href="{{ route('rayon.index') }}"><i class="bi bi-geo me-2"></i>Rayon</a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
-                        <li class="has-submenu">
+                        <li><a href="{{ route('admin.ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Data Ptk</a></li>
+
+                        {{-- <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-person-badge me-2"></i>Data PTK
                             </a>
@@ -245,9 +250,10 @@
                                 <li><a href="{{ route('admin.tunjangan.index') }}"><i class="bi-currency-exchange"></i>Tunjangan</a></li>
                                 <li><a href="{{ route('admin.kesejahteraan-ptk.index') }}"><i class="bi bi-heart me-2"></i>Kesejahteraan</a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
-                        <li class="has-submenu">
+                        <li><a href="{{ route('admin.penugasan-ptk.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat & Karir</a></li>
+                        {{-- <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-clock-history me-2"></i>Riwayat & Karir PTK
                             </a>
@@ -261,9 +267,10 @@
                                 <li><a href="{{ route('admin.riwayat-kepangkatan.index') }}"><i class="bi bi-diagram-3 me-2"></i>Riwayat Kepangkatan</a></li>
                                 <li><a href="{{ route('admin.riwayat-jabatan-fungsional.index') }}"><i class="bi bi-diagram-2 me-2"></i>Jabatan Fungsional</a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
-                        <li class="has-submenu">
+                        <li><a href="{{ route('admin.diklat.index') }}"><i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi</a></li>
+                        {{-- <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi PTK
                             </a>
@@ -277,17 +284,26 @@
                                 <li><a href="{{ route('admin.kompetensi-ptk.index') }}"><i class="bi bi-gear me-2"></i>Kompetensi</a></li>
                                 <li><a href="{{ route('admin.kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
                             </ul>
+                        </li> --}}
+                    @endif
+
+                    @if (auth()->user()->role === 'ptk')
+                        <li><a href="{{ route('ptk.master-ptk.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Ptk</a></li>
+                        <li><a href="{{ route('ptk.ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Data Ptk</a></li>
+                        <li><a href="{{ route('ptk.penugasan-ptk.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat & Karir</a></li>
+                        <li><a href="{{ route('ptk.diklat.index') }}"><i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi</a></li>
                         </li>
                     @endif
 
 
-                    {{-- @if (auth()->user()->role === 'siswa')
+                    @if (auth()->user()->role === 'siswa')
                         <li><a href="{{ route('siswa.master-siswa.index') }}"><i class="bi bi-folder2-open me-2"></i>Master Siswa</a></li>
-                        <li class="has-submenu">
+                        <li><a href="{{ route('siswa.siswa.index') }}"><i class="bi bi-person-badge me-2"></i>Data Siswa</a></li>
+                        {{-- <li class="has-submenu">
                             <a href="#" onclick="toggleSubmenu(event)">
                                 <i class="bi bi-person-badge me-2"></i>Data Siswa
-                            </a>
-                            <ul class="submenu">
+                            </a> --}}
+                            {{-- <ul class="submenu">
                                 <li><a href="{{ route('siswa.siswa.index') }}"><i class="bi bi-person-lines-fill me-2"></i>Siswa</a></li>
                                 <li><a href="{{ route('siswa.akun-siswa.index') }}"><i class="bi bi-key me-2"></i>Akun</a></li>
                                 <li><a href="{{ route('siswa.dokumen-siswa.index') }}"><i class="bi bi-file-earmark me-2"></i>Dokumen</a></li>
@@ -298,9 +314,9 @@
                                 <li><a href="{{ route('siswa.registrasi-siswa.index') }}"><i class="bi bi-journal-check me-2"></i>Registrasi Siswa</a></li>
                                 <li><a href="{{ route('siswa.kesejahteraan-siswa.index') }}"><i class="bi bi-heart-pulse me-2"></i>Kesejahteraan Siswa</a></li>
                                 <li><a href="{{ route('siswa.kontak-siswa.index') }}"><i class="bi bi-geo-alt me-2"></i>Kontak & Alamat Siswa</a></li>
-                            </ul>
+                            </ul> --}}
                         </li>
-                    @endif --}}
+                    @endif
                 @endguest
             </ul>
         </div>
@@ -326,7 +342,7 @@
             </div>
         </div>
 
-        @if(auth()->user()->role === 'ptk')
+        {{-- @if(auth()->user()->role === 'ptk')
             <nav class="bg-white border-bottom mb-3">
                 <div class="container-fluid d-flex flex-wrap gap-2 py-2">
 
@@ -356,9 +372,9 @@
 
                 </div>
             </nav>
-        @endif
+        @endif --}}
 
-        @if(auth()->user()->role === 'siswa')
+        {{-- @if(auth()->user()->role === 'siswa')
             <nav class="bg-white border-bottom mb-3">
                 <div class="container-fluid d-flex flex-wrap gap-2 py-2">
 
@@ -376,7 +392,7 @@
 
                 </div>
             </nav>
-        @endif
+        @endif --}}
 
         <div class="content-area">
             <div class="scrollable-content">

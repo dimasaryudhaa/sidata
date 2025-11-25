@@ -29,8 +29,17 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.jurusan.index') }}" class="btn btn-primary">Jurusan</a>
+            <a href="{{ route('admin.rayon.index') }}" class="btn btn-primary">Rayon</a>
+            <a href="{{ route('admin.rombel.index') }}" class="btn btn-primary">Rombel</a>
+            <a href="{{ route('admin.semester.index') }}" class="btn btn-primary">Semester</a>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('rayon.create') }}" class="btn btn-sm btn-no-border">
+        <a href="{{ route('admin.rayon.create') }}" class="btn btn-sm btn-no-border">
             <img src="{{ asset('images/tambah.png') }}" alt="Tambah Rayon" style="width:50px; height:50px; margin-right:5px;">
         </a>
         <form class="d-flex mb-3" style="gap:0.5rem;">
@@ -81,10 +90,10 @@
                         <td class="nama_rayon">{{ $r->nama_rayon }}</td>
                         <td>{{ $r->ptk->nama_lengkap ?? '-' }}</td>
                         <td>
-                            <a href="{{ route('rayon.edit', $r->id) }}" class="btn btn-sm btn-no-border">
+                            <a href="{{ route('admin.rayon.edit', $r->id) }}" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/edit.png') }}" alt="Edit Rayon" style="width:20px; height:20px; margin-right:5px;">
                             </a>
-                            <form action="{{ route('rayon.destroy', $r->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('admin.rayon.destroy', $r->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-no-border"

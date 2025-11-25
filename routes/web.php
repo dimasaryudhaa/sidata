@@ -102,6 +102,12 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('kompetensi-ptk', KompetensiPtkController::class);
         Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
         Route::resource('tunjangan', TunjanganController::class);
+
+        //akademik
+        Route::resource('rayon', RayonController::class);
+        Route::resource('jurusan', JurusanController::class);
+        Route::resource('rombel', RombelController::class);
+        Route::resource('semester', SemesterController::class);
     });
 
     Route::prefix('ptk')->name('ptk.')->group(function () {
@@ -158,9 +164,5 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('pendaftaran-keluar', PendaftaranKeluarController::class);
 
     //akademik
-    Route::resource('rayon', RayonController::class);
-    Route::resource('jurusan', JurusanController::class);
-    Route::resource('rombel', RombelController::class);
-    Route::resource('semester', SemesterController::class);
 
 });

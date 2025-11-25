@@ -29,6 +29,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.ptk.index') }}" class="btn btn-primary">Ptk</a>
+            <a href="{{ route('admin.akun-ptk.index') }}" class="btn btn-primary">Akun</a>
+            <a href="{{ route('admin.kontak-ptk.index') }}" class="btn btn-primary">Kontak</a>
+            <a href="{{ route('admin.dokumen-ptk.index') }}" class="btn btn-primary">Dokumen</a>
+            <a href="{{ route('admin.anak-ptk.index') }}" class="btn btn-primary">Anak</a>
+            <a href="{{ route('admin.keluarga-ptk.index') }}" class="btn btn-primary">Keluarga</a>
+            <a href="{{ route('admin.tunjangan.index') }}" class="btn btn-primary">Tunjangan</a>
+            <a href="{{ route('admin.kesejahteraan-ptk.index') }}" class="btn btn-primary">Kesejahteraan</a>
+        </div>
+    @endif
+
     @if(auth()->user()->role === 'ptk')
         <div class="mb-3 d-flex flex-wrap gap-2">
             <a href="{{ route('ptk.ptk.index') }}" class="btn btn-primary">Ptk</a>
@@ -45,7 +58,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         @if(!$isPtk)
             <div class="d-flex align-items-center">
-                <a href="{{ route('ptk.create') }}" class="btn btn-sm btn-no-border me-2">
+                <a href="{{ route('ptk.ptk.create') }}" class="btn btn-sm btn-no-border me-2">
                     <img src="{{ asset('images/tambah.png') }}" alt="Tambah PTK"
                         style="width:50px; height:50px;">
                 </a>
@@ -126,10 +139,10 @@
                             <td>{{ $p->tempat_lahir ?? '-' }}</td>
                             <td>{{ $p->tanggal_lahir ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('ptk.edit', $p->id) }}" class="btn btn-sm btn-no-border">
+                                <a href="{{ route('ptk.ptk.edit', $p->id) }}" class="btn btn-sm btn-no-border">
                                     <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                                 </a>
-                                <form action="{{ route('ptk.destroy', $p->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('ptk.ptk.destroy', $p->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-no-border"

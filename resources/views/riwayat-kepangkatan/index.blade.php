@@ -36,6 +36,19 @@
 
 <div class="container">
 
+    @if(auth()->user()->role === 'admin')
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.penugasan-ptk.index') }}" class="btn btn-primary">Penugasan</a>
+            <a href="{{ route('admin.kepegawaian-ptk.index') }}" class="btn btn-primary">Kepegawaian</a>
+            <a href="{{ route('admin.tugas-tambahan.index') }}" class="btn btn-primary">Tugas Tambahan</a>
+            <a href="{{ route('admin.riwayat-gaji.index') }}" class="btn btn-primary">Riwayat Gaji</a>
+            <a href="{{ route('admin.riwayat-karir.index') }}" class="btn btn-primary">Riwayat Karir</a>
+            <a href="{{ route('admin.riwayat-jabatan.index') }}" class="btn btn-primary">Riwayat Jabatan</a>
+            <a href="{{ route('admin.riwayat-kepangkatan.index') }}" class="btn btn-primary">Riwayat Kepangkatan</a>
+            <a href="{{ route('admin.riwayat-jabatan-fungsional.index') }}" class="btn btn-primary">Riwayat Jabatan Fungsional</a>
+        </div>
+    @endif
+
     @if(auth()->user()->role === 'ptk')
         <div class="mb-3 d-flex flex-wrap gap-2">
             <a href="{{ route('ptk.penugasan-ptk.index') }}" class="btn btn-primary">Penugasan</a>
