@@ -117,8 +117,13 @@
                             <td>{{ $item->nomor_surat_tugas ?? '-' }}</td>
                             <td>{{ $item->tanggal_surat_tugas ?? '-' }}</td>
                             <td>{{ $item->tmt_tugas ?? '-' }}</td>
-                            <td>{{ $item->status_sekolah_induk ?? '-' }}</td>
-
+                            <td>
+                                @if($item->penugasan_id)
+                                    {{ $item->status_sekolah_induk === 'Ya' ? 'Ya' : 'Tidak' }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>
                                 @if($item->penugasan_id)
                                     <a href="{{ route($prefix.'penugasan-ptk.edit', ['penugasan_ptk' => $item->penugasan_id]) }}"

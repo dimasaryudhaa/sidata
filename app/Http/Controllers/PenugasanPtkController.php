@@ -28,7 +28,12 @@ class PenugasanPtkController extends Controller
                     'penugasan.nomor_surat_tugas',
                     'penugasan.tanggal_surat_tugas',
                     'penugasan.tmt_tugas',
-                    'penugasan.status_sekolah_induk'
+                    DB::raw("CASE
+                                WHEN penugasan.status_sekolah_induk IS NULL THEN '-'
+                                WHEN penugasan.status_sekolah_induk = 'Ya' THEN 'Ya'
+                                WHEN penugasan.status_sekolah_induk = 'Tidak' THEN 'Tidak'
+                                ELSE '-'
+                            END as status_sekolah_induk")
                 )
                 ->paginate(1);
 
@@ -43,7 +48,12 @@ class PenugasanPtkController extends Controller
                     'penugasan.nomor_surat_tugas',
                     'penugasan.tanggal_surat_tugas',
                     'penugasan.tmt_tugas',
-                    'penugasan.status_sekolah_induk'
+                    DB::raw("CASE
+                                WHEN penugasan.status_sekolah_induk IS NULL THEN '-'
+                                WHEN penugasan.status_sekolah_induk = 'Ya' THEN 'Ya'
+                                WHEN penugasan.status_sekolah_induk = 'Tidak' THEN 'Tidak'
+                                ELSE '-'
+                            END as status_sekolah_induk")
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
                 ->paginate(12);
@@ -51,7 +61,6 @@ class PenugasanPtkController extends Controller
             return view('penugasan-ptk.index', compact('data', 'isPtk'));
         }
     }
-
 
     public function create()
     {
@@ -84,7 +93,6 @@ class PenugasanPtkController extends Controller
             ->with('success', 'Penugasan PTK berhasil ditambahkan.');
     }
 
-
     public function edit($id)
     {
         $user = Auth::user();
@@ -94,7 +102,6 @@ class PenugasanPtkController extends Controller
         $penugasan = PenugasanPtk::find($id);
 
         if (!$penugasan) {
-            // id bukan penugasan → berarti id PTK
             $ptk = Ptk::findOrFail($id);
             $existing = PenugasanPtk::where('ptk_id', $ptk->id)->first();
 
@@ -119,7 +126,6 @@ class PenugasanPtkController extends Controller
         ]);
     }
 
-
     public function update(Request $request, PenugasanPtk $penugasan_ptk)
     {
         $validated = $request->validate([
@@ -139,7 +145,6 @@ class PenugasanPtkController extends Controller
             ->route($prefix.'penugasan-ptk.index')
             ->with('success', 'Penugasan PTK berhasil diperbarui.');
     }
-
 
     public function destroy($id)
     {
