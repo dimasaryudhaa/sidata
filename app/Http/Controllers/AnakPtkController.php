@@ -137,8 +137,10 @@ class AnakPtkController extends Controller
         ]);
     }
 
-    public function update(Request $request, AnakPtk $anak)
+    public function update(Request $request, $id)
     {
+        $anak = AnakPtk::findOrFail($id);
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'nama_anak' => 'required|string|max:255',
@@ -153,23 +155,21 @@ class AnakPtkController extends Controller
 
         $anak->update($validated);
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()
-            ->route($prefix.'.anak-ptk.index')
+        return redirect()->route($prefix.'anak-ptk.index')
             ->with('success', 'Data Anak PTK berhasil diperbarui.');
     }
 
-    public function destroy($ptk_id)
+    public function destroy($id)
     {
-        AnakPtk::where('ptk_id', $ptk_id)->delete();
+        AnakPtk::findOrFail($id)->delete();
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'anak-ptk.index')
-            ->with('success', 'Semua data anak PTK berhasil dihapus.');
+            ->with('success', 'Data Anak PTK berhasil dihapus.');
     }
+
 
 }

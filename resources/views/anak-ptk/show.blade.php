@@ -65,24 +65,20 @@
                     <td>{{ $a->tempat_lahir ?? '-' }}, {{ $a->tanggal_lahir ? date('d-m-Y', strtotime($a->tanggal_lahir)) : '-' }}</td>
                     <td>{{ $a->tahun_masuk ?? '-' }}</td>
                     <td>
-                        @if($a->anak_id)
-                        <a href="{{ route($prefix.'anak-ptk.edit', $a->anak_id) }}" class="btn btn-sm btn-no-border">
+                        <a href="{{ route($prefix.'anak-ptk.edit', ['anak_ptk' => $a->id]) }}"
+                        class="btn btn-sm btn-no-border">
                             <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
                         </a>
 
-                        <form action="{{ route($prefix.'anak-ptk.destroy', $a->anak_id) }}" method="POST" class="d-inline">
+                        <form action="{{ route($prefix.'anak-ptk.destroy', ['anak_ptk' => $a->id]) }}"
+                            method="POST" class="d-inline"
+                            onsubmit="return confirm('Yakin ingin menghapus data anak PTK ini?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-no-border"
-                                onclick="return confirm('Yakin ingin menghapus semua data anak PTK ini?')">
+                            <button type="submit" class="btn btn-sm btn-no-border">
                                 <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
                             </button>
                         </form>
-                        @else
-                        <button class="btn btn-sm btn-no-border" disabled>
-                            <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
-                        </button>
-                        @endif
                     </td>
                 </tr>
                 @empty
