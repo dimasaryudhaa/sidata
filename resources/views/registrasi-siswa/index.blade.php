@@ -103,13 +103,15 @@
 
     @else
         @php $detail = $data->first(); @endphp
-        <div class="d-flex mb-3">
-            <a href="{{ route($prefix.'registrasi-siswa.edit', $detail->siswa_id) }}"
-                class="btn btn-primary px-4"
-                style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border-radius:6px;">
-                <i class="bi bi-pencil-square me-2"></i> Edit
-            </a>
-        </div>
+        @if ($detail)
+            <div class="d-flex mb-3">
+                <a href="{{ route($prefix.'registrasi-siswa.edit', $detail->siswa_id) }}"
+                    class="btn btn-primary px-4"
+                    style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border-radius:6px;">
+                    <i class="bi bi-pencil-square me-2"></i> Edit
+                </a>
+            </div>
+        @endif
     @endif
 
     <div class="table-responsive rounded-3 overflow-hidden mt-3">

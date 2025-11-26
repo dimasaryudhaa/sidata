@@ -13,6 +13,7 @@ class PtkController extends Controller
     {
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
+        $isAdmin = $user->role === 'admin';
 
         if ($isPtk) {
             $ptk = DB::table('akun_ptk')
@@ -34,7 +35,7 @@ class PtkController extends Controller
                 )
                 ->paginate(1);
 
-            return view('ptk.index', compact('ptk', 'isPtk'));
+            return view('ptk.index', compact('ptk', 'isPtk', 'isAdmin'));
         } else {
             $ptk = DB::table('ptk')
                 ->select(
@@ -70,7 +71,10 @@ class PtkController extends Controller
 
         Ptk::create($request->all());
 
-        return redirect()->route('ptk.index')->with('success', 'Data PTK berhasil ditambahkan!');
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.ptk' : 'ptk.ptk';
+
+        return redirect()->route($prefix.'.index')->with('success', 'Data PTK berhasil ditambahkan!');
     }
 
     public function show(Ptk $ptk)
@@ -105,16 +109,18 @@ class PtkController extends Controller
         $ptk->update($request->all());
 
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $prefix = $user->role === 'admin' ? 'admin.ptk' : 'ptk.ptk';
 
-        return redirect()
-            ->route($prefix.'ptk.index')
-            ->with('success', 'Data PTK berhasil diperbarui!');
+        return redirect()->route($prefix.'.index')->with('success', 'Data PTK berhasil diperbarui!');
     }
 
     public function destroy(Ptk $ptk)
     {
         $ptk->delete();
-        return redirect()->route('ptk.index')->with('success', 'Data PTK berhasil dihapus!');
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.ptk' : 'ptk.ptk';
+
+        return redirect()->route($prefix.'.index')->with('success', 'Data PTK berhasil dihapus!');
     }
 }
