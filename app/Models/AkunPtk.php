@@ -17,10 +17,11 @@ class AkunPtk extends Model
         'password',
     ];
 
-    protected $hidden = ['password']; 
+    protected $hidden = ['password'];
 
     public function ptk()
     {
         return $this->belongsTo(Ptk::class);
     }
+
 }

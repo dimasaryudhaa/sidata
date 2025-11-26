@@ -21,4 +21,6 @@ class AkunSiswa extends Model
     {
         return $this->belongsTo(Siswa::class, 'peserta_didik_id');
     }
+
+    
 }
