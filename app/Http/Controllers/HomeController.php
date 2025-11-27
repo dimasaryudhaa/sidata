@@ -45,7 +45,6 @@ class HomeController extends Controller
         $user = Auth::user();
         $ptk = $user->akunPtk?->ptk;
 
-        // Cek data utama PTK sudah lengkap
         $dataLengkap = $ptk
             ? (
                 $ptk->nama_lengkap &&

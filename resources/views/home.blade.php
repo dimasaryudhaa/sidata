@@ -423,7 +423,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4 d-flex justify-content-center">
+            {{-- <div class="col-md-4 d-flex justify-content-center">
                 <a href="{{ route('ptk.ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                         style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
@@ -450,7 +450,7 @@
                         </h6>
                     </div>
                 </a>
-            </div>
+            </div> --}}
             <div class="col-md-4 d-flex justify-content-center">
                 <a href="{{ route('ptk.keluarga-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
@@ -465,8 +465,6 @@
                     </div>
                 </a>
             </div>
-        </div>
-        <div class="row">
             <div class="col-md-4 d-flex justify-content-center">
                 <a href="{{ route('ptk.penugasan-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
@@ -482,19 +480,25 @@
                 </a>
             </div>
             <div class="col-md-4 d-flex justify-content-center">
-                <a href="{{ route('ptk.dokumen-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.kepegawaian-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                         style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
-                        <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Dokumen PTK</p>
-                        <div style="background-color: {{ $sudahMengunggahDokumen ? '#28a745' : '#dc3545' }}; color: white; font-size: 3rem; width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                            <i class="bi {{ $sudahMengunggahDokumen ? 'bi-check2-circle' : 'bi-x-circle' }}"></i>
+                        <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Kepegawaian PTK</p>
+                        <div style="background-color: {{ $sudahIsiKepegawaian ? '#28a745' : '#dc3545' }};
+                                    color: white; font-size: 3rem; width: 80px; height: 80px;
+                                    border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                            <i class="bi {{ $sudahIsiKepegawaian ? 'bi-check2-circle' : 'bi-x-circle' }}"></i>
                         </div>
-                        <h6 class="mb-0 fw-bold {{ $sudahMengunggahDokumen ? 'text-success' : 'text-danger' }}" style="font-size: 1.2rem;">
-                            {{ $sudahMengunggahDokumen ? 'Sudah Mengisi' : 'Belum Mengisi' }}
+                        <h6 class="mb-0 fw-bold {{ $sudahIsiKepegawaian ? 'text-success' : 'text-danger' }}"
+                            style="font-size: 1.2rem;">
+                            {{ $sudahIsiKepegawaian ? 'Sudah Mengisi' : 'Belum Mengisi' }}
                         </h6>
                     </div>
                 </a>
             </div>
+        </div>
+        <div class="row">
+
         </div>
 
 
@@ -557,7 +561,7 @@
     </div>
     <div class="row">
         <div class="col-md-4 d-flex justify-content-center">
-            <a href="{{ route('ptk.ptk.index') }}" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('siswa.siswa.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="card mb-3 shadow hoverable"
                     style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
                     <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Data PTK</p>
