@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\KesejahteraanPtk;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class KesejahteraanPtkController extends Controller
 {
@@ -76,7 +80,41 @@ class KesejahteraanPtkController extends Controller
             'status' => 'required|in:Masih Menerima,Tidak Menerima',
         ]);
 
-        KesejahteraanPtk::create($validated);
+        $kesejahteraan = KesejahteraanPtk::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('KesejahteraanPTK');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('KesejahteraanPTK');
+            $sheet->fromArray(['Nama PTK', 'Jenis Kesejahteraan', 'Nama', 'Penyelenggara', 'Dari Tahun', 'Sampai Tahun', 'Status'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jenis_kesejahteraan'],
+            $validated['nama'],
+            $validated['penyelenggara'] ?? '',
+            $validated['dari_tahun'] ?? '',
+            $validated['sampai_tahun'] ?? '',
+            $validated['status'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -115,6 +153,8 @@ class KesejahteraanPtkController extends Controller
 
     public function update(Request $request, KesejahteraanPtk $kesejahteraanPtk)
     {
+        $oldNama = $kesejahteraanPtk->nama;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jenis_kesejahteraan' => 'required|string|max:100',
@@ -126,6 +166,31 @@ class KesejahteraanPtkController extends Controller
         ]);
 
         $kesejahteraanPtk->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KesejahteraanPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNama) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_kesejahteraan']);
+                        $sheet->setCellValue("C{$row}", $validated['nama']);
+                        $sheet->setCellValue("D{$row}", $validated['penyelenggara'] ?? '');
+                        $sheet->setCellValue("E{$row}", $validated['dari_tahun'] ?? '');
+                        $sheet->setCellValue("F{$row}", $validated['sampai_tahun'] ?? '');
+                        $sheet->setCellValue("G{$row}", $validated['status']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -136,7 +201,26 @@ class KesejahteraanPtkController extends Controller
 
     public function destroy(KesejahteraanPtk $kesejahteraanPtk)
     {
+        $oldNama = $kesejahteraanPtk->nama;
         $kesejahteraanPtk->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KesejahteraanPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNama) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';

@@ -28,9 +28,10 @@
 </style>
 
 @php
+    use Illuminate\Support\Facades\Auth;
+
     $user = Auth::user();
     $isPtk = $user->role === 'ptk';
-
     $prefix = $isPtk ? 'ptk.' : 'admin.';
 @endphp
 

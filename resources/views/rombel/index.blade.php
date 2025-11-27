@@ -87,7 +87,7 @@
             <tbody>
                 @foreach($rombel as $r)
                     <tr>
-                        <td style="width: 60px;">{{ $loop->iteration }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td class="nama_rombel">{{ $r->nama_rombel }}</td>
                         <td>{{ $r->jurusan->nama_jurusan ?? '-' }}</td>
                         <td>

@@ -86,7 +86,7 @@
             <tbody>
                 @foreach($rayon as $r)
                     <tr>
-                        <td style="width: 60px;">{{ $loop->iteration }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td class="nama_rayon">{{ $r->nama_rayon }}</td>
                         <td>{{ $r->ptk->nama_lengkap ?? '-' }}</td>
                         <td>

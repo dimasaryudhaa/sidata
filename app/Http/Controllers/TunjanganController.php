@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Tunjangan;
 use App\Models\Ptk;
 use App\Models\Semester;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class TunjanganController extends Controller
 {
@@ -97,7 +101,46 @@ class TunjanganController extends Controller
             'status' => 'required|in:Masih Menerima,Tidak Menerima',
         ]);
 
-        Tunjangan::create($validated);
+        $tunjangan = Tunjangan::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('Tunjangan');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('Tunjangan');
+            $sheet->fromArray(['Nama PTK', 'Jenis Tunjangan', 'Nama Tunjangan', 'Instansi', 'SK Tunjangan', 'Tanggal SK', 'Semester', 'Sumber Dana', 'Dari Tahun', 'Sampai Tahun', 'Nominal', 'Status'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jenis_tunjangan'],
+            $validated['nama_tunjangan'],
+            $validated['instansi'] ?? '',
+            $validated['sk_tunjangan'] ?? '',
+            $validated['tgl_sk_tunjangan'] ?? '',
+            $validated['semester_id'],
+            $validated['sumber_dana'] ?? '',
+            $validated['dari_tahun'] ?? '',
+            $validated['sampai_tahun'] ?? '',
+            $validated['nominal'] ?? '',
+            $validated['status'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -139,6 +182,8 @@ class TunjanganController extends Controller
 
     public function update(Request $request, Tunjangan $tunjangan)
     {
+        $oldNamaTunjangan = $tunjangan->nama_tunjangan;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jenis_tunjangan' => 'required|string|max:100',
@@ -155,21 +200,67 @@ class TunjanganController extends Controller
         ]);
 
         $tunjangan->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $path = storage_path('app/exports/sidata.xlsx');
 
-        return redirect()
-            ->route($prefix.'tunjangan.index')
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('Tunjangan');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNamaTunjangan) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_tunjangan']);
+                        $sheet->setCellValue("C{$row}", $validated['nama_tunjangan']);
+                        $sheet->setCellValue("D{$row}", $validated['instansi'] ?? '');
+                        $sheet->setCellValue("E{$row}", $validated['sk_tunjangan'] ?? '');
+                        $sheet->setCellValue("F{$row}", $validated['tgl_sk_tunjangan'] ?? '');
+                        $sheet->setCellValue("G{$row}", $validated['semester_id']);
+                        $sheet->setCellValue("H{$row}", $validated['sumber_dana'] ?? '');
+                        $sheet->setCellValue("I{$row}", $validated['dari_tahun'] ?? '');
+                        $sheet->setCellValue("J{$row}", $validated['sampai_tahun'] ?? '');
+                        $sheet->setCellValue("K{$row}", $validated['nominal'] ?? '');
+                        $sheet->setCellValue("L{$row}", $validated['status']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
+        $prefix = $ptk = Auth::user()->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'tunjangan.index')
             ->with('success', 'Data tunjangan berhasil diperbarui.');
     }
 
     public function destroy(Tunjangan $tunjangan)
     {
+        $oldNamaTunjangan = $tunjangan->nama_tunjangan;
         $tunjangan->delete();
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('Tunjangan');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNamaTunjangan) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'tunjangan.index')
             ->with('success', 'Data tunjangan berhasil dihapus.');

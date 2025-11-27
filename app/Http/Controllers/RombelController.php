@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Rombel;
 use App\Models\Jurusan;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class RombelController extends Controller
 {
@@ -27,7 +31,38 @@ class RombelController extends Controller
             'nama_rombel' => 'required|string|max:100',
         ]);
 
-        Rombel::create($request->all());
+        $rombel = Rombel::create($request->all());
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('Rombel');
+
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('Rombel');
+            $sheet->fromArray(['ID Jurusan', 'Nama Rombel'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+
+        $sheet->fromArray([
+            $rombel->jurusan_id,
+            $rombel->nama_rombel,
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
+
         return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil ditambahkan.');
     }
 
@@ -44,13 +79,70 @@ class RombelController extends Controller
             'nama_rombel' => 'required|string|max:100',
         ]);
 
+        $oldJurusan = $rombel->jurusan_id;
+        $oldNama = $rombel->nama_rombel;
+
         $rombel->update($request->all());
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('Rombel');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if (
+                        $sheet->getCell("A{$row}")->getValue() == $oldJurusan &&
+                        $sheet->getCell("B{$row}")->getValue() == $oldNama
+                    ) {
+                        $sheet->setCellValue("A{$row}", $rombel->jurusan_id);
+                        $sheet->setCellValue("B{$row}", $rombel->nama_rombel);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil diupdate.');
     }
 
     public function destroy(Rombel $rombel)
     {
+        if ($rombel->pesertaDidik()->exists()) {
+            return redirect()->route('admin.rombel.index')
+                ->with('error', 'Rombel tidak dapat dihapus karena masih memiliki peserta didik.');
+        }
+
+        $jurusan = $rombel->jurusan_id;
+        $nama = $rombel->nama_rombel;
+
         $rombel->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('Rombel');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if (
+                        $sheet->getCell("A{$row}")->getValue() == $jurusan &&
+                        $sheet->getCell("B{$row}")->getValue() == $nama
+                    ) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil dihapus.');
     }
+
 }

@@ -8,6 +8,10 @@ use App\Models\AkunPtk;
 use App\Models\Ptk;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class AkunPtkController extends Controller
 {
@@ -63,6 +67,7 @@ class AkunPtkController extends Controller
 
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'email' => 'required|email|unique:akun_ptk,email|unique:users,email',
@@ -84,11 +89,40 @@ class AkunPtkController extends Controller
             'updated_at' => now(),
         ]);
 
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('AkunPTK');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('AkunPTK');
+            $sheet->fromArray(['Nama PTK', 'Email', 'Password (Hash)'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['email'],
+            $validated['password'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
+
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'akun-ptk.index')
-                        ->with('success', 'Akun PTK berhasil ditambahkan ke tabel users.');
+                        ->with('success', 'Akun PTK berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -155,6 +189,28 @@ class AkunPtkController extends Controller
             ->where('email', $oldEmail)
             ->update($updateData);
 
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('AkunPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("B{$row}")->getValue() == $oldEmail) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['email']);
+                        if (isset($validated['password'])) {
+                            $sheet->setCellValue("C{$row}", $validated['password']);
+                        }
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
@@ -171,11 +227,30 @@ class AkunPtkController extends Controller
 
         $akun->delete();
 
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('AkunPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("B{$row}")->getValue() == $akun->email) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'akun-ptk.index')
-            ->with('success', 'Akun PTK dan user berhasil dihapus.');
+            ->with('success', 'Akun PTK berhasil dihapus.');
     }
+
 
 }

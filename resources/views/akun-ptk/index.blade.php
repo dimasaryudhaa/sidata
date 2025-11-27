@@ -3,6 +3,8 @@
 @section('content')
 
 @php
+    use Illuminate\Support\Facades\Auth;
+
     $isAdmin = Auth::user()->role === 'admin';
     $isPtk = Auth::user()->role === 'ptk';
 @endphp

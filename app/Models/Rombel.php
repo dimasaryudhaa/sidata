@@ -16,4 +16,10 @@ class Rombel extends Model
     {
         return $this->belongsTo(Jurusan::class);
     }
+
+    public function pesertaDidik()
+    {
+        return $this->hasMany(Siswa::class, 'rombel_id');
+    }
+
 }

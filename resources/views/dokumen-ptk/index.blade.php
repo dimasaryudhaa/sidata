@@ -3,6 +3,8 @@
 @section('content')
 
 @php
+    use Illuminate\Support\Facades\Auth;
+
     $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
 @endphp
 

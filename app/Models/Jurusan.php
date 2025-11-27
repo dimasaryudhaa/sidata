@@ -11,4 +11,10 @@ class Jurusan extends Model
 
     protected $table = 'jurusan';
     protected $fillable = ['nama_jurusan'];
+
+    public function rombels()
+    {
+        return $this->hasMany(Rombel::class);
+    }
+
 }

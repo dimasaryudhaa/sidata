@@ -6,6 +6,10 @@ use App\Models\Ptk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class PtkController extends Controller
 {
@@ -69,12 +73,50 @@ class PtkController extends Controller
             'nama_ibu_kandung' => 'required|string|max:255',
         ]);
 
-        Ptk::create($request->all());
+        $ptk = Ptk::create($request->all());
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('PTK');
+
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('PTK');
+            $sheet->fromArray(
+                ['Nama Lengkap', 'NIK', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Nama Ibu Kandung'],
+                null,
+                'A1'
+            );
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $ptk->nik,
+            $ptk->jenis_kelamin,
+            $ptk->tempat_lahir,
+            $ptk->tanggal_lahir,
+            $ptk->nama_ibu_kandung,
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.ptk' : 'ptk.ptk';
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'.index')->with('success', 'Data PTK berhasil ditambahkan!');
+        return redirect()->route($prefix.'ptk.index')->with('success', 'Data PTK berhasil ditambahkan!');
     }
 
     public function show(Ptk $ptk)
@@ -106,21 +148,82 @@ class PtkController extends Controller
             'nama_ibu_kandung' => 'required|string|max:255',
         ]);
 
+        $old = [
+            $ptk->nama_lengkap,
+            $ptk->nik,
+            $ptk->jenis_kelamin,
+            $ptk->tempat_lahir,
+            $ptk->tanggal_lahir,
+            $ptk->nama_ibu_kandung,
+        ];
+
         $ptk->update($request->all());
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.ptk' : 'ptk.ptk';
+        $path = storage_path('app/exports/sidata.xlsx');
 
-        return redirect()->route($prefix.'.index')->with('success', 'Data PTK berhasil diperbarui!');
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if (
+                        $sheet->getCell("A{$row}")->getValue() == $old[0] &&
+                        $sheet->getCell("B{$row}")->getValue() == $old[1]
+                    ) {
+                        $sheet->fromArray([
+                            $ptk->nama_lengkap,
+                            $ptk->nik,
+                            $ptk->jenis_kelamin,
+                            $ptk->tempat_lahir,
+                            $ptk->tanggal_lahir,
+                            $ptk->nama_ibu_kandung,
+                        ], null, "A{$row}");
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'ptk.index')->with('success', 'Data PTK berhasil diperbarui!');
     }
 
     public function destroy(Ptk $ptk)
     {
+        $deleteKey = [$ptk->nama_lengkap, $ptk->nik];
+
         $ptk->delete();
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.ptk' : 'ptk.ptk';
+        $path = storage_path('app/exports/sidata.xlsx');
 
-        return redirect()->route($prefix.'.index')->with('success', 'Data PTK berhasil dihapus!');
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if (
+                        $sheet->getCell("A{$row}")->getValue() == $deleteKey[0] &&
+                        $sheet->getCell("B{$row}")->getValue() == $deleteKey[1]
+                    ) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
+        $user = Auth::user();
+        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+        return redirect()->route($prefix.'ptk.index')->with('success', 'Data PTK berhasil dihapus!');
     }
+
 }

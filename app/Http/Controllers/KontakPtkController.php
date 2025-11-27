@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\KontakPtk;
 use App\Models\Ptk;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class KontakPtkController extends Controller
 {
@@ -84,7 +88,44 @@ class KontakPtkController extends Controller
             'kode_pos' => 'nullable|max:5',
         ]);
 
-        KontakPtk::create($validated);
+        $kontak = KontakPtk::create($validated);
+
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('KontakPTK');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('KontakPTK');
+            $sheet->fromArray(['Nama PTK', 'No HP', 'Email', 'Alamat', 'RT', 'RW', 'Kelurahan', 'Kecamatan', 'Kode Pos'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['no_hp'] ?? '',
+            $validated['email'] ?? '',
+            $validated['alamat_jalan'] ?? '',
+            $validated['rt'] ?? '',
+            $validated['rw'] ?? '',
+            $validated['kelurahan'] ?? '',
+            $validated['kecamatan'] ?? '',
+            $validated['kode_pos'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -125,6 +166,8 @@ class KontakPtkController extends Controller
 
     public function update(Request $request, KontakPtk $kontak_ptk)
     {
+        $oldEmail = $kontak_ptk->email;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'no_hp' => 'nullable|max:15',
@@ -139,6 +182,34 @@ class KontakPtkController extends Controller
 
         $kontak_ptk->update($validated);
 
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KontakPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldEmail) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['no_hp'] ?? '');
+                        $sheet->setCellValue("C{$row}", $validated['email'] ?? '');
+                        $sheet->setCellValue("D{$row}", $validated['alamat_jalan'] ?? '');
+                        $sheet->setCellValue("E{$row}", $validated['rt'] ?? '');
+                        $sheet->setCellValue("F{$row}", $validated['rw'] ?? '');
+                        $sheet->setCellValue("G{$row}", $validated['kelurahan'] ?? '');
+                        $sheet->setCellValue("H{$row}", $validated['kecamatan'] ?? '');
+                        $sheet->setCellValue("I{$row}", $validated['kode_pos'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
@@ -151,6 +222,24 @@ class KontakPtkController extends Controller
     {
         $kontak = KontakPtk::findOrFail($id);
         KontakPtk::where('ptk_id', $kontak->ptk_id)->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KontakPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $kontak->email) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
