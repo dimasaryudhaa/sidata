@@ -17,10 +17,12 @@
 
         <div class="mb-3">
             <label>Tahun Ajaran</label>
-            <input type="text" name="tahun_ajaran" class="form-control" placeholder="Contoh: 2024/2025" required>
+            <input type="text" name="tahun_ajaran" class="form-control" required>
         </div>
-
-        <button type="submit" class="btn btn-primary">Simpan</button>
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{{ route('admin.semester.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <button type="submit" class="btn btn-success">Simpan</button>
+        </div>
     </form>
 </div>
 @endsection

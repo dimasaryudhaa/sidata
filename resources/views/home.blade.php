@@ -564,7 +564,7 @@
             <a href="{{ route('siswa.siswa.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="card mb-3 shadow hoverable"
                     style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
-                    <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Data PTK</p>
+                    <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Data Siswa</p>
                     <div style="background-color: {{ $sudahMengisi ? '#28a745' : '#dc3545' }}; color: white; font-size: 3rem; width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
                         <i class="bi {{ $sudahMengisi ? 'bi-check2-circle' : 'bi-x-circle' }}"></i>
                     </div>

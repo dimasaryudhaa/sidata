@@ -18,7 +18,10 @@
             <label>Nama Rombel</label>
             <input type="text" name="nama_rombel" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Simpan</button>
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{{ route('admin.rombel.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <button type="submit" class="btn btn-success">Simpan</button>
+        </div>
     </form>
 </div>
 @endsection
