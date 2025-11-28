@@ -8,6 +8,11 @@ use App\Models\AkunSiswa;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
+
 
 class AkunSiswaController extends Controller
 {
@@ -66,7 +71,7 @@ class AkunSiswaController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        AkunSiswa::create($validated);
+        $akun = AkunSiswa::create($validated);
 
         $siswa = Siswa::find($validated['peserta_didik_id']);
 
@@ -78,6 +83,35 @@ class AkunSiswaController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('AkunSiswa');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('AkunSiswa');
+            $sheet->fromArray(['Nama Siswa', 'Email', 'Password (Hash)'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $siswa->nama_lengkap,
+            $validated['email'],
+            $validated['password'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -154,6 +188,28 @@ class AkunSiswaController extends Controller
             ->where('email', $oldEmail)
             ->update($updateData);
 
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('AkunSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("B{$row}")->getValue() == $oldEmail) {
+                        $sheet->setCellValue("A{$row}", $siswa->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['email']);
+                        if (isset($validated['password'])) {
+                            $sheet->setCellValue("C{$row}", $validated['password']);
+                        }
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
@@ -167,6 +223,24 @@ class AkunSiswaController extends Controller
 
         DB::table('users')->where('email', $akun->email)->delete();
 
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('AkunSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("B{$row}")->getValue() == $akun->email) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
+
         $akun->delete();
 
         $user = Auth::user();
@@ -175,4 +249,5 @@ class AkunSiswaController extends Controller
         return redirect()->route($prefix.'akun-siswa.index')
             ->with('success', 'Akun siswa dan user berhasil dihapus.');
     }
+
 }

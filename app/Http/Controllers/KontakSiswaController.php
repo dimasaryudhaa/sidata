@@ -8,6 +8,10 @@ use App\Models\KontakSiswa;
 use App\Models\Siswa;
 use App\Models\Rombel;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class KontakSiswaController extends Controller
 {
@@ -75,7 +79,59 @@ class KontakSiswaController extends Controller
             'anak_ke' => 'nullable|integer',
         ]);
 
-        KontakSiswa::create($validated);
+        $kontak = KontakSiswa::create($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('KontakSiswa');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('KontakSiswa');
+            $sheet->fromArray([
+                'Nama Siswa',
+                'No. HP',
+                'Email',
+                'Alamat Jalan',
+                'RT',
+                'RW',
+                'Kelurahan',
+                'Kecamatan',
+                'Kode Pos',
+                'Tempat Tinggal',
+                'Moda Transportasi',
+                'Anak Ke'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $siswa->nama_lengkap,
+            $validated['no_hp'] ?? '',
+            $validated['email'] ?? '',
+            $validated['alamat_jalan'] ?? '',
+            $validated['rt'] ?? '',
+            $validated['rw'] ?? '',
+            $validated['kelurahan'] ?? '',
+            $validated['kecamatan'] ?? '',
+            $validated['kode_pos'] ?? '',
+            $validated['tempat_tinggal'] ?? '',
+            $validated['moda_transportasi'] ?? '',
+            $validated['anak_ke'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
 
@@ -125,7 +181,38 @@ class KontakSiswaController extends Controller
             'anak_ke' => 'nullable|integer',
         ]);
 
+        $oldId = $kontak->peserta_didik_id;
         $kontak->update($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KontakSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == Siswa::find($oldId)->nama_lengkap) {
+                        $sheet->setCellValue("A{$row}", $siswa->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['no_hp'] ?? '');
+                        $sheet->setCellValue("C{$row}", $validated['email'] ?? '');
+                        $sheet->setCellValue("D{$row}", $validated['alamat_jalan'] ?? '');
+                        $sheet->setCellValue("E{$row}", $validated['rt'] ?? '');
+                        $sheet->setCellValue("F{$row}", $validated['rw'] ?? '');
+                        $sheet->setCellValue("G{$row}", $validated['kelurahan'] ?? '');
+                        $sheet->setCellValue("H{$row}", $validated['kecamatan'] ?? '');
+                        $sheet->setCellValue("I{$row}", $validated['kode_pos'] ?? '');
+                        $sheet->setCellValue("J{$row}", $validated['tempat_tinggal'] ?? '');
+                        $sheet->setCellValue("K{$row}", $validated['moda_transportasi'] ?? '');
+                        $sheet->setCellValue("L{$row}", $validated['anak_ke'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
 
@@ -136,11 +223,31 @@ class KontakSiswaController extends Controller
     public function destroy($id)
     {
         $kontak = KontakSiswa::findOrFail($id);
+        $namaSiswa = Siswa::find($kontak->peserta_didik_id)->nama_lengkap;
         KontakSiswa::where('peserta_didik_id', $kontak->peserta_didik_id)->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KontakSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == $namaSiswa) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
 
         return redirect()->route($prefix.'kontak-siswa.index')
             ->with('success', 'Data kontak siswa berhasil dihapus.');
     }
+
 }

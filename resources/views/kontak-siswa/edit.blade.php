@@ -3,6 +3,8 @@
 @section('content')
 
 @php
+    use Illuminate\Support\Facades\Auth;
+
     $user = Auth::user();
     $role = $user->role;
     $prefix = $role === 'admin' ? 'admin.' : ($role === 'ptk' ? 'ptk.' : 'siswa.');

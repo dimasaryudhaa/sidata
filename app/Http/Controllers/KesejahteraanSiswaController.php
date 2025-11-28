@@ -7,6 +7,10 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class KesejahteraanSiswaController extends Controller
 {
@@ -105,14 +109,50 @@ class KesejahteraanSiswaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'jenis_kesejahteraan' => 'required|in:PKH,PIP,Kartu Perlindungan Sosial,Kartu Keluarga Sejahtera,Kartu Kesehatan',
             'no_kartu' => 'nullable|string|max:50',
             'nama_di_kartu' => 'nullable|string|max:100',
         ]);
 
-        KesejahteraanSiswa::create($request->all());
+        $kesejahteraan = KesejahteraanSiswa::create($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('KesejahteraanSiswa');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('KesejahteraanSiswa');
+            $sheet->fromArray([
+                'Nama Siswa',
+                'Jenis Kesejahteraan',
+                'No. Kartu',
+                'Nama di Kartu'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $siswa->nama_lengkap,
+            $validated['jenis_kesejahteraan'],
+            $validated['no_kartu'] ?? '',
+            $validated['nama_di_kartu'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -142,15 +182,38 @@ class KesejahteraanSiswaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'peserta_dididik_id' => 'exists:peserta_didik,id',
+        $validated = $request->validate([
+            'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'jenis_kesejahteraan' => 'required|in:PKH,PIP,Kartu Perlindungan Sosial,Kartu Keluarga Sejahtera,Kartu Kesehatan',
             'no_kartu' => 'nullable|string|max:50',
             'nama_di_kartu' => 'nullable|string|max:100',
         ]);
 
         $kesejahteraan = KesejahteraanSiswa::findOrFail($id);
-        $kesejahteraan->update($request->all());
+        $oldId = $kesejahteraan->peserta_didik_id;
+        $kesejahteraan->update($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KesejahteraanSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == Siswa::find($oldId)->nama_lengkap) {
+                        $sheet->setCellValue("A{$row}", $siswa->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_kesejahteraan']);
+                        $sheet->setCellValue("C{$row}", $validated['no_kartu'] ?? '');
+                        $sheet->setCellValue("D{$row}", $validated['nama_di_kartu'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -161,7 +224,27 @@ class KesejahteraanSiswaController extends Controller
 
     public function destroy($id)
     {
-        KesejahteraanSiswa::findOrFail($id)->delete();
+        $kesejahteraan = KesejahteraanSiswa::findOrFail($id);
+        $namaSiswa = Siswa::find($kesejahteraan->peserta_didik_id)->nama_lengkap;
+        $kesejahteraan->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KesejahteraanSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == $namaSiswa) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -169,4 +252,5 @@ class KesejahteraanSiswaController extends Controller
         return redirect()->route($prefix . 'kesejahteraan-siswa.index')
             ->with('success', 'Data kesejahteraan siswa berhasil dihapus.');
     }
+
 }

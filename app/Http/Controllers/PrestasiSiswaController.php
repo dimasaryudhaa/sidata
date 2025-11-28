@@ -7,6 +7,11 @@ use App\Models\PrestasiSiswa;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
+
 
 class PrestasiSiswaController extends Controller
 {
@@ -92,10 +97,9 @@ class PrestasiSiswaController extends Controller
         return view('prestasi.create', compact('siswa', 'prefix'));
     }
 
-
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'jenis_prestasi' => 'required|in:Sains,Seni,Olahraga,Lain-lain',
             'tingkat_prestasi' => 'required|in:Sekolah,Kecamatan,Kabupaten,Provinsi,Nasional,Internasional',
@@ -105,15 +109,56 @@ class PrestasiSiswaController extends Controller
             'peringkat' => 'nullable|integer'
         ]);
 
-        PrestasiSiswa::create($request->all());
+        $prestasi = PrestasiSiswa::create($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('PrestasiSiswa');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('PrestasiSiswa');
+            $sheet->fromArray([
+                'Nama Siswa',
+                'Jenis Prestasi',
+                'Tingkat Prestasi',
+                'Nama Prestasi',
+                'Tahun Prestasi',
+                'Penyelenggara',
+                'Peringkat'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $siswa->nama_lengkap,
+            $validated['jenis_prestasi'],
+            $validated['tingkat_prestasi'],
+            $validated['nama_prestasi'],
+            $validated['tahun_prestasi'],
+            $validated['penyelenggara'],
+            $validated['peringkat'] ?? ''
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
-        return redirect()->route($prefix . 'prestasi.index')
+        return redirect()->route($prefix.'prestasi.index')
             ->with('success', 'Data prestasi berhasil ditambahkan.');
     }
-
 
     public function edit($id)
     {
@@ -134,10 +179,12 @@ class PrestasiSiswaController extends Controller
         ));
     }
 
-
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $prestasi = PrestasiSiswa::findOrFail($id);
+        $oldId = $prestasi->peserta_didik_id;
+
+        $validated = $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'jenis_prestasi' => 'required|in:Sains,Seni,Olahraga,Lain-lain',
             'tingkat_prestasi' => 'required|in:Sekolah,Kecamatan,Kabupaten,Provinsi,Nasional,Internasional',
@@ -147,25 +194,71 @@ class PrestasiSiswaController extends Controller
             'peringkat' => 'nullable|integer',
         ]);
 
-        $prestasi = PrestasiSiswa::findOrFail($id);
-        $prestasi->update($request->all());
+        $prestasi->update($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PrestasiSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                $oldNama = Siswa::find($oldId)->nama_lengkap;
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == $oldNama) {
+                        $sheet->setCellValue("A{$row}", $siswa->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_prestasi']);
+                        $sheet->setCellValue("C{$row}", $validated['tingkat_prestasi']);
+                        $sheet->setCellValue("D{$row}", $validated['nama_prestasi']);
+                        $sheet->setCellValue("E{$row}", $validated['tahun_prestasi']);
+                        $sheet->setCellValue("F{$row}", $validated['penyelenggara']);
+                        $sheet->setCellValue("G{$row}", $validated['peringkat'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
-        return redirect()->route($prefix . 'prestasi.index')
+        return redirect()->route($prefix.'prestasi.index')
             ->with('success', 'Data prestasi berhasil diperbarui.');
     }
 
-
     public function destroy($id)
     {
-        PrestasiSiswa::findOrFail($id)->delete();
+        $prestasi = PrestasiSiswa::findOrFail($id);
+        $namaSiswa = Siswa::find($prestasi->peserta_didik_id)->nama_lengkap;
+
+        PrestasiSiswa::where('peserta_didik_id', $prestasi->peserta_didik_id)->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PrestasiSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == $namaSiswa) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
-        return redirect()->route($prefix . 'prestasi.index')
+        return redirect()->route($prefix.'prestasi.index')
             ->with('success', 'Data prestasi berhasil dihapus.');
     }
+
 }

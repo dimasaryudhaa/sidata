@@ -7,6 +7,10 @@ use App\Models\PeriodikSiswa;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class PeriodikSiswaController extends Controller
 {
@@ -72,7 +76,7 @@ class PeriodikSiswaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'tinggi_badan_cm' => 'nullable|numeric',
             'berat_badan_kg' => 'nullable|numeric',
@@ -84,7 +88,53 @@ class PeriodikSiswaController extends Controller
             'jumlah_saudara' => 'nullable|integer',
         ]);
 
-        PeriodikSiswa::create($request->all());
+        $periodik = PeriodikSiswa::create($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('PeriodikSiswa');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('PeriodikSiswa');
+            $sheet->fromArray([
+                'Nama Siswa',
+                'Tinggi Badan (cm)',
+                'Berat Badan (kg)',
+                'Lingkar Kepala (cm)',
+                'Jarak ke Sekolah',
+                'Jarak Sebenarnya (km)',
+                'Waktu Tempuh (jam)',
+                'Waktu Tempuh (menit)',
+                'Jumlah Saudara'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $siswa->nama_lengkap,
+            $validated['tinggi_badan_cm'] ?? '',
+            $validated['berat_badan_kg'] ?? '',
+            $validated['lingkar_kepala_cm'] ?? '',
+            $validated['jarak_ke_sekolah'] ?? '',
+            $validated['jarak_sebenarnya_km'] ?? '',
+            $validated['waktu_tempuh_jam'] ?? '',
+            $validated['waktu_tempuh_menit'] ?? '',
+            $validated['jumlah_saudara'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -125,7 +175,9 @@ class PeriodikSiswaController extends Controller
 
     public function update(Request $request, PeriodikSiswa $periodik)
     {
-        $request->validate([
+        $oldId = $periodik->peserta_didik_id;
+
+        $validated = $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
             'tinggi_badan_cm' => 'nullable|numeric',
             'berat_badan_kg' => 'nullable|numeric',
@@ -137,7 +189,34 @@ class PeriodikSiswaController extends Controller
             'jumlah_saudara' => 'nullable|integer',
         ]);
 
-        $periodik->update($request->all());
+        $periodik->update($validated);
+        $siswa = Siswa::find($validated['peserta_didik_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PeriodikSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == Siswa::find($oldId)->nama_lengkap) {
+                        $sheet->setCellValue("A{$row}", $siswa->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['tinggi_badan_cm'] ?? '');
+                        $sheet->setCellValue("C{$row}", $validated['berat_badan_kg'] ?? '');
+                        $sheet->setCellValue("D{$row}", $validated['lingkar_kepala_cm'] ?? '');
+                        $sheet->setCellValue("E{$row}", $validated['jarak_ke_sekolah'] ?? '');
+                        $sheet->setCellValue("F{$row}", $validated['jarak_sebenarnya_km'] ?? '');
+                        $sheet->setCellValue("G{$row}", $validated['waktu_tempuh_jam'] ?? '');
+                        $sheet->setCellValue("H{$row}", $validated['waktu_tempuh_menit'] ?? '');
+                        $sheet->setCellValue("I{$row}", $validated['jumlah_saudara'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -149,8 +228,27 @@ class PeriodikSiswaController extends Controller
     public function destroy($id)
     {
         $periodik = PeriodikSiswa::findOrFail($id);
+        $namaSiswa = Siswa::find($periodik->peserta_didik_id)->nama_lengkap;
 
         PeriodikSiswa::where('peserta_didik_id', $periodik->peserta_didik_id)->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PeriodikSiswa');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("A{$row}")->getValue() == $namaSiswa) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
@@ -158,4 +256,5 @@ class PeriodikSiswaController extends Controller
         return redirect()->route($prefix.'periodik.index')
             ->with('success', 'Semua data periodik siswa berhasil dihapus.');
     }
+
 }

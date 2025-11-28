@@ -2,6 +2,8 @@
 
 @section('content')
 @php
+    use Illuminate\Support\Facades\Auth;
+
     $user = Auth::user();
     $isAdmin = $user->role === 'admin';
     $prefix = $isAdmin ? 'admin.' : 'siswa.';

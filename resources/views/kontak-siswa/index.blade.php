@@ -28,6 +28,8 @@
 </style>
 
 @php
+    use Illuminate\Support\Facades\Auth;
+
     $user = Auth::user();
     $isAdmin = $user->role === 'admin';
     $isSiswa = $user->role === 'siswa';
