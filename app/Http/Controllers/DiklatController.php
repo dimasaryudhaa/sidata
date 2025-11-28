@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Diklat;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class DiklatController extends Controller
 {
@@ -92,12 +96,50 @@ class DiklatController extends Controller
             'tingkat' => 'nullable|string|max:255',
         ]);
 
-        Diklat::create($validated);
+        $diklat = Diklat::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('Diklat');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('Diklat');
+            $sheet->fromArray([
+                'Nama PTK', 'Jenis Diklat', 'Nama Diklat', 'No Sertifikat', 'Penyelenggara', 'Tahun', 'Peran', 'Tingkat'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jenis_diklat'],
+            $validated['nama_diklat'],
+            $validated['no_sertifikat'] ?? '',
+            $validated['penyelenggara'],
+            $validated['tahun'],
+            $validated['peran'] ?? '',
+            $validated['tingkat'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'diklat.index')
+        return redirect()
+            ->route($prefix.'diklat.index')
             ->with('success', 'Data diklat berhasil ditambahkan.');
     }
 
@@ -123,6 +165,8 @@ class DiklatController extends Controller
 
     public function update(Request $request, Diklat $diklat)
     {
+        $oldNo = $diklat->no_sertifikat;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jenis_diklat' => 'required|string|max:150',
@@ -135,22 +179,70 @@ class DiklatController extends Controller
         ]);
 
         $diklat->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('Diklat');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("D{$row}")->getValue() == $oldNo) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_diklat']);
+                        $sheet->setCellValue("C{$row}", $validated['nama_diklat']);
+                        $sheet->setCellValue("D{$row}", $validated['no_sertifikat'] ?? '');
+                        $sheet->setCellValue("E{$row}", $validated['penyelenggara']);
+                        $sheet->setCellValue("F{$row}", $validated['tahun']);
+                        $sheet->setCellValue("G{$row}", $validated['peran'] ?? '');
+                        $sheet->setCellValue("H{$row}", $validated['tingkat'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'diklat.index')
+        return redirect()
+            ->route($prefix.'diklat.index')
             ->with('success', 'Data diklat berhasil diperbarui.');
     }
 
     public function destroy(Diklat $diklat)
     {
+        $oldNo = $diklat->no_sertifikat;
         $diklat->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('Diklat');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("D{$row}")->getValue() == $oldNo) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'diklat.index')
+        return redirect()
+            ->route($prefix.'diklat.index')
             ->with('success', 'Data diklat berhasil dihapus.');
     }
+
 }

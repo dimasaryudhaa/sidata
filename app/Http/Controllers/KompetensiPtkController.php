@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\KompetensiPtk;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class KompetensiPtkController extends Controller
 {
@@ -81,12 +85,45 @@ class KompetensiPtkController extends Controller
             'urutan' => 'nullable|integer',
         ]);
 
-        KompetensiPtk::create($validated);
+        $kompetensi = KompetensiPtk::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('KompetensiPTK');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('KompetensiPTK');
+            $sheet->fromArray([
+                'Nama PTK', 'Bidang Studi', 'Urutan'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['bidang_studi'],
+            $validated['urutan'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'kompetensi-ptk.index')
+        return redirect()
+            ->route($prefix.'kompetensi-ptk.index')
             ->with('success', 'Data kompetensi PTK berhasil ditambahkan.');
     }
 
@@ -101,6 +138,8 @@ class KompetensiPtkController extends Controller
 
     public function update(Request $request, KompetensiPtk $kompetensiPtk)
     {
+        $oldBidang = $kompetensiPtk->bidang_studi;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'bidang_studi' => 'required|string|max:255',
@@ -108,22 +147,65 @@ class KompetensiPtkController extends Controller
         ]);
 
         $kompetensiPtk->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KompetensiPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("B{$row}")->getValue() == $oldBidang) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['bidang_studi']);
+                        $sheet->setCellValue("C{$row}", $validated['urutan']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'kompetensi-ptk.index')
+        return redirect()
+            ->route($prefix.'kompetensi-ptk.index')
             ->with('success', 'Data kompetensi PTK berhasil diperbarui.');
     }
 
     public function destroy(KompetensiPtk $kompetensiPtk)
     {
+        $oldBidang = $kompetensiPtk->bidang_studi;
         $kompetensiPtk->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('KompetensiPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("B{$row}")->getValue() == $oldBidang) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'kompetensi-ptk.index')
+        return redirect()
+            ->route($prefix.'kompetensi-ptk.index')
             ->with('success', 'Data kompetensi PTK berhasil dihapus.');
     }
+
 }

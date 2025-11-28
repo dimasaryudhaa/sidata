@@ -5,6 +5,8 @@
     <h1 class="mb-4">{{ $data->id ? 'Edit Kepegawaian PTK' : 'Tambah Kepegawaian PTK' }}</h1>
 
     @php
+        use Illuminate\Support\Facades\Auth;
+
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
         $prefix = $isPtk ? 'ptk.' : 'admin.';
@@ -47,7 +49,7 @@
                 <div class="mb-3">
                     <label>Status Kepegawaian</label>
                     <select name="status_kepegawaian" class="form-control" required>
-                        <option value="">-- Pilih Status --</option>
+                        <option value="">Pilih Status</option>
                         @foreach(['PNS','PNS Diperbantukan','PNS Depag','GTY/PTY','GTT/PTT Propinsi','GTT/PTT Kab/Kota','Guru Bantu Pusat','Guru Honor Sekolah','Tenaga Honor','CPNS','PPPK','PPNPN','Kontrak Kerja WNA'] as $status)
                             <option value="{{ $status }}" {{ $data->status_kepegawaian == $status ? 'selected' : '' }}>
                                 {{ $status }}

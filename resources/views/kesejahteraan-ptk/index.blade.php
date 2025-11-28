@@ -102,7 +102,7 @@
                         <th>Dari Tahun</th>
                         <th>Sampai Tahun</th>
                         <th>Status</th>
-                        <th style="width:100px;">Aksi</th>
+                        <th style="width:80px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -160,7 +160,7 @@
                         <th style="width:50px;">No</th>
                         <th style="width:500px;">Nama PTK</th>
                         <th>Jumlah Kesejahteraan</th>
-                        <th style="width:100px;">Aksi</th>
+                        <th style="width:80px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

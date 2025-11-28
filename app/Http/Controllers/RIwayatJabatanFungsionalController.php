@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Ptk;
 use App\Models\RiwayatJabatanFungsional;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class RiwayatJabatanFungsionalController extends Controller
 {
@@ -80,12 +84,44 @@ class RiwayatJabatanFungsionalController extends Controller
             'tmt_jabatan' => 'required|date',
         ]);
 
-        RiwayatJabatanFungsional::create($validated);
+        $riwayatJabfung = RiwayatJabatanFungsional::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('RiwayatJabatanFungsional');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('RiwayatJabatanFungsional');
+            $sheet->fromArray(['Nama PTK', 'Jabatan Fungsional', 'SK Jabfung', 'TMT Jabatan'], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jabatan_fungsional'],
+            $validated['sk_jabfung'],
+            $validated['tmt_jabatan'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'riwayat-jabatan-fungsional.index')
+        return redirect()
+            ->route($prefix.'riwayat-jabatan-fungsional.index')
             ->with('success', 'Data riwayat jabatan fungsional berhasil ditambahkan.');
     }
 
@@ -124,6 +160,8 @@ class RiwayatJabatanFungsionalController extends Controller
 
     public function update(Request $request, RiwayatJabatanFungsional $riwayatJabatanFungsional)
     {
+        $oldSK = $riwayatJabatanFungsional->sk_jabfung;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jabatan_fungsional' => 'required|string|max:100',
@@ -132,6 +170,28 @@ class RiwayatJabatanFungsionalController extends Controller
         ]);
 
         $riwayatJabatanFungsional->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatJabatanFungsional');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldSK) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jabatan_fungsional']);
+                        $sheet->setCellValue("C{$row}", $validated['sk_jabfung']);
+                        $sheet->setCellValue("D{$row}", $validated['tmt_jabatan']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -142,7 +202,26 @@ class RiwayatJabatanFungsionalController extends Controller
 
     public function destroy(RiwayatJabatanFungsional $riwayatJabatanFungsional)
     {
+        $oldSK = $riwayatJabatanFungsional->sk_jabfung;
         $riwayatJabatanFungsional->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatJabatanFungsional');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldSK) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -150,4 +229,5 @@ class RiwayatJabatanFungsionalController extends Controller
         return redirect()->route($prefix.'riwayat-jabatan-fungsional.index')
             ->with('success', 'Data riwayat jabatan fungsional berhasil dihapus.');
     }
+
 }

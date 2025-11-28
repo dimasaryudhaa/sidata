@@ -155,7 +155,7 @@ return [
         * Package Service Providers...
         */
         Maatwebsite\Excel\ExcelServiceProvider::class,
-    ],  
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -164,7 +164,7 @@ return [
     */
 
     'aliases' => [
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class, // ✅ tetap
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class, 
     ],
 
 ];

@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatGaji;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class RiwayatGajiController extends Controller
 {
@@ -81,7 +85,44 @@ class RiwayatGajiController extends Controller
             'gaji_pokok' => 'required|numeric|min:0',
         ]);
 
-        RiwayatGaji::create($validated);
+        $riwayatGaji = RiwayatGaji::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('RiwayatGaji');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('RiwayatGaji');
+            $sheet->fromArray([
+                'Nama PTK', 'Pangkat/Golongan', 'Nomor SK', 'Tanggal SK', 'TMT KGB', 'Masa Kerja (Thn)', 'Masa Kerja (Bln)', 'Gaji Pokok'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['pangkat_golongan'],
+            $validated['nomor_sk'],
+            $validated['tanggal_sk'],
+            $validated['tmt_kgb'],
+            $validated['masa_kerja_thn'],
+            $validated['masa_kerja_bln'],
+            $validated['gaji_pokok'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -122,6 +163,8 @@ class RiwayatGajiController extends Controller
 
     public function update(Request $request, RiwayatGaji $riwayatGaji)
     {
+        $oldNomor = $riwayatGaji->nomor_sk;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'pangkat_golongan' => 'required|string|max:50',
@@ -134,6 +177,32 @@ class RiwayatGajiController extends Controller
         ]);
 
         $riwayatGaji->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatGaji');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNomor) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['pangkat_golongan']);
+                        $sheet->setCellValue("C{$row}", $validated['nomor_sk']);
+                        $sheet->setCellValue("D{$row}", $validated['tanggal_sk']);
+                        $sheet->setCellValue("E{$row}", $validated['tmt_kgb']);
+                        $sheet->setCellValue("F{$row}", $validated['masa_kerja_thn']);
+                        $sheet->setCellValue("G{$row}", $validated['masa_kerja_bln']);
+                        $sheet->setCellValue("H{$row}", $validated['gaji_pokok']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -145,7 +214,26 @@ class RiwayatGajiController extends Controller
 
     public function destroy(RiwayatGaji $riwayatGaji)
     {
+        $oldNomor = $riwayatGaji->nomor_sk;
         $riwayatGaji->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatGaji');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNomor) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -154,4 +242,5 @@ class RiwayatGajiController extends Controller
             ->route($prefix.'riwayat-gaji.index')
             ->with('success', 'Data riwayat gaji berhasil dihapus.');
     }
+
 }

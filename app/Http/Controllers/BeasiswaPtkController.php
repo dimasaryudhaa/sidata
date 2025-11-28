@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\BeasiswaPtk;
 use App\Models\Ptk;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class BeasiswaPtkController extends Controller
 {
@@ -88,12 +92,48 @@ class BeasiswaPtkController extends Controller
             'masih_menerima' => 'nullable|boolean',
         ]);
 
-        BeasiswaPtk::create($validated);
+        $beasiswa = BeasiswaPtk::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('BeasiswaPTK');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('BeasiswaPTK');
+            $sheet->fromArray([
+                'Nama PTK', 'Jenis Beasiswa', 'Keterangan', 'Tahun Mulai', 'Tahun Akhir', 'Masih Menerima'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jenis_beasiswa'],
+            $validated['keterangan'],
+            $validated['tahun_mulai'],
+            $validated['tahun_akhir'],
+            $validated['masih_menerima'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'beasiswa-ptk.index')
+        return redirect()
+            ->route($prefix.'beasiswa-ptk.index')
             ->with('success', 'Data beasiswa PTK berhasil ditambahkan.');
     }
 
@@ -117,6 +157,8 @@ class BeasiswaPtkController extends Controller
 
     public function update(Request $request, BeasiswaPtk $beasiswaPtk)
     {
+        $oldTahun = $beasiswaPtk->tahun_mulai;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jenis_beasiswa' => 'required|string|max:255',
@@ -127,22 +169,68 @@ class BeasiswaPtkController extends Controller
         ]);
 
         $beasiswaPtk->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('BeasiswaPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("D{$row}")->getValue() == $oldTahun) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_beasiswa']);
+                        $sheet->setCellValue("C{$row}", $validated['keterangan']);
+                        $sheet->setCellValue("D{$row}", $validated['tahun_mulai']);
+                        $sheet->setCellValue("E{$row}", $validated['tahun_akhir']);
+                        $sheet->setCellValue("F{$row}", $validated['masih_menerima']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'beasiswa-ptk.index')
+        return redirect()
+            ->route($prefix.'beasiswa-ptk.index')
             ->with('success', 'Data beasiswa PTK berhasil diperbarui.');
     }
 
     public function destroy(BeasiswaPtk $beasiswaPtk)
     {
+        $oldTahun = $beasiswaPtk->tahun_mulai;
         $beasiswaPtk->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('BeasiswaPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("D{$row}")->getValue() == $oldTahun) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'beasiswa-ptk.index')
+        return redirect()
+            ->route($prefix.'beasiswa-ptk.index')
             ->with('success', 'Data beasiswa PTK berhasil dihapus.');
     }
+
 }

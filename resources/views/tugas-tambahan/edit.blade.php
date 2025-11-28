@@ -7,6 +7,8 @@
     <h1 class="mb-4">{{ $tugasTambahan->id ? 'Edit Tugas Tambahan' : 'Tambah Tugas Tambahan' }}</h1>
 
     @php
+        use Illuminate\Support\Facades\Auth;
+
         $user = Auth::user();
         $isAdmin = $user->role === 'admin';
         $prefix = $isAdmin ? 'admin' : 'ptk';

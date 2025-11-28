@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TugasTambahan;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class TugasTambahanController extends Controller
 {
@@ -77,7 +81,42 @@ class TugasTambahanController extends Controller
             'tst_tambahan' => 'nullable|date',
         ]);
 
-        TugasTambahan::create($validated);
+        $tugasTambahan = TugasTambahan::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('TugasTambahan');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('TugasTambahan');
+            $sheet->fromArray([
+                'Nama PTK', 'Jabatan PTK', 'Prasarana', 'Nomor SK', 'TMT Tambahan', 'TST Tambahan'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jabatan_ptk'],
+            $validated['prasarana'] ?? '',
+            $validated['nomor_sk'],
+            $validated['tmt_tambahan'],
+            $validated['tst_tambahan'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -113,6 +152,8 @@ class TugasTambahanController extends Controller
 
     public function update(Request $request, TugasTambahan $tugasTambahan)
     {
+        $oldNomor = $tugasTambahan->nomor_sk;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jabatan_ptk' => 'required|string|max:100',
@@ -123,6 +164,30 @@ class TugasTambahanController extends Controller
         ]);
 
         $tugasTambahan->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('TugasTambahan');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("D{$row}")->getValue() == $oldNomor) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jabatan_ptk']);
+                        $sheet->setCellValue("C{$row}", $validated['prasarana'] ?? '');
+                        $sheet->setCellValue("D{$row}", $validated['nomor_sk']);
+                        $sheet->setCellValue("E{$row}", $validated['tmt_tambahan']);
+                        $sheet->setCellValue("F{$row}", $validated['tst_tambahan'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -134,13 +199,33 @@ class TugasTambahanController extends Controller
 
     public function destroy(TugasTambahan $tugasTambahan)
     {
-        $tugasTambahan->delete();
+    $oldNomor = $tugasTambahan->nomor_sk;
+    $tugasTambahan->delete();
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+    $path = storage_path('app/exports/sidata.xlsx');
 
-        return redirect()
-            ->route($prefix.'tugas-tambahan.index')
-            ->with('success', 'Data tugas tambahan berhasil dihapus.');
+    if (file_exists($path)) {
+        $spreadsheet = IOFactory::load($path);
+        $sheet = $spreadsheet->getSheetByName('TugasTambahan');
+
+        if ($sheet) {
+            $highestRow = $sheet->getHighestRow();
+            for ($row = 2; $row <= $highestRow; $row++) {
+                if ($sheet->getCell("D{$row}")->getValue() == $oldNomor) {
+                    $sheet->removeRow($row, 1);
+                    break;
+                }
+            }
+            (new Xlsx($spreadsheet))->save($path);
+        }
     }
+
+    $user = Auth::user();
+    $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+
+    return redirect()
+        ->route($prefix.'tugas-tambahan.index')
+        ->with('success', 'Data tugas tambahan berhasil dihapus.');
+    }
+
 }

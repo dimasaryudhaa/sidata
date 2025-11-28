@@ -5,6 +5,8 @@
     <h1 class="mb-4">{{ $data->id ? 'Edit Penugasan PTK' : 'Tambah Penugasan PTK' }}</h1>
 
     @php
+        use Illuminate\Support\Facades\Auth;
+
         $user = Auth::user();
         $isPtk = $user->role === 'ptk';
         $prefix = $isPtk ? 'ptk.' : 'admin.';

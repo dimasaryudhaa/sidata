@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatKarir;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class RiwayatKarirController extends Controller
 {
@@ -89,7 +93,49 @@ class RiwayatKarirController extends Controller
             'ttd_sk_kerja' => 'required|string|max:100',
         ]);
 
-        RiwayatKarir::create($validated);
+        $riwayatKarir = RiwayatKarir::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('RiwayatKarir');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('RiwayatKarir');
+            $sheet->fromArray([
+                'Nama PTK', 'Jenjang Pendidikan', 'Jenis Lembaga', 'Status Kepegawaian', 'Jenis PTK',
+                'Lembaga Pengangkat', 'Nomor SK', 'Tanggal SK', 'TMT Kerja', 'TST Kerja', 'Tempat Kerja', 'TTD SK Kerja'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jenjang_pendidikan'],
+            $validated['jenis_lembaga'],
+            $validated['status_kepegawaian'],
+            $validated['jenis_ptk'],
+            $validated['lembaga_pengangkat'],
+            $validated['no_sk_kerja'],
+            $validated['tgl_sk_kerja'],
+            $validated['tmt_kerja'],
+            $validated['tst_kerja'] ?? '',
+            $validated['tempat_kerja'],
+            $validated['ttd_sk_kerja'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -130,6 +176,8 @@ class RiwayatKarirController extends Controller
 
     public function update(Request $request, RiwayatKarir $riwayatKarir)
     {
+        $oldNomor = $riwayatKarir->no_sk_kerja;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jenjang_pendidikan' => 'required|string|max:100',
@@ -146,6 +194,36 @@ class RiwayatKarirController extends Controller
         ]);
 
         $riwayatKarir->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatKarir');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("G{$row}")->getValue() == $oldNomor) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenjang_pendidikan']);
+                        $sheet->setCellValue("C{$row}", $validated['jenis_lembaga']);
+                        $sheet->setCellValue("D{$row}", $validated['status_kepegawaian']);
+                        $sheet->setCellValue("E{$row}", $validated['jenis_ptk']);
+                        $sheet->setCellValue("F{$row}", $validated['lembaga_pengangkat']);
+                        $sheet->setCellValue("G{$row}", $validated['no_sk_kerja']);
+                        $sheet->setCellValue("H{$row}", $validated['tgl_sk_kerja']);
+                        $sheet->setCellValue("I{$row}", $validated['tmt_kerja']);
+                        $sheet->setCellValue("J{$row}", $validated['tst_kerja'] ?? '');
+                        $sheet->setCellValue("K{$row}", $validated['tempat_kerja']);
+                        $sheet->setCellValue("L{$row}", $validated['ttd_sk_kerja']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -157,7 +235,26 @@ class RiwayatKarirController extends Controller
 
     public function destroy(RiwayatKarir $riwayatKarir)
     {
+        $oldNomor = $riwayatKarir->no_sk_kerja;
         $riwayatKarir->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatKarir');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("G{$row}")->getValue() == $oldNomor) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -166,4 +263,5 @@ class RiwayatKarirController extends Controller
             ->route($prefix.'riwayat-karir.index')
             ->with('success', 'Data riwayat karir berhasil dihapus.');
     }
+
 }

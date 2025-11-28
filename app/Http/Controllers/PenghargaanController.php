@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Penghargaan;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class PenghargaanController extends Controller
 {
@@ -87,12 +91,49 @@ class PenghargaanController extends Controller
             'instansi' => 'required|string|max:150',
         ]);
 
-        Penghargaan::create($validated);
+        $penghargaan = Penghargaan::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('PenghargaanPTK');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('PenghargaanPTK');
+            $sheet->fromArray([
+                'Nama PTK', 'Tingkat Penghargaan', 'Jenis Penghargaan',
+                'Nama Penghargaan', 'Tahun', 'Instansi'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['tingkat_penghargaan'],
+            $validated['jenis_penghargaan'],
+            $validated['nama_penghargaan'],
+            $validated['tahun'],
+            $validated['instansi'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'penghargaan.index')
+        return redirect()
+            ->route($prefix.'penghargaan.index')
             ->with('success', 'Data penghargaan berhasil ditambahkan.');
     }
 
@@ -107,6 +148,8 @@ class PenghargaanController extends Controller
 
     public function update(Request $request, Penghargaan $penghargaan)
     {
+        $oldTahun = $penghargaan->tahun;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'tingkat_penghargaan' => 'required|string|max:100',
@@ -117,22 +160,68 @@ class PenghargaanController extends Controller
         ]);
 
         $penghargaan->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PenghargaanPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("D{$row}")->getValue() == $oldTahun) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['tingkat_penghargaan']);
+                        $sheet->setCellValue("C{$row}", $validated['jenis_penghargaan']);
+                        $sheet->setCellValue("D{$row}", $validated['nama_penghargaan']);
+                        $sheet->setCellValue("E{$row}", $validated['tahun']);
+                        $sheet->setCellValue("F{$row}", $validated['instansi']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'penghargaan.index')
+        return redirect()
+            ->route($prefix.'penghargaan.index')
             ->with('success', 'Data penghargaan berhasil diperbarui.');
     }
 
     public function destroy(Penghargaan $penghargaan)
     {
+        $oldTahun = $penghargaan->tahun;
         $penghargaan->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('PenghargaanPTK');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("E{$row}")->getValue() == $oldTahun) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'penghargaan.index')
+        return redirect()
+            ->route($prefix.'penghargaan.index')
             ->with('success', 'Data penghargaan berhasil dihapus.');
     }
+
 }

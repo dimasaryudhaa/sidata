@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\NilaiTest;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class NilaiTestController extends Controller
 {
@@ -88,12 +92,49 @@ class NilaiTestController extends Controller
             'nomor_peserta' => 'nullable|string|max:50',
         ]);
 
-        NilaiTest::create($validated);
+        $nilaiTest = NilaiTest::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('NilaiTest');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('NilaiTest');
+            $sheet->fromArray([
+                'Nama PTK', 'Jenis Test', 'Nama Test', 'Penyelenggara', 'Tahun', 'Skor', 'Nomor Peserta'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['jenis_test'],
+            $validated['nama_test'],
+            $validated['penyelenggara'],
+            $validated['tahun'],
+            $validated['skor'] ?? '',
+            $validated['nomor_peserta'] ?? '',
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'nilai-test.index')
+        return redirect()
+            ->route($prefix.'nilai-test.index')
             ->with('success', 'Data nilai test berhasil ditambahkan.');
     }
 
@@ -111,6 +152,8 @@ class NilaiTestController extends Controller
 
     public function update(Request $request, NilaiTest $nilaiTest)
     {
+        $oldNo = $nilaiTest->nomor_peserta;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'jenis_test' => 'required|string|max:150',
@@ -122,22 +165,69 @@ class NilaiTestController extends Controller
         ]);
 
         $nilaiTest->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('NilaiTest');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("G{$row}")->getValue() == $oldNo) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_test']);
+                        $sheet->setCellValue("C{$row}", $validated['nama_test']);
+                        $sheet->setCellValue("D{$row}", $validated['penyelenggara']);
+                        $sheet->setCellValue("E{$row}", $validated['tahun']);
+                        $sheet->setCellValue("F{$row}", $validated['skor'] ?? '');
+                        $sheet->setCellValue("G{$row}", $validated['nomor_peserta'] ?? '');
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'nilai-test.index')
+        return redirect()
+            ->route($prefix.'nilai-test.index')
             ->with('success', 'Data nilai test berhasil diperbarui.');
     }
 
     public function destroy(NilaiTest $nilaiTest)
     {
+        $oldNo = $nilaiTest->nomor_peserta;
         $nilaiTest->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('NilaiTest');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("G{$row}")->getValue() == $oldNo) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'nilai-test.index')
+        return redirect()
+            ->route($prefix.'nilai-test.index')
             ->with('success', 'Data nilai test berhasil dihapus.');
     }
+
 }

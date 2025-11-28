@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\RiwayatKepangkatan;
 use App\Models\Ptk;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class RiwayatKepangkatanController extends Controller
 {
@@ -86,12 +90,49 @@ class RiwayatKepangkatanController extends Controller
             'masa_kerja_bln' => 'required|integer|min:0|max:11',
         ]);
 
-        RiwayatKepangkatan::create($validated);
+        $riwayatKepangkatan = RiwayatKepangkatan::create($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        if (!Storage::exists('exports')) {
+            Storage::makeDirectory('exports');
+        }
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (!file_exists($path)) {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->removeSheetByIndex(0);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getSheetByName('RiwayatKepangkatan');
+        if (!$sheet) {
+            $sheet = $spreadsheet->createSheet();
+            $sheet->setTitle('RiwayatKepangkatan');
+            $sheet->fromArray([
+                'Nama PTK', 'Pangkat/Golongan', 'Nomor SK', 'Tanggal SK', 'TMT Pangkat', 'Masa Kerja (Thn)', 'Masa Kerja (Bln)'
+            ], null, 'A1');
+        }
+
+        $lastRow = $sheet->getHighestRow() + 1;
+        $sheet->fromArray([
+            $ptk->nama_lengkap,
+            $validated['pangkat_golongan'],
+            $validated['nomor_sk'],
+            $validated['tanggal_sk'],
+            $validated['tmt_pangkat'],
+            $validated['masa_kerja_thn'],
+            $validated['masa_kerja_bln'],
+        ], null, "A{$lastRow}");
+
+        (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
 
-        return redirect()->route($prefix.'riwayat-kepangkatan.index')
+        return redirect()
+            ->route($prefix.'riwayat-kepangkatan.index')
             ->with('success', 'Data riwayat kepangkatan berhasil ditambahkan.');
     }
 
@@ -126,6 +167,8 @@ class RiwayatKepangkatanController extends Controller
 
     public function update(Request $request, RiwayatKepangkatan $riwayatKepangkatan)
     {
+        $oldNomor = $riwayatKepangkatan->nomor_sk;
+
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'pangkat_golongan' => 'required|string|max:50',
@@ -137,6 +180,31 @@ class RiwayatKepangkatanController extends Controller
         ]);
 
         $riwayatKepangkatan->update($validated);
+        $ptk = Ptk::find($validated['ptk_id']);
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatKepangkatan');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNomor) {
+                        $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
+                        $sheet->setCellValue("B{$row}", $validated['pangkat_golongan']);
+                        $sheet->setCellValue("C{$row}", $validated['nomor_sk']);
+                        $sheet->setCellValue("D{$row}", $validated['tanggal_sk']);
+                        $sheet->setCellValue("E{$row}", $validated['tmt_pangkat']);
+                        $sheet->setCellValue("F{$row}", $validated['masa_kerja_thn']);
+                        $sheet->setCellValue("G{$row}", $validated['masa_kerja_bln']);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -147,7 +215,26 @@ class RiwayatKepangkatanController extends Controller
 
     public function destroy(RiwayatKepangkatan $riwayatKepangkatan)
     {
+        $oldNomor = $riwayatKepangkatan->nomor_sk;
         $riwayatKepangkatan->delete();
+
+        $path = storage_path('app/exports/sidata.xlsx');
+
+        if (file_exists($path)) {
+            $spreadsheet = IOFactory::load($path);
+            $sheet = $spreadsheet->getSheetByName('RiwayatKepangkatan');
+
+            if ($sheet) {
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    if ($sheet->getCell("C{$row}")->getValue() == $oldNomor) {
+                        $sheet->removeRow($row, 1);
+                        break;
+                    }
+                }
+                (new Xlsx($spreadsheet))->save($path);
+            }
+        }
 
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
@@ -155,4 +242,5 @@ class RiwayatKepangkatanController extends Controller
         return redirect()->route($prefix.'riwayat-kepangkatan.index')
             ->with('success', 'Data riwayat kepangkatan berhasil dihapus.');
     }
+
 }
