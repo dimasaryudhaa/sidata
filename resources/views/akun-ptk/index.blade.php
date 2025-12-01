@@ -156,16 +156,57 @@
 
 @if(!$isPtk)
 <script>
-document.getElementById('search').addEventListener('keyup', function() {
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll('#akunPtkTable tbody tr');
+const searchInput = document.getElementById('search');
+const tbody = document.querySelector('#akunPtkTable tbody');
 
-    rows.forEach(row => {
-        let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-        row.style.display = nama.includes(filter) ? '' : 'none';
-    });
+searchInput.addEventListener('keyup', function() {
+    let query = this.value;
+
+    if (query.length === 0) {
+        location.reload();
+        return;
+    }
+
+    fetch(`/admin/akun-ptk/search?q=` + query)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td class="nama_ptk">${item.nama_lengkap ?? '-'}</td>
+                        <td>${item.email ?? '-'}</td>
+                        <td>
+                            <a href="/admin/akun-ptk/${item.ptk_id}/edit" class="btn btn-sm btn-no-border">
+                                <img src="/images/edit.png" style="width:20px;">
+                            </a>
+
+                            ${
+                                item.akun_id ? `
+                                <form action="/admin/akun-ptk/${item.akun_id}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-no-border"
+                                        onclick="return confirm('Yakin ingin menghapus akun PTK ini?')">
+                                        <img src="/images/delete.png" style="width:20px;">
+                                    </button>
+                                </form>
+                                ` : `
+                                <button class="btn btn-sm btn-no-border" disabled>
+                                    <img src="/images/delete.png" style="width:20px; opacity:0.5;">
+                                </button>
+                                `
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+        });
 });
 </script>
 @endif
+
 
 @endsection
