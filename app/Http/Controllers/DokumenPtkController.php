@@ -44,6 +44,18 @@ class DokumenPtkController extends Controller
         return view('dokumen-ptk.index', compact('dokumen', 'isPtk', 'dokumenPtk', 'ptk'));
     }
 
+    public function search(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $data = DB::table('ptk')
+            ->where('nama_lengkap', 'LIKE', "%$keyword%")
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        return response()->json($data);
+    }
+
     public function create(Request $request)
     {
         $ptkId = $request->query('ptk_id');

@@ -272,17 +272,60 @@
 
         <script>
         const searchInput = document.getElementById('search');
-        const rows = document.querySelectorAll('#dokumenTable tbody tr');
+        const tbody = document.querySelector('#kontakPtkTable tbody');
 
-        function filterTable() {
-            const searchValue = searchInput.value.toLowerCase();
-            rows.forEach(row => {
-                const nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-                row.style.display = nama.includes(searchValue) ? '' : 'none';
-            });
-        }
+        searchInput.addEventListener('keyup', function() {
+            let query = this.value;
 
-        searchInput.addEventListener('keyup', filterTable);
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+
+            fetch(`/admin/kontak-ptk/search?q=` + query)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td class="nama_ptk">${item.nama_lengkap ?? '-'}</td>
+                                <td>${item.no_hp ?? '-'}</td>
+                                <td>${item.email ?? '-'}</td>
+                                <td>${item.alamat_jalan ?? '-'}</td>
+                                <td>${item.kelurahan ?? '-'}</td>
+                                <td>${item.kecamatan ?? '-'}</td>
+                                <td>${item.kode_pos ?? '-'}</td>
+                                <td>
+                                    <a href="/admin/kontak-ptk/${item.kontak_id ?? item.ptk_id}/edit"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="/images/edit.png" style="width:20px;">
+                                    </a>
+
+                                    ${
+                                        item.kontak_id ? `
+                                        <form action="/admin/kontak-ptk/${item.kontak_id}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-sm btn-no-border"
+                                                onclick="return confirm('Yakin ingin menghapus kontak PTK ini?')">
+                                                <img src="/images/delete.png" style="width:20px;">
+                                            </button>
+                                        </form>
+                                        ` : `
+                                        <button class="btn btn-sm btn-no-border" disabled>
+                                            <img src="/images/delete.png" style="width:20px; opacity:0.5;">
+                                        </button>
+                                        `
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+        });
         </script>
     @endif
 </div>

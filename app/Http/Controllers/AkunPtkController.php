@@ -51,7 +51,7 @@ class AkunPtkController extends Controller
                     'akun_ptk.email'
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
         }
 
         return view('akun-ptk.index', compact('data', 'isPtk', 'isAdmin', 'ptkId'));

@@ -57,7 +57,7 @@ class KontakPtkController extends Controller
                     'kontak_ptk.kode_pos'
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
 
             return view('kontak-ptk.index', compact('data', 'isPtk'));
         }
