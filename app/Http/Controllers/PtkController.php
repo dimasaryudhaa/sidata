@@ -66,11 +66,11 @@ class PtkController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|string|size:16|unique:ptk,nik',
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'tempat_lahir' => 'required|string|max:100',
-            'tanggal_lahir' => 'required|date',
-            'nama_ibu_kandung' => 'required|string|max:255',
+            // 'nik' => 'required|string|size:16|unique:ptk,nik',
+            // 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            // 'tempat_lahir' => 'required|string|max:100',
+            // 'tanggal_lahir' => 'required|date',
+            // 'nama_ibu_kandung' => 'required|string|max:255',
         ]);
 
         $ptk = Ptk::create($request->all());
@@ -141,11 +141,11 @@ class PtkController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|string|size:16|unique:ptk,nik,' . $ptk->id,
-            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'tempat_lahir' => 'required|string|max:100',
-            'tanggal_lahir' => 'required|date',
-            'nama_ibu_kandung' => 'required|string|max:255',
+            // 'nik' => 'required|string|size:16|unique:ptk,nik,' . $ptk->id,
+            // 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            // 'tempat_lahir' => 'required|string|max:100',
+            // 'tanggal_lahir' => 'required|date',
+            // 'nama_ibu_kandung' => 'required|string|max:255',
         ]);
 
         $old = [
