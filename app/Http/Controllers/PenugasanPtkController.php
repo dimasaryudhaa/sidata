@@ -60,10 +60,22 @@ class PenugasanPtkController extends Controller
                             END as status_sekolah_induk")
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
 
             return view('penugasan-ptk.index', compact('data', 'isPtk'));
         }
+    }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $data = DB::table('ptk')
+            ->where('nama_lengkap', 'LIKE', "%$keyword%")
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        return response()->json($data);
     }
 
     public function create()

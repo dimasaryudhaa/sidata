@@ -166,15 +166,59 @@
         </div>
 
         <script>
-            document.getElementById('search').addEventListener('keyup', function() {
-                let filter = this.value.toLowerCase();
-                let rows = document.querySelectorAll('#penugasanPtkTable tbody tr');
+        const searchInput = document.getElementById('search');
+        const tbody = document.querySelector('#penugasanPtkTable tbody');
 
-                rows.forEach(row => {
-                    let nama = row.querySelector('.nama_lengkap').textContent.toLowerCase();
-                    row.style.display = nama.includes(filter) ? '' : 'none';
-                });
-            });
+        searchInput.addEventListener('keyup', function () {
+            let query = this.value.trim();
+
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+
+            fetch(`/{{ $isPtk ? 'ptk' : 'admin' }}/penugasan-ptk/search?q=` + query)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td class="nama_lengkap">${item.nama_lengkap ?? '-'}</td>
+                                <td>${item.nomor_surat_tugas ?? '-'}</td>
+                                <td>${item.tanggal_surat_tugas ?? '-'}</td>
+                                <td>${item.tmt_tugas ?? '-'}</td>
+                                <td>${item.status_sekolah_induk ?? '-'}</td>
+                                <td>
+                                    <a href="/{{ $isPtk ? 'ptk' : 'admin' }}/penugasan-ptk/${item.penugasan_id ?? item.ptk_id}/edit"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="/images/edit.png" style="width:20px; height:20px;">
+                                    </a>
+
+                                    ${item.penugasan_id ? `
+                                        <form action="/{{ $isPtk ? 'ptk' : 'admin' }}/penugasan-ptk/${item.penugasan_id}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-no-border"
+                                                onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                                <img src="/images/delete.png" style="width:20px; height:20px;">
+                                            </button>
+                                        </form>
+                                    ` : `
+                                        <button class="btn btn-sm btn-no-border" disabled>
+                                            <img src="/images/delete.png" style="width:20px; height:20px; opacity:0.5;">
+                                        </button>
+                                    `}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => console.error(err));
+        });
         </script>
 
     @else

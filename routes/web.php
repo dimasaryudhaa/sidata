@@ -87,6 +87,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('keluarga-ptk/search', [KeluargaPtkController::class, 'search'])->name('keluarga-ptk.search');
         Route::get('tunjangan/search', [TunjanganController::class, 'search'])->name('tunjangan.search');
         Route::get('kesejahteraan-ptk/search', [TunjanganController::class, 'search'])->name('kesejahteraan-ptk.search');
+        Route::get('penugasan-ptk/search', [PenugasanPtkController::class, 'search'])->name('penugasan-ptk.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
@@ -131,7 +132,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('dokumen-ptk/search', [DokumenPtkController::class, 'search'])->name('dokumen-ptk.search');
         Route::get('anak-ptk/search', [AnakPtkController::class, 'search'])->name('anak-ptk.search');
         Route::get('keluarga-ptk/search', [KeluargaPtkController::class, 'search'])->name('keluarga-ptk.search');
-        Route::get('kesejahteraan-ptk/search', [TunjanganController::class, 'search'])->name('kesejahteraan-ptk.search');
+        Route::get('tunjangan/search', [TunjanganController::class, 'search'])->name('tunjangan.search');
+        Route::get('kesejahteraan-ptk/search', [KesejahteraanPtkController::class, 'search'])->name('kesejahteraan-ptk.search');
+        Route::get('penugasan-ptk/search', [PenugasanPtkController::class, 'search'])->name('penugasan-ptk.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);

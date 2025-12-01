@@ -60,7 +60,7 @@ class TunjanganController extends Controller
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
         }
 
         return view('tunjangan.index', compact('tunjangan', 'isPtk', 'isAdmin', 'ptkId'));

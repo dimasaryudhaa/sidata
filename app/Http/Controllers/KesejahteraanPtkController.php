@@ -47,7 +47,7 @@ class KesejahteraanPtkController extends Controller
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
         }
 
         return view('kesejahteraan-ptk.index', compact('kesejahteraan', 'isPtk', 'isAdmin'));
