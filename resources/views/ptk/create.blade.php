@@ -41,7 +41,7 @@
                 <div class="mb-3">
                     <label>NIK</label>
                     <input type="text" name="nik" class="form-control @error('nik') is-invalid @enderror"
-                        value="{{ old('nik', $ptk->nik ?? '') }}" required>
+                        value="{{ old('nik', $ptk->nik ?? '') }}">
                     @error('nik')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -49,7 +49,7 @@
 
                 <div class="mb-3">
                     <label>Jenis Kelamin</label>
-                    <select name="jenis_kelamin" class="form-control @error('jenis_kelamin') is-invalid @enderror" required>
+                    <select name="jenis_kelamin" class="form-control @error('jenis_kelamin') is-invalid @enderror">
                         <option value="">Pilih Jenis Kelamin</option>
                         <option value="Laki-laki" {{ old('jenis_kelamin', $ptk->jenis_kelamin ?? '')=='Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                         <option value="Perempuan" {{ old('jenis_kelamin', $ptk->jenis_kelamin ?? '')=='Perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -62,7 +62,7 @@
                 <div class="mb-3">
                     <label>Tempat Lahir</label>
                     <input type="text" name="tempat_lahir" class="form-control @error('tempat_lahir') is-invalid @enderror"
-                        value="{{ old('tempat_lahir', $ptk->tempat_lahir ?? '') }}" required>
+                        value="{{ old('tempat_lahir', $ptk->tempat_lahir ?? '') }}">
                     @error('tempat_lahir')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -71,7 +71,7 @@
                 <div class="mb-3">
                     <label>Tanggal Lahir</label>
                     <input type="date" name="tanggal_lahir" class="form-control @error('tanggal_lahir') is-invalid @enderror"
-                        value="{{ old('tanggal_lahir', $ptk->tanggal_lahir ?? '') }}" required>
+                        value="{{ old('tanggal_lahir', $ptk->tanggal_lahir ?? '') }}">
                     @error('tanggal_lahir')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -80,7 +80,7 @@
                 <div class="mb-3">
                     <label>Nama Ibu Kandung</label>
                     <input type="text" name="nama_ibu_kandung" class="form-control @error('nama_ibu_kandung') is-invalid @enderror"
-                        value="{{ old('nama_ibu_kandung', $ptk->nama_ibu_kandung ?? '') }}" required>
+                        value="{{ old('nama_ibu_kandung', $ptk->nama_ibu_kandung ?? '') }}">
                     @error('nama_ibu_kandung')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
