@@ -66,6 +66,18 @@ class TunjanganController extends Controller
         return view('tunjangan.index', compact('tunjangan', 'isPtk', 'isAdmin', 'ptkId'));
     }
 
+    public function search(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $data = DB::table('ptk')
+            ->where('nama_lengkap', 'LIKE', "%$keyword%")
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        return response()->json($data);
+    }
+
     public function create(Request $request)
     {
         $user = Auth::user();
