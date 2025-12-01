@@ -75,6 +75,29 @@ class OrangTuaController extends Controller
     {
         $request->validate([
             'peserta_didik_id' => 'required|exists:peserta_didik,id',
+
+            'nama_ayah' => 'nullable|string|max:255',
+            'nik_ayah' => 'nullable|string|max:20',
+            'tahun_lahir_ayah' => 'nullable|digits:4',
+            'pendidikan_ayah' => 'nullable|in:Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,S1,S2,S3',
+            'pekerjaan_ayah' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/POLRI,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan',
+            'penghasilan_ayah' => 'nullable|in:<500rb,500rb-999rb,1jt-1.9jt,2jt-4.9jt,>=5jt',
+            'kebutuhan_khusus_ayah' => 'nullable|string|max:255',
+
+            'nama_ibu' => 'nullable|string|max:255',
+            'nik_ibu' => 'nullable|string|max:20',
+            'tahun_lahir_ibu' => 'nullable|digits:4',
+            'pendidikan_ibu' => 'nullable|in:Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,S1,S2,S3',
+            'pekerjaan_ibu' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/POLRI,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan',
+            'penghasilan_ibu' => 'nullable|in:<500rb,500rb-999rb,1jt-1.9jt,2jt-4.9jt,>=5jt',
+            'kebutuhan_khusus_ibu' => 'nullable|string|max:255',
+
+            'nama_wali' => 'nullable|string|max:255',
+            'nik_wali' => 'nullable|string|max:20',
+            'tahun_lahir_wali' => 'nullable|digits:4',
+            'pendidikan_wali' => 'nullable|in:Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,S1,S2,S3',
+            'pekerjaan_wali' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/POLRI,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan',
+            'penghasilan_wali' => 'nullable|in:<500rb,500rb-999rb,1jt-1.9jt,2jt-4.9jt,>=5jt',
         ]);
 
         OrangTua::create($request->all());
@@ -117,6 +140,33 @@ class OrangTuaController extends Controller
 
     public function update(Request $request, $id)
     {
+    $request->validate([
+        'peserta_didik_id' => 'required|exists:peserta_didik,id',
+
+        'nama_ayah' => 'nullable|string|max:255',
+        'nik_ayah' => 'nullable|string|max:20',
+        'tahun_lahir_ayah' => 'nullable|digits:4',
+        'pendidikan_ayah' => 'nullable|in:Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,S1,S2,S3',
+        'pekerjaan_ayah' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/POLRI,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan',
+        'penghasilan_ayah' => 'nullable|in:<500rb,500rb-999rb,1jt-1.9jt,2jt-4.9jt,>=5jt',
+        'kebutuhan_khusus_ayah' => 'nullable|string|max:255',
+
+        'nama_ibu' => 'nullable|string|max:255',
+        'nik_ibu' => 'nullable|string|max:20',
+        'tahun_lahir_ibu' => 'nullable|digits:4',
+        'pendidikan_ibu' => 'nullable|in:Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,S1,S2,S3',
+        'pekerjaan_ibu' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/POLRI,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan',
+        'penghasilan_ibu' => 'nullable|in:<500rb,500rb-999rb,1jt-1.9jt,2jt-4.9jt,>=5jt',
+        'kebutuhan_khusus_ibu' => 'nullable|string|max:255',
+
+        'nama_wali' => 'nullable|string|max:255',
+        'nik_wali' => 'nullable|string|max:20',
+        'tahun_lahir_wali' => 'nullable|digits:4',
+        'pendidikan_wali' => 'nullable|in:Tidak Sekolah,Putus SD,SD Sederajat,SMP Sederajat,SMA Sederajat,D1,D2,D3,S1,S2,S3',
+        'pekerjaan_wali' => 'nullable|in:Tidak Bekerja,Nelayan,Petani,Peternak,PNS/TNI/POLRI,Karyawan Swasta,Pedagang Kecil,Pedagang Besar,Wiraswasta,Wirausaha,Buruh,Pensiunan',
+        'penghasilan_wali' => 'nullable|in:<500rb,500rb-999rb,1jt-1.9jt,2jt-4.9jt,>=5jt',
+    ]);
+
         $orangTua = OrangTua::findOrFail($id);
 
         $orangTua->update($request->all());

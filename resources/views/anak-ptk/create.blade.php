@@ -55,13 +55,19 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>NISN</label>
-                    <input type="text" name="nisn" class="form-control"
-                           value="{{ old('nisn', $anakPtk->nisn ?? '') }}">
+                    <label>Tahun Masuk</label>
+                    <input type="number" name="tahun_masuk" class="form-control" min="1900" max="{{ date('Y') }}"
+                           value="{{ old('tahun_masuk', $anakPtk->tahun_masuk ?? '') }}">
                 </div>
             </div>
 
             <div class="col-md-6">
+                <div class="mb-3">
+                    <label>NISN</label>
+                    <input type="text" name="nisn" class="form-control"
+                           value="{{ old('nisn', $anakPtk->nisn ?? '') }}">
+                </div>
+
                 <div class="mb-3">
                     <label>Jenis Kelamin</label>
                     <select name="jenis_kelamin" class="form-control" required>
@@ -81,12 +87,6 @@
                     <label>Tanggal Lahir</label>
                     <input type="date" name="tanggal_lahir" class="form-control"
                            value="{{ old('tanggal_lahir', isset($anakPtk) && $anakPtk->tanggal_lahir ? $anakPtk->tanggal_lahir->format('Y-m-d') : '') }}">
-                </div>
-
-                <div class="mb-3">
-                    <label>Tahun Masuk</label>
-                    <input type="number" name="tahun_masuk" class="form-control" min="1900" max="{{ date('Y') }}"
-                           value="{{ old('tahun_masuk', $anakPtk->tahun_masuk ?? '') }}">
                 </div>
             </div>
         </div>

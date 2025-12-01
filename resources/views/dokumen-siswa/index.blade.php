@@ -4,6 +4,7 @@
 
 @php
     use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Str;
 
     $prefix = auth()->user()->role === 'admin' ? 'admin' : 'siswa';
     $isAdmin = auth()->user()->role === 'admin';

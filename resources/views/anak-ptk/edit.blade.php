@@ -42,6 +42,11 @@
                 </div>
 
                 <div class="mb-3">
+                    <label>Tahun Masuk</label>
+                    <input type="number" name="tahun_masuk" value="{{ $anak->tahun_masuk }}" class="form-control" min="1900" max="{{ date('Y') }}">
+                </div>
+
+                <div class="mb-3">
                     <label>NISN</label>
                     <input type="text" name="nisn" value="{{ $anak->nisn }}" class="form-control">
                 </div>
@@ -67,10 +72,6 @@
                     <input type="date" name="tanggal_lahir" value="{{ $anak->tanggal_lahir }}" class="form-control">
                 </div>
 
-                <div class="mb-3">
-                    <label>Tahun Masuk</label>
-                    <input type="number" name="tahun_masuk" value="{{ $anak->tahun_masuk }}" class="form-control" min="1900" max="{{ date('Y') }}">
-                </div>
             </div>
         </div>
 
