@@ -154,21 +154,9 @@ class PtkController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            // 'nik' => 'required|string|size:16|unique:ptk,nik,' . $ptk->id,
-            // 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            // 'tempat_lahir' => 'required|string|max:100',
-            // 'tanggal_lahir' => 'required|date',
-            // 'nama_ibu_kandung' => 'required|string|max:255',
         ]);
 
-        $old = [
-            $ptk->nama_lengkap,
-            // $ptk->nik,
-            // $ptk->jenis_kelamin,
-            // $ptk->tempat_lahir,
-            // $ptk->tanggal_lahir,
-            // $ptk->nama_ibu_kandung,
-        ];
+        $oldNama = $ptk->nama_lengkap;
 
         $ptk->update($request->all());
 
@@ -180,11 +168,11 @@ class PtkController extends Controller
 
             if ($sheet) {
                 $highestRow = $sheet->getHighestRow();
+
                 for ($row = 2; $row <= $highestRow; $row++) {
-                    if (
-                        $sheet->getCell("A{$row}")->getValue() == $old[0] &&
-                        $sheet->getCell("B{$row}")->getValue() == $old[1]
-                    ) {
+
+                    if ($sheet->getCell("A{$row}")->getValue() == $oldNama) {
+
                         $sheet->fromArray([
                             $ptk->nama_lengkap,
                             $ptk->nik,
@@ -193,15 +181,16 @@ class PtkController extends Controller
                             $ptk->tanggal_lahir,
                             $ptk->nama_ibu_kandung,
                         ], null, "A{$row}");
+
                         break;
                     }
                 }
+
                 (new Xlsx($spreadsheet))->save($path);
             }
         }
 
-        $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'ptk.';
+        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'ptk.';
 
         return redirect()->route($prefix.'ptk.index')->with('success', 'Data PTK berhasil diperbarui!');
     }
