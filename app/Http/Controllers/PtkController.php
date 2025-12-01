@@ -64,7 +64,7 @@ class PtkController extends Controller
         $data = DB::table('ptk')
             ->where('nama_lengkap', 'LIKE', "%$keyword%")
             ->orderBy('nama_lengkap', 'asc')
-            ->get(); 
+            ->get();
 
         return response()->json($data);
     }
@@ -163,11 +163,11 @@ class PtkController extends Controller
 
         $old = [
             $ptk->nama_lengkap,
-            $ptk->nik,
-            $ptk->jenis_kelamin,
-            $ptk->tempat_lahir,
-            $ptk->tanggal_lahir,
-            $ptk->nama_ibu_kandung,
+            // $ptk->nik,
+            // $ptk->jenis_kelamin,
+            // $ptk->tempat_lahir,
+            // $ptk->tanggal_lahir,
+            // $ptk->nama_ibu_kandung,
         ];
 
         $ptk->update($request->all());

@@ -23,12 +23,12 @@
 
                 <div class="mb-3">
                     <label>NIK</label>
-                    <input type="text" name="nik" class="form-control" value="{{ $ptk->nik }}" required>
+                    <input type="text" name="nik" class="form-control" value="{{ $ptk->nik }}">
                 </div>
 
                 <div class="mb-3">
                     <label>Jenis Kelamin</label>
-                    <select name="jenis_kelamin" class="form-control" required>
+                    <select name="jenis_kelamin" class="form-control">
                         <option value="">Pilih Jenis Kelamin</option>
                         <option value="Laki-laki" {{ $ptk->jenis_kelamin=='Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                         <option value="Perempuan" {{ $ptk->jenis_kelamin=='Perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -37,17 +37,17 @@
 
                 <div class="mb-3">
                     <label>Tempat Lahir</label>
-                    <input type="text" name="tempat_lahir" class="form-control" value="{{ $ptk->tempat_lahir }}" required>
+                    <input type="text" name="tempat_lahir" class="form-control" value="{{ $ptk->tempat_lahir }}">
                 </div>
 
                 <div class="mb-3">
                     <label>Tanggal Lahir</label>
-                    <input type="date" name="tanggal_lahir" class="form-control" value="{{ $ptk->tanggal_lahir }}" required>
+                    <input type="date" name="tanggal_lahir" class="form-control" value="{{ $ptk->tanggal_lahir }}">
                 </div>
 
                 <div class="mb-3">
                     <label>Nama Ibu Kandung</label>
-                    <input type="text" name="nama_ibu_kandung" class="form-control" value="{{ $ptk->nama_ibu_kandung }}" required>
+                    <input type="text" name="nama_ibu_kandung" class="form-control" value="{{ $ptk->nama_ibu_kandung }}">
                 </div>
 
             </div>
