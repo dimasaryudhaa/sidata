@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('kontak-siswa', KontakSiswaController::class);
 
         //ptk
+        Route::get('ptk/search', [PtkController::class, 'search'])->name('ptk.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
