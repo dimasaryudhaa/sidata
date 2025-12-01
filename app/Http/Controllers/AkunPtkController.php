@@ -79,12 +79,13 @@ class AkunPtkController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'ptk_id' => 'required|exists:ptk,id',
             'email' => 'required|email|unique:akun_ptk,email|unique:users,email',
             'password' => 'required|min:6',
         ]);
+
+        $plainPassword = $validated['password'];
 
         $validated['password'] = Hash::make($validated['password']);
 
@@ -118,14 +119,14 @@ class AkunPtkController extends Controller
         if (!$sheet) {
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('AkunPTK');
-            $sheet->fromArray(['Nama PTK', 'Email', 'Password (Hash)'], null, 'A1');
+            $sheet->fromArray(['Nama PTK', 'Email', 'Password'], null, 'A1');
         }
 
         $lastRow = $sheet->getHighestRow() + 1;
         $sheet->fromArray([
             $ptk->nama_lengkap,
             $validated['email'],
-            $validated['password'],
+            $plainPassword,
         ], null, "A{$lastRow}");
 
         (new Xlsx($spreadsheet))->save($path);
@@ -178,9 +179,11 @@ class AkunPtkController extends Controller
         ]);
 
         if ($request->filled('password')) {
+            $plainPassword = $request->password;
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
+            $plainPassword = null;
         }
 
         $akun_ptk->update($validated);
@@ -213,8 +216,8 @@ class AkunPtkController extends Controller
                     if ($sheet->getCell("B{$row}")->getValue() == $oldEmail) {
                         $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
                         $sheet->setCellValue("B{$row}", $validated['email']);
-                        if (isset($validated['password'])) {
-                            $sheet->setCellValue("C{$row}", $validated['password']);
+                        if ($plainPassword) { 
+                            $sheet->setCellValue("C{$row}", $plainPassword);
                         }
                         break;
                     }
