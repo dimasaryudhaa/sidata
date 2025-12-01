@@ -56,7 +56,7 @@ class AnakPtkController extends Controller
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
         }
 
         return view('anak-ptk.index', compact('anakPtk', 'isPtk', 'isAdmin', 'ptkId'));

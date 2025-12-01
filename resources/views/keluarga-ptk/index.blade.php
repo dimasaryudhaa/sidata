@@ -152,15 +152,59 @@
         </div>
 
         <script>
-            document.getElementById('search').addEventListener('keyup', function() {
-                let filter = this.value.toLowerCase();
-                let rows = document.querySelectorAll('#keluargaPtkTable tbody tr');
+        const searchInput = document.getElementById('search');
+        const tbody = document.querySelector('#keluargaPtkTable tbody');
 
-                rows.forEach(row => {
-                    let nama = row.querySelector('.nama_lengkap').textContent.toLowerCase();
-                    row.style.display = nama.includes(filter) ? '' : 'none';
+        searchInput.addEventListener('keyup', function() {
+            let query = this.value.trim();
+
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+
+            fetch(`/{{ $isPtk ? 'ptk' : 'admin' }}/keluarga-ptk/search?q=` + query)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td class="nama_lengkap">${item.nama_lengkap ?? '-'}</td>
+                                <td>${item.no_kk ?? '-'}</td>
+                                <td>${item.status_perkawinan ?? '-'}</td>
+                                <td>${item.nama_suami_istri ?? '-'}</td>
+                                <td>${item.nip_suami_istri ?? '-'}</td>
+                                <td>${item.pekerjaan_suami_istri ?? '-'}</td>
+                                <td>
+                                    <a href="/{{ $isPtk ? 'ptk' : 'admin' }}/keluarga-ptk/${item.keluarga_id ?? item.ptk_id}/edit"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="/images/edit.png" style="width:20px;">
+                                    </a>
+
+                                    ${item.keluarga_id ?
+                                        `<form action="/{{ $isPtk ? 'ptk' : 'admin' }}/keluarga-ptk/${item.keluarga_id}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-no-border"
+                                                onclick="return confirm('Yakin ingin menghapus data keluarga PTK ini?')">
+                                                <img src="/images/delete.png" style="width:20px;">
+                                            </button>
+                                        </form>`
+                                        :
+                                        `<button class="btn btn-sm btn-no-border" disabled>
+                                            <img src="/images/delete.png" style="width:20px; opacity:0.5;">
+                                        </button>`
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    });
                 });
-            });
+        });
         </script>
 
     @else

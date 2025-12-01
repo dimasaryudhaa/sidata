@@ -52,10 +52,22 @@ class KeluargaPtkController extends Controller
                     'keluarga_ptk.pekerjaan_suami_istri'
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
 
             return view('keluarga-ptk.index', compact('data', 'isPtk'));
         }
+    }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $data = DB::table('ptk')
+            ->where('nama_lengkap', 'LIKE', "%$keyword%")
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        return response()->json($data);
     }
 
     public function create()
