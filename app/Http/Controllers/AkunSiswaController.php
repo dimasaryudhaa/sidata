@@ -13,14 +13,20 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Storage;
 
-
 class AkunSiswaController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-        $isSiswa = $user->role === 'siswa';
-        $isAdmin = $user->role === 'admin';
+        $isAdmin = $user->role == 'admin';
+        $isSiswa = $user->role == 'siswa';
+
+        $siswaId = null;
+        if ($isSiswa) {
+            $siswaId = DB::table('akun_siswa')
+                ->where('email', $user->email)
+                ->value('peserta_didik_id');
+        }
 
         if ($isSiswa) {
             $data = DB::table('akun_siswa')
@@ -48,16 +54,14 @@ class AkunSiswaController extends Controller
                 ->paginate(12);
         }
 
-        return view('akun-siswa.index', compact('data', 'isSiswa', 'isAdmin'));
+        return view('akun-siswa.index', compact('data', 'isSiswa', 'isAdmin', 'siswaId'));
     }
 
     public function create()
     {
         $siswas = Siswa::all();
-
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
-
         return view('akun-siswa.create', compact('siswas', 'prefix'));
     }
 
@@ -97,10 +101,10 @@ class AkunSiswaController extends Controller
             $spreadsheet = IOFactory::load($path);
         }
 
-        $sheet = $spreadsheet->getSheetByName('AkunSiswa');
+        $sheet = $spreadsheet->getSheetByName('AkunSISWA');
         if (!$sheet) {
             $sheet = $spreadsheet->createSheet();
-            $sheet->setTitle('AkunSiswa');
+            $sheet->setTitle('AkunSISWA');
             $sheet->fromArray(['Nama Siswa', 'Email', 'Password (Hash)'], null, 'A1');
         }
 
@@ -117,7 +121,7 @@ class AkunSiswaController extends Controller
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
         return redirect()->route($prefix.'akun-siswa.index')
-            ->with('success', 'Akun siswa berhasil ditambahkan ke tabel users.');
+                        ->with('success', 'Akun siswa berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -143,11 +147,8 @@ class AkunSiswaController extends Controller
             $siswa = Siswa::find($akun->peserta_didik_id);
         }
 
-        $siswas = Siswa::all();
-
         return view('akun-siswa.edit', [
             'data' => $akun,
-            'siswas' => $siswas,
             'isAdmin' => $isAdmin,
             'isSiswa' => $isSiswa,
             'siswa' => $siswa,
@@ -192,7 +193,7 @@ class AkunSiswaController extends Controller
 
         if (file_exists($path)) {
             $spreadsheet = IOFactory::load($path);
-            $sheet = $spreadsheet->getSheetByName('AkunSiswa');
+            $sheet = $spreadsheet->getSheetByName('AkunSISWA');
 
             if ($sheet) {
                 $highestRow = $sheet->getHighestRow();
@@ -213,8 +214,9 @@ class AkunSiswaController extends Controller
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
-        return redirect()->route($prefix.'akun-siswa.index')
-            ->with('success', 'Akun siswa dan user berhasil diperbarui.');
+        return redirect()
+            ->route($prefix.'akun-siswa.index')
+            ->with('success', 'Akun siswa berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -222,12 +224,13 @@ class AkunSiswaController extends Controller
         $akun = AkunSiswa::findOrFail($id);
 
         DB::table('users')->where('email', $akun->email)->delete();
+        $akun->delete();
 
         $path = storage_path('app/exports/sidata.xlsx');
 
         if (file_exists($path)) {
             $spreadsheet = IOFactory::load($path);
-            $sheet = $spreadsheet->getSheetByName('AkunSiswa');
+            $sheet = $spreadsheet->getSheetByName('AkunSISWA');
 
             if ($sheet) {
                 $highestRow = $sheet->getHighestRow();
@@ -241,13 +244,10 @@ class AkunSiswaController extends Controller
             }
         }
 
-        $akun->delete();
-
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
         return redirect()->route($prefix.'akun-siswa.index')
-            ->with('success', 'Akun siswa dan user berhasil dihapus.');
+            ->with('success', 'Akun siswa berhasil dihapus.');
     }
-
 }
