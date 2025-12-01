@@ -32,7 +32,7 @@ class DokumenPtkController extends Controller
             $query->where('akun_ptk.email', $user->email);
         }
 
-        $dokumen = $query->paginate(12);
+        $dokumen = $query->paginate(50);
 
         $ptk = null;
         $dokumenPtk = null;

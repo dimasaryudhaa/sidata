@@ -16,7 +16,6 @@
         vertical-align: middle !important;
         font-weight: 600;
     }
-
     .btn-no-border {
         border: none !important;
         box-shadow: none !important;
@@ -24,17 +23,14 @@
         padding: 0;
         cursor: pointer;
     }
-
     .btn-no-border.disabled {
         opacity: 0.4;
         cursor: not-allowed;
         pointer-events: none;
     }
-
     .modal-lg {
         max-width: 800px;
     }
-
     .modal-body img {
         max-width: 100%;
         height: auto;
@@ -98,11 +94,11 @@
     @endif
 
     @if(isset($isPtk) && $isPtk && isset($ptk))
+
         <div class="mb-3">
             @if($dokumenPtk)
                 <a href="{{ route($prefix . '.dokumen-ptk.edit', $ptk->id) }}"
-                class="btn btn-primary px-4"
-                style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color: white; border-radius: 6px;">
+                class="btn btn-primary px-4">
                     <i class="bi bi-pencil-square me-2"></i> Edit
                 </a>
             @else
@@ -115,9 +111,9 @@
 
         <div class="table-responsive rounded-3 overflow-hidden mt-3">
             <table class="table table-bordered mt-3">
-                <thead class="text-white" style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8);">
+                <thead class="text-white">
                     <tr>
-                        <th style="width: 50px;">No</th>
+                        <th>No</th>
                         <th>Nama Dokumen</th>
                         <th>File</th>
                     </tr>
@@ -147,15 +143,14 @@
                                 @if($file)
                                     @if(Str::endsWith($file, ['.jpg', '.jpeg', '.png', '.gif']))
                                         <img src="{{ asset('storage/' . $file) }}"
-                                             alt="{{ $nama }}"
                                              class="img-thumbnail preview-trigger"
                                              data-nama="{{ $nama }}"
                                              data-src="{{ asset('storage/' . $file) }}"
                                              data-type="image"
-                                             style="max-width:100px; max-height:100px; cursor:pointer;">
+                                             style="max-width:100px; cursor:pointer;">
                                     @else
                                         <a href="#"
-                                           class="preview-trigger text-decoration-none"
+                                           class="preview-trigger"
                                            data-nama="{{ $nama }}"
                                            data-src="{{ asset('storage/' . $file) }}"
                                            data-type="file">
@@ -172,12 +167,12 @@
             </table>
         </div>
 
-        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal fade" id="previewModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header" style="background:#007efd; color:white;">
-                        <h5 class="modal-title" id="previewModalLabel">Preview Dokumen</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Preview Dokumen</h5>
+                        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body text-center">
                         <h6 id="docName" class="mb-3 fw-bold text-primary"></h6>
@@ -197,19 +192,15 @@
             previewTriggers.forEach(trigger => {
                 trigger.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const nama = this.getAttribute('data-nama');
-                    const src = this.getAttribute('data-src');
-                    const type = this.getAttribute('data-type');
+                    docName.textContent = this.dataset.nama;
 
-                    docName.textContent = nama;
-
-                    if (type === 'image') {
-                        docPreview.innerHTML = `<img src="${src}" alt="${nama}" class="img-fluid rounded shadow">`;
+                    if (this.dataset.type === 'image') {
+                        docPreview.innerHTML = `<img src="${this.dataset.src}" class="img-fluid rounded shadow">`;
                     } else {
                         docPreview.innerHTML = `
-                            <iframe src="${src}" width="100%" height="500px" style="border:none;"></iframe>
+                            <iframe src="${this.dataset.src}" width="100%" height="500px"></iframe>
                             <div class="mt-2">
-                                <a href="${src}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <a href="${this.dataset.src}" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-box-arrow-up-right"></i> Buka di Tab Baru
                                 </a>
                             </div>`;
@@ -222,8 +213,9 @@
         </script>
 
     @else
+
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <form class="d-flex mb-3" style="gap:0.5rem;">
+            <form class="d-flex" style="gap:0.5rem;">
                 <input type="text" id="search" class="form-control form-control-sm"
                        placeholder="Cari Nama PTK..." style="max-width:250px;">
             </form>
@@ -233,10 +225,10 @@
             <table class="table table-bordered" id="dokumenTable">
                 <thead class="text-white">
                     <tr>
-                        <th style="width: 50px;">No</th>
-                        <th style="width: 500px">Nama PTK</th>
+                        <th width="50">No</th>
+                        <th width="500">Nama PTK</th>
                         <th>Status</th>
-                        <th style="width: 80px;">Aksi</th>
+                        <th width="80">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -244,7 +236,6 @@
                     <tr>
                         <td>{{ $dokumen->firstItem() + $index }}</td>
                         <td class="nama_ptk">{{ $d->nama_lengkap ?? '-' }}</td>
-
                         <td>
                             @if($d->jumlah_dokumen > 0)
                                 <span class="badge bg-success">Sudah Mengumpulkan</span>
@@ -252,12 +243,10 @@
                                 <span class="badge bg-danger">Belum Mengumpulkan</span>
                             @endif
                         </td>
-
                         <td>
                             <a href="{{ route($prefix . '.dokumen-ptk.show', $d->ptk_id) }}"
-                            class="btn btn-sm btn-no-border"
-                            title="Lihat Dokumen">
-                                <img src="{{ asset('images/view.png') }}" alt="Lihat Dokumen" style="width:20px; height:20px;">
+                            class="btn btn-sm btn-no-border">
+                                <img src="{{ asset('images/view.png') }}" style="width:20px;">
                             </a>
                         </td>
                     </tr>
@@ -272,18 +261,44 @@
 
         <script>
         const searchInput = document.getElementById('search');
-        const rows = document.querySelectorAll('#dokumenTable tbody tr');
+        const tbody = document.querySelector('#dokumenTable tbody');
 
-        function filterTable() {
-            const searchValue = searchInput.value.toLowerCase();
-            rows.forEach(row => {
-                const nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-                row.style.display = nama.includes(searchValue) ? '' : 'none';
-            });
-        }
+        searchInput.addEventListener('keyup', function() {
+            let query = this.value.trim();
 
-        searchInput.addEventListener('keyup', filterTable);
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+
+            fetch(`/{{ $prefix }}/dokumen-ptk/search?q=` + query)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        let status = item.jumlah_dokumen > 0
+                            ? `<span class="badge bg-success">Sudah Mengumpulkan</span>`
+                            : `<span class="badge bg-danger">Belum Mengumpulkan</span>`;
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td class="nama_ptk">${item.nama_lengkap ?? '-'}</td>
+                                <td>${status}</td>
+                                <td>
+                                    <a href="/{{ $prefix }}/dokumen-ptk/${item.ptk_id}"
+                                       class="btn btn-sm btn-no-border">
+                                        <img src="/images/view.png" style="width:20px;">
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+        });
         </script>
+
     @endif
 </div>
 
