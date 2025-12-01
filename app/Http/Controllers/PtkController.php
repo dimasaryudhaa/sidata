@@ -51,7 +51,7 @@ class PtkController extends Controller
                     'ptk.tanggal_lahir'
                 )
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(15);
+                ->paginate(50);
 
             return view('ptk.index', compact('ptk', 'isPtk'));
         }
