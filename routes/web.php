@@ -102,6 +102,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('beasiswa-ptk/search', [BeasiswaPtkController::class, 'search'])->name('beasiswa-ptk.search');
         Route::get('penghargaan/search', [PenghargaanController::class, 'search'])->name('penghargaan.search');
         Route::get('kompetensi-ptk/search', [KompetensiPtkController::class, 'search'])->name('kompetensi-ptk.search');
+        Route::get('kompetensi-khusus-ptk/search', [KompetensiKhususPtkController::class, 'search'])->name('kompetensi-khusus-ptk.search');
 
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
@@ -164,6 +165,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('beasiswa-ptk/search', [BeasiswaPtkController::class, 'search'])->name('beasiswa-ptk.search');
         Route::get('penghargaan/search', [PenghargaanController::class, 'search'])->name('penghargaan.search');
         Route::get('kompetensi-ptk/search', [KompetensiPtkController::class, 'search'])->name('kompetensi-ptk.search');
+        Route::get('kompetensi-khusus-ptk/search', [KompetensiKhususPtkController::class, 'search'])->name('kompetensi-khusus-ptk.search');
 
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
