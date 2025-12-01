@@ -98,6 +98,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('diklat/search', [DiklatController::class, 'search'])->name('diklat.search');
         Route::get('nilai-test/search', [NilaiTestController::class, 'search'])->name('nilai-test.search');
         Route::get('pendidikan-ptk/search', [PendidikanPtkController::class, 'search'])->name('pendidikan-ptk.search');
+        Route::get('sertifikat-ptk/search', [SertifikatPtkController::class, 'search'])->name('sertifikat-ptk.search');
 
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
@@ -156,6 +157,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('diklat/search', [DiklatController::class, 'search'])->name('diklat.search');
         Route::get('nilai-test/search', [NilaiTestController::class, 'search'])->name('nilai-test.search');
         Route::get('pendidikan-ptk/search', [PendidikanPtkController::class, 'search'])->name('pendidikan-ptk.search');
+        Route::get('sertifikat-ptk/search', [SertifikatPtkController::class, 'search'])->name('sertifikat-ptk.search');
 
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
