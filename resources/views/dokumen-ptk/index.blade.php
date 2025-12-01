@@ -215,7 +215,7 @@
     @else
 
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <form class="d-flex" style="gap:0.5rem;">
+            <form class="d-flex mb-3" style="gap:0.5rem;">
                 <input type="text" id="search" class="form-control form-control-sm"
                        placeholder="Cari Nama PTK..." style="max-width:250px;">
             </form>
