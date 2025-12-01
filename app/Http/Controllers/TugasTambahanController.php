@@ -48,10 +48,22 @@ class TugasTambahanController extends Controller
                 )
                 ->groupBy('ptk.id', 'ptk.nama_lengkap')
                 ->orderBy('ptk.nama_lengkap', 'asc')
-                ->paginate(12);
+                ->paginate(50);
         }
 
         return view('tugas-tambahan.index', compact('tugasTambahan', 'isPtk', 'isAdmin', 'prefix'));
+    }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $data = DB::table('ptk')
+            ->where('nama_lengkap', 'LIKE', "%$keyword%")
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        return response()->json($data);
     }
 
     public function create(Request $request)
