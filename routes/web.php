@@ -93,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('riwayat-gaji/search', [RiwayatGajiController::class, 'search'])->name('riwayat-gaji.search');
         Route::get('riwayat-karir/search', [RiwayatKarirController::class, 'search'])->name('riwayat-karir.search');
         Route::get('riwayat-jabatan/search', [RiwayatJabatanController::class, 'search'])->name('riwayat-jabatan.search');
+        Route::get('riwayat-kepangkatan/search', [RiwayatJabatanController::class, 'search'])->name('riwayat-kepangkatan.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
@@ -145,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('riwayat-gaji/search', [RiwayatGajiController::class, 'search'])->name('riwayat-gaji.search');
         Route::get('riwayat-karir/search', [RiwayatKarirController::class, 'search'])->name('riwayat-karir.search');
         Route::get('riwayat-jabatan/search', [RiwayatJabatanController::class, 'search'])->name('riwayat-jabatan.search');
+        Route::get('riwayat-kepangkatan/search', [RiwayatJabatanController::class, 'search'])->name('riwayat-kepangkatan.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
