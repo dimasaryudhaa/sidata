@@ -182,16 +182,48 @@
         </div>
 
         <script>
-            document.getElementById('search')?.addEventListener('keyup', function() {
-                let filter = this.value.toLowerCase();
-                let rows = document.querySelectorAll('#pendidikanPtkTable tbody tr');
+        const searchInput = document.getElementById('search');
+        const tbody = document.querySelector('#pendidikanPtkTable tbody');
 
-                rows.forEach(row => {
-                    let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-                    row.style.display = nama.includes(filter) ? '' : 'none';
-                });
-            });
+        searchInput.addEventListener('keyup', function () {
+            let query = this.value.trim();
+
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+
+            fetch(`/{{ $isAdmin ? 'admin' : 'ptk' }}/pendidikan-ptk/search?q=` + query)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td class="nama_ptk">${item.nama_lengkap ?? '-'}</td>
+                                <td>${item.jumlah_pendidikan ?? 0}</td>
+
+                                <td>
+                                    <a href="/{{ $isAdmin ? 'admin' : 'ptk' }}/pendidikan-ptk/${item.ptk_id}"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="/images/view.png" style="width:20px; height:20px;">
+                                    </a>
+
+                                    <a href="/{{ $isAdmin ? 'admin' : 'ptk' }}/pendidikan-ptk/create?ptk_id=${item.ptk_id}"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="/images/tambah2.png" style="width:20px; height:20px;">
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => console.error(err));
+        });
         </script>
+
     @endif
 </div>
 
