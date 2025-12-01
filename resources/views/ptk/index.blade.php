@@ -208,19 +208,49 @@
 
 @if(!$isPtk)
 <script>
-    const searchInput = document.getElementById('search');
-    const rows = document.querySelectorAll('#ptkTable tbody tr');
+const searchInput = document.getElementById('search');
+const tbody = document.querySelector('#ptkTable tbody');
 
-    function filterTable() {
-        const searchValue = searchInput.value.toLowerCase();
+searchInput.addEventListener('keyup', function() {
+    let query = this.value;
 
-        rows.forEach(row => {
-            const nama = row.querySelector('.nama_ptk')?.textContent.toLowerCase() || '';
-            row.style.display = nama.includes(searchValue) ? '' : 'none';
-        });
+    if (query.length === 0) {
+        location.reload(); 
+        return;
     }
 
-    searchInput.addEventListener('keyup', filterTable);
+    fetch(`/admin/ptk/search?q=` + query)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.nama_lengkap ?? '-'}</td>
+                        <td>${item.jenis_kelamin ?? '-'}</td>
+                        <td>${item.nik ?? '-'}</td>
+                        <td>${item.tempat_lahir ?? '-'}</td>
+                        <td>${item.tanggal_lahir ?? '-'}</td>
+                        <td>
+                            <a href="/admin/ptk/${item.id}/edit" class="btn btn-sm btn-no-border">
+                                <img src="/images/edit.png" style="width:20px;">
+                            </a>
+                            <form action="/admin/ptk/${item.id}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-no-border"
+                                    onclick="return confirm('Yakin ingin menghapus?')">
+                                    <img src="/images/delete.png" style="width:20px;">
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+});
 </script>
 @endif
 
