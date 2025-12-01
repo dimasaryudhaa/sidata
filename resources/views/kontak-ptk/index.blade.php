@@ -90,6 +90,7 @@
     @endif
 
     @if(!$isPtk)
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <form class="d-flex mb-3" style="gap:0.5rem;">
                 <input type="text" id="search" class="form-control form-control-sm"
@@ -125,7 +126,7 @@
                             <td>{{ $item->kode_pos ?? '-' }}</td>
                             <td>
                                 <a href="{{ route($prefix.'kontak-ptk.edit', ['kontak_ptk' => $item->kontak_id ?? $item->ptk_id]) }}" class="btn btn-sm btn-no-border">
-                                    <img src="{{ asset('images/edit.png') }}" alt="Edit" style="width:20px; height:20px;">
+                                    <img src="{{ asset('images/edit.png') }}" style="width:20px; height:20px;">
                                 </a>
 
                                 @if($item->kontak_id)
@@ -134,12 +135,12 @@
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-no-border"
                                             onclick="return confirm('Yakin ingin menghapus data kontak PTK ini?')">
-                                            <img src="{{ asset('images/delete.png') }}" alt="Hapus" style="width:20px; height:20px;">
+                                            <img src="{{ asset('images/delete.png') }}" style="width:20px; height:20px;">
                                         </button>
                                     </form>
                                 @else
                                     <button class="btn btn-sm btn-no-border" disabled>
-                                        <img src="{{ asset('images/delete.png') }}" alt="Nonaktif" style="width:20px; height:20px; opacity:0.5;">
+                                        <img src="{{ asset('images/delete.png') }}" style="width:20px; height:20px; opacity:0.5;">
                                     </button>
                                 @endif
                             </td>
@@ -149,19 +150,73 @@
             </table>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-3" id="paginationBox">
             {{ $data->links('pagination::bootstrap-5') }}
         </div>
 
         <script>
-            document.getElementById('search').addEventListener('keyup', function() {
-                let filter = this.value.toLowerCase();
-                let rows = document.querySelectorAll('#kontakPtkTable tbody tr');
-                rows.forEach(row => {
-                    let nama = row.querySelector('.nama_ptk').textContent.toLowerCase();
-                    row.style.display = nama.includes(filter) ? '' : 'none';
+        const searchInput = document.getElementById('search');
+        const tbody = document.querySelector('#kontakPtkTable tbody');
+        const paginationBox = document.getElementById('paginationBox');
+
+        searchInput.addEventListener('keyup', function() {
+            let query = this.value;
+
+            if (query.length === 0) {
+                location.reload();
+                return;
+            }
+
+            fetch('/admin/kontak-ptk/search?q=' + query)
+                .then(response => response.json())
+                .then(data => {
+
+                    paginationBox.style.display = "none";
+
+                    tbody.innerHTML = '';
+
+                    data.forEach((item, index) => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${item.nama_lengkap ?? '-'}</td>
+                                <td>${item.no_hp ?? '-'}</td>
+                                <td>${item.email ?? '-'}</td>
+                                <td>${item.alamat_jalan ?? '-'}</td>
+                                <td>${item.kelurahan ?? '-'}</td>
+                                <td>${item.kecamatan ?? '-'}</td>
+                                <td>${item.kode_pos ?? '-'}</td>
+
+                                <td>
+                                    <a href="/admin/kontak-ptk/${item.kontak_id ?? item.ptk_id}/edit"
+                                        class="btn btn-sm btn-no-border">
+                                        <img src="/images/edit.png" style="width:20px; height:20px;">
+                                    </a>
+
+                                    ${
+                                        item.kontak_id
+                                        ? `
+                                            <form action="/admin/kontak-ptk/${item.kontak_id}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-no-border"
+                                                    onclick="return confirm('Yakin ingin menghapus?')">
+                                                    <img src="/images/delete.png" style="width:20px; height:20px;">
+                                                </button>
+                                            </form>
+                                        `
+                                        : `
+                                            <button class="btn btn-sm btn-no-border" disabled>
+                                                <img src="/images/delete.png" style="width:20px; height:20px; opacity:0.5;">
+                                            </button>
+                                        `
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    });
                 });
-            });
+        });
         </script>
 
     @else
@@ -186,42 +241,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>No HP</td>
-                        <td>{{ $dataPtk->no_hp ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td>{{ $dataPtk->email ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Alamat Jalan</td>
-                        <td>{{ $dataPtk->alamat_jalan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>RT</td>
-                        <td>{{ $dataPtk->rt ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>RW</td>
-                        <td>{{ $dataPtk->rw ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Kelurahan</td>
-                        <td>{{ $dataPtk->kelurahan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Kecamatan</td>
-                        <td>{{ $dataPtk->kecamatan ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Kode Pos</td>
-                        <td>{{ $dataPtk->kode_pos ?? '-' }}</td>
-                    </tr>
+                    <tr><td>No HP</td><td>{{ $dataPtk->no_hp ?? '-' }}</td></tr>
+                    <tr><td>Email</td><td>{{ $dataPtk->email ?? '-' }}</td></tr>
+                    <tr><td>Alamat Jalan</td><td>{{ $dataPtk->alamat_jalan ?? '-' }}</td></tr>
+                    <tr><td>RT</td><td>{{ $dataPtk->rt ?? '-' }}</td></tr>
+                    <tr><td>RW</td><td>{{ $dataPtk->rw ?? '-' }}</td></tr>
+                    <tr><td>Kelurahan</td><td>{{ $dataPtk->kelurahan ?? '-' }}</td></tr>
+                    <tr><td>Kecamatan</td><td>{{ $dataPtk->kecamatan ?? '-' }}</td></tr>
+                    <tr><td>Kode Pos</td><td>{{ $dataPtk->kode_pos ?? '-' }}</td></tr>
                 </tbody>
             </table>
         </div>
     @endif
+
 </div>
 
 @endsection

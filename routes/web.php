@@ -81,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
         //ptk
         Route::get('ptk/search', [PtkController::class, 'search'])->name('ptk.search');
         Route::get('akun-ptk/search', [AkunPtkController::class, 'search'])->name('akun-ptk.search');
+        Route::get('kontak-ptk/search', [KontakPtkController::class, 'search'])->name('kontak-ptk.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
@@ -121,6 +122,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('master-ptk.cetak');
         Route::get('ptk/search', [PtkController::class, 'search'])->name('ptk.search');
         Route::get('akun-ptk/search', [AkunPtkController::class, 'search'])->name('akun-ptk.search');
+        Route::get('kontak-ptk/search', [KontakPtkController::class, 'search'])->name('kontak-ptk.search');
         Route::resource('ptk', PtkController::class);
         Route::resource('akun-ptk', AkunPtkController::class);
         Route::resource('kontak-ptk', KontakPtkController::class);
