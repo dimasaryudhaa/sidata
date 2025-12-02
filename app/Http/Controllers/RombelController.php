@@ -33,6 +33,8 @@ class RombelController extends Controller
 
         $rombel = Rombel::create($request->all());
 
+        $namaJurusan = Jurusan::find($request->jurusan_id)->nama_jurusan;
+
         if (!Storage::exists('exports')) {
             Storage::makeDirectory('exports');
         }
@@ -51,13 +53,13 @@ class RombelController extends Controller
         if (!$sheet) {
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('Rombel');
-            $sheet->fromArray(['ID Jurusan', 'Nama Rombel'], null, 'A1');
+            $sheet->fromArray(['Nama Jurusan', 'Nama Rombel'], null, 'A1');
         }
 
         $lastRow = $sheet->getHighestRow() + 1;
 
         $sheet->fromArray([
-            $rombel->jurusan_id,
+            $namaJurusan,
             $rombel->nama_rombel,
         ], null, "A{$lastRow}");
 
@@ -75,14 +77,17 @@ class RombelController extends Controller
     public function update(Request $request, Rombel $rombel)
     {
         $request->validate([
-            'jurusan_id' => 'required|integer',
+            'jurusan_id' => 'required|integer|exists:jurusan,id',
             'nama_rombel' => 'required|string|max:100',
         ]);
 
-        $oldJurusan = $rombel->jurusan_id;
-        $oldNama = $rombel->nama_rombel;
+        $oldNamaJurusan = Jurusan::find($rombel->jurusan_id)->nama_jurusan;
+        $oldNamaRombel = $rombel->nama_rombel;
 
         $rombel->update($request->all());
+
+        $newNamaJurusan = Jurusan::find($request->jurusan_id)->nama_jurusan;
+        $newNamaRombel = $request->nama_rombel;
 
         $path = storage_path('app/exports/sidata.xlsx');
 
@@ -92,21 +97,25 @@ class RombelController extends Controller
 
             if ($sheet) {
                 $highestRow = $sheet->getHighestRow();
+
                 for ($row = 2; $row <= $highestRow; $row++) {
+
                     if (
-                        $sheet->getCell("A{$row}")->getValue() == $oldJurusan &&
-                        $sheet->getCell("B{$row}")->getValue() == $oldNama
+                        trim($sheet->getCell("A{$row}")->getValue()) === trim($oldNamaJurusan) &&
+                        trim($sheet->getCell("B{$row}")->getValue()) === trim($oldNamaRombel)
                     ) {
-                        $sheet->setCellValue("A{$row}", $rombel->jurusan_id);
-                        $sheet->setCellValue("B{$row}", $rombel->nama_rombel);
+                        $sheet->setCellValue("A{$row}", $newNamaJurusan);
+                        $sheet->setCellValue("B{$row}", $newNamaRombel);
                         break;
                     }
                 }
+
                 (new Xlsx($spreadsheet))->save($path);
             }
         }
 
-        return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil diupdate.');
+        return redirect()->route('admin.rombel.index')
+            ->with('success', 'Rombel berhasil diupdate.');
     }
 
     public function destroy(Rombel $rombel)
