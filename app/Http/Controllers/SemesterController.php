@@ -15,7 +15,7 @@ class SemesterController extends Controller
     {
         $semester = Semester::orderBy('tahun_ajaran', 'desc')
             ->orderBy('nama_semester', 'asc')
-            ->paginate(12);
+            ->paginate(10);
         return view('semester.index', compact('semester'));
     }
 
@@ -138,5 +138,5 @@ class SemesterController extends Controller
 
         return redirect()->route('admin.semester.index')->with('success', 'Semester berhasil dihapus.');
     }
-    
+
 }

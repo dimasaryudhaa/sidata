@@ -16,7 +16,7 @@ class RayonController extends Controller
     {
         $rayon = Rayon::with('ptk')
             ->orderBy('nama_rayon', 'asc')
-            ->paginate(12);
+            ->paginate(10);
 
         return view('rayon.index', compact('rayon'));
     }
