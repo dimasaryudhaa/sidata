@@ -27,7 +27,7 @@ class RombelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jurusan_id' => 'required|integer',
+            'jurusan_id' => 'required|integer|exists:jurusan,id',
             'nama_rombel' => 'required|string|max:100',
         ]);
 
@@ -65,7 +65,8 @@ class RombelController extends Controller
 
         (new Xlsx($spreadsheet))->save($path);
 
-        return redirect()->route('admin.rombel.index')->with('success', 'Rombel berhasil ditambahkan.');
+        return redirect()->route('admin.rombel.index')
+            ->with('success', 'Rombel berhasil ditambahkan.');
     }
 
     public function edit(Rombel $rombel)
