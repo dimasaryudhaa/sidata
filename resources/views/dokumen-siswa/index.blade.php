@@ -73,7 +73,6 @@ setTimeout(() => {
 </script>
 @endif
 
-
 <div class="container">
 
     @if(auth()->user()->role === 'admin')
@@ -106,137 +105,212 @@ setTimeout(() => {
         </div>
     @endif
 
-@if($isSiswa && isset($siswa))
+    @if($isSiswa && isset($siswa))
 
-    <div class="mb-3">
-        @if($dokumenSiswa)
-            <a href="{{ route($prefix . '.dokumen-siswa.edit', $siswa->id) }}"
-               class="btn btn-primary px-4"
-               style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color:white;">
-               <i class="bi bi-pencil-square me-2"></i> Edit
-            </a>
-        @else
-            <a href="{{ route($prefix . '.dokumen-siswa.create', ['peserta_didik_id' => $siswa->id]) }}"
-               class="btn btn-success px-4">
-               <i class="bi bi-upload me-2"></i> Upload
-            </a>
-        @endif
-    </div>
+        <div class="mb-3">
+            @if($dokumenSiswa)
+                <a href="{{ route($prefix . '.dokumen-siswa.edit', $siswa->id) }}"
+                   class="btn btn-primary px-4"
+                   style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); color:white;">
+                    <i class="bi bi-pencil-square me-2"></i> Edit
+                </a>
+            @else
+                <a href="{{ route($prefix . '.dokumen-siswa.create', ['peserta_didik_id' => $siswa->id]) }}"
+                   class="btn btn-success px-4">
+                    <i class="bi bi-upload me-2"></i> Upload
+                </a>
+            @endif
+        </div>
 
-    <div class="table-responsive rounded-3">
-        <table class="table table-bordered ">
-            <thead class="text-white">
-                <tr>
-                    <th style="width: 50px;">No</th>
-                    <th>Nama Dokumen</th>
-                    <th>File</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $dokumenList = [
-                        'akte_kelahiran' => 'Akte Kelahiran',
-                        'kartu_keluarga' => 'Kartu Keluarga',
-                        'ktp_ayah' => 'KTP Ayah',
-                        'ktp_ibu' => 'KTP Ibu',
-                        'ijazah_sd' => 'Ijazah SD',
-                        'ijazah_smp' => 'Ijazah SMP',
-                    ];
-                    $no = 1;
-                @endphp
-
-                @foreach($dokumenList as $field => $nama)
-                    @php $file = $dokumenSiswa->$field ?? null; @endphp
-
+        <div class="table-responsive rounded-3">
+            <table class="table table-bordered">
+                <thead class="text-white">
                     <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $nama }}</td>
-                        <td>
-                            @if($file)
-                                @if(Str::endsWith($file, ['.jpg', '.jpeg', '.png', '.gif']))
-                                    <img src="{{ asset('storage/' . $file) }}"
-                                         class="img-thumbnail preview-trigger"
-                                         data-nama="{{ $nama }}"
-                                         data-src="{{ asset('storage/' . $file) }}"
-                                         data-type="image"
-                                         style="max-width:100px; cursor:pointer;">
-                                @else
-                                    <a href="#"
-                                       class="preview-trigger text-decoration-none"
-                                       data-nama="{{ $nama }}"
-                                       data-src="{{ asset('storage/' . $file) }}"
-                                       data-type="file">
-                                       <i class="bi bi-file-earmark-text"></i> {{ basename($file) }}
-                                    </a>
-                                @endif
-                            @else
-                                <span class="text-muted">Belum diunggah</span>
-                            @endif
-                        </td>
+                        <th style="width: 50px;">No</th>
+                        <th>Nama Dokumen</th>
+                        <th>File</th>
                     </tr>
+                </thead>
 
+                <tbody>
+                    @php
+                        $dokumenList = [
+                            'akte_kelahiran' => 'Akte Kelahiran',
+                            'kartu_keluarga' => 'Kartu Keluarga',
+                            'ktp_ayah'       => 'KTP Ayah',
+                            'ktp_ibu'        => 'KTP Ibu',
+                            'ijazah_sd'      => 'Ijazah SD',
+                            'ijazah_smp'     => 'Ijazah SMP',
+                        ];
+                        $no = 1;
+                    @endphp
+
+                    @foreach($dokumenList as $field => $nama)
+                        @php $file = $dokumenSiswa->$field ?? null; @endphp
+                        <tr>
+                            <td>{{ $no++ }}</td>
+                            <td>{{ $nama }}</td>
+                            <td>
+                                @if($file)
+                                    @if(Str::endsWith($file, ['.jpg','.jpeg','.png','.gif']))
+                                        <img src="{{ asset('storage/' . $file) }}"
+                                             class="img-thumbnail preview-trigger"
+                                             data-nama="{{ $nama }}"
+                                             data-src="{{ asset('storage/' . $file) }}"
+                                             data-type="image"
+                                             style="max-width:100px; cursor:pointer;">
+                                    @else
+                                        <a href="#" class="preview-trigger text-decoration-none"
+                                           data-nama="{{ $nama }}"
+                                           data-src="{{ asset('storage/' . $file) }}"
+                                           data-type="file">
+                                           <i class="bi bi-file-earmark-text"></i> {{ basename($file) }}
+                                        </a>
+                                    @endif
+                                @else
+                                    <span class="text-muted">Belum diunggah</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+
+                </tbody>
+            </table>
+        </div>
+
+    @else
+
+        <div class="d-flex gap-2 mb-3">
+            <input type="text" id="search" class="form-control form-control-sm"
+                   placeholder="Cari Nama Siswa" style="max-width:200px;">
+
+            <select id="rombelFilter" class="form-control form-control-sm" style="max-width:200px;">
+                <option value="">Semua Rombel</option>
+                @foreach($rombels as $rombel)
+                    <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
                 @endforeach
-            </tbody>
-        </table>
-    </div>
+            </select>
+        </div>
 
-@else
+        <div class="table-responsive rounded-3 overflow-auto mt-3" style="max-height: 550px;">
+            <table class="table table-bordered" id="dokumenTable">
+                <thead class="text-white">
+                    <tr>
+                        <th style="width: 50px">No</th>
+                        <th>Nama Siswa</th>
+                        <th>Status</th>
+                        <th style="width: 80px;">Aksi</th>
+                    </tr>
+                </thead>
 
-<div class="d-flex gap-2 mb-3">
-    <input type="text" id="search" class="form-control form-control-sm"
-           placeholder="Cari Nama Siswa" style="max-width:200px;">
+                <tbody>
+                    @foreach($dokumen as $index => $d)
+                        <tr data-rombel="{{ $d->rombel_id }}">
+                            <td>{{ $dokumen->firstItem() + $index }}</td>
+                            <td class="nama_siswa">{{ $d->nama_lengkap ?? '-' }}</td>
+                            <td>
+                                <span class="badge bg-{{ $d->jumlah_dokumen > 0 ? 'success' : 'danger' }} status-label"
+                                    style="cursor:pointer;"
+                                    data-id="{{ $d->peserta_didik_id }}">
+                                    {{ $d->jumlah_dokumen > 0 ? 'Sudah Mengumpulkan' : 'Belum Mengumpulkan' }}
+                                </span>
 
-    <select id="rombelFilter" class="form-control form-control-sm" style="max-width:200px;">
-        <option value="">Semua Rombel</option>
-        @foreach($rombels as $rombel)
-            <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
-        @endforeach
-    </select>
+                                @if($d->jumlah_dokumen > 0)
+                                    <div class="mt-2 d-none validate-box" id="box-{{ $d->peserta_didik_id }}">
+                                        <button class="btn btn-sm btn-primary"
+                                                onclick="validateNow({{ $d->peserta_didik_id }})">
+                                            Validasi
+                                        </button>
+                                    </div>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route($prefix . '.dokumen-siswa.show', $d->peserta_didik_id) }}"
+                                   class="btn btn-sm btn-no-border">
+                                    <img src="{{ asset('images/view.png') }}" style="width:20px;">
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+
+                    document.querySelectorAll(".status-label").forEach(el => {
+                        let id = el.dataset.id;
+                        let saved = localStorage.getItem("status-" + id);
+
+                        if (saved) {
+                            setStatus(id, saved, false);
+                        }
+                    });
+
+                });
+
+                document.querySelectorAll(".status-label").forEach(el => {
+                    el.addEventListener("click", function () {
+                        let id = this.dataset.id;
+                        let box = document.getElementById("box-" + id);
+                        box.classList.toggle("d-none");
+                    });
+                });
+
+                function setStatus(id, status, save = true) {
+                    let badge = document.querySelector(`[data-id="${id}"]`);
+                    let box = document.getElementById("box-" + id);
+
+                    badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+
+                    if (status === "valid") {
+                        badge.innerText = "Di Validasi";
+                        badge.classList.add("bg-primary");
+
+                        box.innerHTML = `
+                            <button class="btn btn-sm btn-warning" onclick="toggleStatus(${id})">
+                                Batalkan Validasi
+                            </button>
+                        `;
+                    } else {
+                        badge.innerText = "Sudah Mengumpulkan";
+                        badge.classList.add("bg-success");
+
+                        box.innerHTML = `
+                            <button class="btn btn-sm btn-primary" onclick="toggleStatus(${id})">
+                                Validasi
+                            </button>
+                        `;
+                    }
+
+                    if (save) {
+                        localStorage.setItem("status-" + id, status);
+                    }
+                }
+
+                function toggleStatus(id) {
+                    let current = localStorage.getItem("status-" + id);
+
+                    if (current === "valid") {
+                        setStatus(id, "mengumpulkan");
+                    } else {
+                        setStatus(id, "valid");
+                    }
+
+                    document.getElementById("box-" + id).classList.add("d-none");
+                }
+            </script>
+
+        </div>
+
+        <div class="mt-3">
+            {{ $dokumen->links('pagination::bootstrap-5') }}
+        </div>
+
+    @endif
+
 </div>
 
-
-<div class="table-responsive rounded-3 overflow-auto mt-3" style="max-height: 550px;">
-    <table class="table table-bordered" id="dokumenTable">
-        <thead class="text-white">
-            <tr>
-                <th style="width: 50px">No</th>
-                <th>Nama Siswa</th>
-                <th>Status</th>
-                <th style="width: 80px;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($dokumen as $index => $d)
-            <tr data-rombel="{{ $d->rombel_id }}">
-                <td>{{ $dokumen->firstItem() + $index }}</td>
-                <td class="nama_siswa">{{ $d->nama_lengkap ?? '-' }}</td>
-
-                <td>
-                    @if($d->jumlah_dokumen > 0)
-                        <span class="badge bg-success">Sudah Mengumpulkan</span>
-                    @else
-                        <span class="badge bg-danger">Belum Mengumpulkan</span>
-                    @endif
-                </td>
-
-                <td>
-                    <a href="{{ route($prefix . '.dokumen-siswa.show', $d->peserta_didik_id) }}"
-                       class="btn btn-sm btn-no-border">
-                        <img src="{{ asset('images/view.png') }}" style="width:20px;">
-                    </a>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-
-<div class="mt-3">
-    {{ $dokumen->links('pagination::bootstrap-5') }}
-</div>
-
-@endif
-</div>
 
 <div class="modal fade" id="previewModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">

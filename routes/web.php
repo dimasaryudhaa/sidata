@@ -193,6 +193,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('kompetensi-khusus-ptk', KompetensiKhususPtkController::class);
         Route::resource('tunjangan', TunjanganController::class);
         Route::resource('profile', ProfileController::class);
+
+        Route::resource('dokumen-siswa', DokumenSiswaController::class);
     });
 
     Route::prefix('siswa')->name('siswa.')->group(function () {

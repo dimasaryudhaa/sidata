@@ -25,4 +25,9 @@ class DokumenSiswa extends Model
     {
         return $this->belongsTo(Siswa::class, 'peserta_didik_id');
     }
+
+    public function ptk()
+    {
+        return $this->belongsTo(Ptk::class, 'ptk_id');
+    }
 }

@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form action="{{ route('dokumen-siswa.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('siswa.dokumen-siswa.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="row">
             <div class="col-md-6">
@@ -80,7 +80,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{{ route('dokumen-siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route('siswa.dokumen-siswa.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>
