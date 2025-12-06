@@ -6,6 +6,7 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use App\Models\Rayon;
 use App\Models\Rombel;
+use App\Models\Ptk;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -18,9 +19,9 @@ class SiswaController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $isSiswa = $user->role === 'siswa';
+        $role = $user->role;
 
-        if ($isSiswa) {
+        if ($role === 'siswa') {
 
             $siswa = DB::table('akun_siswa')
                 ->join('peserta_didik', 'akun_siswa.peserta_didik_id', '=', 'peserta_didik.id')
@@ -46,37 +47,94 @@ class SiswaController extends Controller
                 )
                 ->paginate(1);
 
-            return view('siswa.index', compact('siswa', 'isSiswa'));
+            return view('siswa.index', compact('siswa'))
+                ->with('isSiswa', true);
+        }
 
-        } else {
+        if ($role === 'ptk') {
+
+            $ptk = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->where('akun_ptk.email', $user->email)
+                ->select('ptk.*')
+                ->first();
+
+            $rayonIds = DB::table('rayon')
+                ->where('ptk_id', $ptk->id)
+                ->pluck('id');
 
             $siswa = DB::table('peserta_didik')
                 ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
                 ->leftJoin('rayon', 'peserta_didik.rayon_id', '=', 'rayon.id')
+                ->whereIn('peserta_didik.rayon_id', $rayonIds)
                 ->select(
                     'peserta_didik.id',
                     'peserta_didik.nama_lengkap',
                     'peserta_didik.jenis_kelamin',
                     'peserta_didik.nis',
                     'peserta_didik.nisn',
+                    'peserta_didik.nik',
+                    'peserta_didik.tempat_lahir',
+                    'peserta_didik.tanggal_lahir',
+                    'peserta_didik.agama',
                     'peserta_didik.rombel_id',
+                    'peserta_didik.rayon_id',
                     'rayon.nama_rayon',
-                    'rombel.nama_rombel'
+                    'rombel.nama_rombel',
+                    'peserta_didik.kewarganegaraan'
                 )
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
 
-            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+            $rombels = DB::table('rombel')
+                ->orderBy('nama_rombel')
+                ->get();
 
-            return view('siswa.index', compact('siswa', 'rombels', 'isSiswa'));
+            return view('siswa.index', compact('siswa', 'rombels'))
+                ->with('isPtk', true);
         }
-    }
 
+        $siswa = DB::table('peserta_didik')
+            ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+            ->leftJoin('rayon', 'peserta_didik.rayon_id', '=', 'rayon.id')
+            ->select(
+                'peserta_didik.id',
+                'peserta_didik.nama_lengkap',
+                'peserta_didik.jenis_kelamin',
+                'peserta_didik.nis',
+                'peserta_didik.nisn',
+                'peserta_didik.nik',
+                'peserta_didik.tempat_lahir',
+                'peserta_didik.tanggal_lahir',
+                'peserta_didik.agama',
+                'peserta_didik.rombel_id',
+                'peserta_didik.rayon_id',
+                'rayon.nama_rayon',
+                'rombel.nama_rombel',
+                'peserta_didik.kewarganegaraan'
+            )
+            ->orderBy('peserta_didik.nama_lengkap', 'asc')
+            ->paginate(12);
+
+        $rombels = DB::table('rombel')
+            ->orderBy('nama_rombel')
+            ->get();
+
+        return view('siswa.index', compact('siswa', 'rombels'))
+            ->with('isAdmin', true);
+    }
 
     public function create()
     {
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         $rayons = Rayon::all();
         $rombels = Rombel::all();
@@ -88,7 +146,7 @@ class SiswaController extends Controller
     {
         $validated = $request->validate([
             'nama_lengkap' => 'required',
-            'jenis_kelamin' => 'required',
+            'jenis_kelamin' => 'nullable',
             'nis' => 'nullable',
             'nisn' => 'nullable',
             'nik' => 'nullable',
@@ -96,8 +154,8 @@ class SiswaController extends Controller
             'tempat_lahir' => 'nullable',
             'tanggal_lahir' => 'nullable|date',
             'agama' => 'nullable',
-            'rayon_id' => 'required|exists:rayon,id',
-            'rombel_id' => 'required|exists:rombel,id',
+            'rayon_id' => 'nullable|exists:rayon,id',
+            'rombel_id' => 'nullable|exists:rombel,id',
             'kewarganegaraan' => 'nullable',
             'negara_asal' => 'nullable',
             'berkebutuhan_khusus' => 'nullable',
@@ -154,8 +212,8 @@ class SiswaController extends Controller
             $validated['tempat_lahir'] ?? '',
             $validated['tanggal_lahir'] ?? '',
             $validated['agama'] ?? '',
-            $rayon->nama_rayon,
-            $rombel->nama_rombel,
+            $rayon->nama_rombel ?? '',
+            $rombel?->nama_rombel ?? '',
             $validated['kewarganegaraan'] ?? '',
             $validated['negara_asal'] ?? '',
             $validated['berkebutuhan_khusus'] ?? '',
@@ -164,7 +222,14 @@ class SiswaController extends Controller
         (new Xlsx($spreadsheet))->save($path);
 
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         return redirect()->route($prefix.'siswa.index')
             ->with('success', 'Data siswa berhasil ditambahkan!');
@@ -179,8 +244,9 @@ class SiswaController extends Controller
         $siswa = Siswa::findOrFail($id);
         $rombels = Rombel::all();
         $rayons = Rayon::all();
+        $ptks = Ptk::all();
 
-        return view('siswa.edit', compact('siswa', 'rombels', 'rayons', 'isAdmin', 'isSiswa'));
+        return view('siswa.edit', compact('siswa', 'rombels', 'rayons', 'ptks', 'isAdmin', 'isSiswa'));
     }
 
     public function update(Request $request, Siswa $siswa)
@@ -189,7 +255,7 @@ class SiswaController extends Controller
 
         $validated = $request->validate([
             'nama_lengkap' => 'required',
-            'jenis_kelamin' => 'required',
+            'jenis_kelamin' => 'nullable',
             'nis' => 'nullable',
             'nisn' => 'nullable',
             'nik' => 'nullable',
@@ -197,8 +263,8 @@ class SiswaController extends Controller
             'tempat_lahir' => 'nullable',
             'tanggal_lahir' => 'nullable|date',
             'agama' => 'nullable',
-            'rayon_id' => 'required|exists:rayon,id',
-            'rombel_id' => 'required|exists:rombel,id',
+            'rayon_id' => 'nullable|exists:rayon,id',
+            'rombel_id' => 'nullable|exists:rombel,id',
             'kewarganegaraan' => 'nullable',
             'negara_asal' => 'nullable',
             'berkebutuhan_khusus' => 'nullable',
@@ -206,8 +272,8 @@ class SiswaController extends Controller
 
         $siswa->update($validated);
 
-        $rayon = Rayon::find($validated['rayon_id']);
-        $rombel = Rombel::find($validated['rombel_id']);
+        $rayon = Rayon::find($validated['rayon_id'] ?? null);
+        $rombel = Rombel::find($validated['rombel_id'] ?? null);
 
         $path = storage_path('app/exports/sidata.xlsx');
 
@@ -217,10 +283,12 @@ class SiswaController extends Controller
 
             if ($sheet) {
                 $highestRow = $sheet->getHighestRow();
+
                 for ($row = 2; $row <= $highestRow; $row++) {
                     if ($sheet->getCell("A{$row}")->getValue() == $oldNama) {
+
                         $sheet->setCellValue("A{$row}", $validated['nama_lengkap']);
-                        $sheet->setCellValue("B{$row}", $validated['jenis_kelamin']);
+                        $sheet->setCellValue("B{$row}", $validated['jenis_kelamin'] ?? '');
                         $sheet->setCellValue("C{$row}", $validated['nis'] ?? '');
                         $sheet->setCellValue("D{$row}", $validated['nisn'] ?? '');
                         $sheet->setCellValue("E{$row}", $validated['nik'] ?? '');
@@ -228,24 +296,34 @@ class SiswaController extends Controller
                         $sheet->setCellValue("G{$row}", $validated['tempat_lahir'] ?? '');
                         $sheet->setCellValue("H{$row}", $validated['tanggal_lahir'] ?? '');
                         $sheet->setCellValue("I{$row}", $validated['agama'] ?? '');
-                        $sheet->setCellValue("J{$row}", $rayon->nama_rayon);
-                        $sheet->setCellValue("K{$row}", $rombel->nama_rombel);
+                        $sheet->setCellValue("J{$row}", $rayon?->nama_rayon ?? '');
+                        $sheet->setCellValue("K{$row}", $rombel?->nama_rombel ?? '');
                         $sheet->setCellValue("L{$row}", $validated['kewarganegaraan'] ?? '');
                         $sheet->setCellValue("M{$row}", $validated['negara_asal'] ?? '');
                         $sheet->setCellValue("N{$row}", $validated['berkebutuhan_khusus'] ?? '');
+
                         break;
                     }
                 }
+
                 (new Xlsx($spreadsheet))->save($path);
             }
         }
 
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         return redirect()->route($prefix.'siswa.index')
             ->with('success', 'Data siswa berhasil diperbarui!');
     }
+
 
     public function destroy(Siswa $siswa)
     {
@@ -272,7 +350,14 @@ class SiswaController extends Controller
         }
 
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         return redirect()->route($prefix.'siswa.index')
             ->with('success', 'Data siswa berhasil dihapus!');

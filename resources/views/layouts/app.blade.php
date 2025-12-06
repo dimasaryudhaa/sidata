@@ -292,8 +292,7 @@
                         <li><a href="{{ route('ptk.ptk.index') }}"><i class="bi bi-person-badge me-2"></i>Data Ptk</a></li>
                         <li><a href="{{ route('ptk.penugasan-ptk.index') }}"><i class="bi bi-briefcase me-2"></i>Riwayat & Karir</a></li>
                         <li><a href="{{ route('ptk.diklat.index') }}"><i class="bi bi-mortarboard me-2"></i>Pendidikan & Kompetensi</a></li>
-                        <li><a href="{{ route('ptk.dokumen-siswa.index') }}"><i class="bi bi-file-text me-2"></i>Dokumen Siswa</a></li>
-                        </li>
+                        <li><a href="{{ route('ptk.siswa.index') }}"><i class="bi bi-person-badge me-2"></i>Data Siswa Rayon</a></li>
                     @endif
 
 

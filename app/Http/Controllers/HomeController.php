@@ -188,6 +188,7 @@ class HomeController extends Controller
         return view('home', [
             'role' => 'siswa',
             'user' => $user,
+            'siswa' => $siswa,
             'jumlahBeasiswa' => $jumlahBeasiswa,
             'jumlahPrestasi' => $jumlahPrestasi,
             'jumlahKesejahteraan' => $jumlahKesejahteraan,

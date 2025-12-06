@@ -9,24 +9,39 @@
     $prefix = $role === 'admin' ? 'admin.' : ($role === 'ptk' ? 'ptk.' : 'siswa.');
     $isEdit = isset($data->id);
 
-    $pendidikanList = ['Tidak Sekolah','Putus SD','SD Sederajat','SMP Sederajat','SMA Sederajat','D1','D2','D3','S1','S2','S3'];
-    $pekerjaanList = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/POLRI','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan'];
-    $penghasilanList = ['<500rb','500rb-999rb','1jt-1.9jt','2jt-4.9jt','>=5jt'];
+    $pendidikanList = ['Tidak Sekolah','Putus SD','SD Sederajat','SMP Sederajat',
+        'SMA Sederajat','D1','D2','D3','S1','S2','S3'];
+
+    $pekerjaanList = [
+        'Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/POLRI',
+        'Karyawan Swasta','Pedagang Kecil','Pedagang Besar',
+        'Wiraswasta','Wirausaha','Buruh','Pensiunan','Meninggal Dunia'
+    ];
+
+    $penghasilanList = [
+        '<500rb','500rb-999rb','1jt-1.9jt','2jt-4.9jt','>=5jt','Tidak Berpenghasilan'
+    ];
 @endphp
 
 <div class="container">
+
     <h2 class="mb-4">
-        {{ $isEdit ? 'Edit Data Orang Tua' : 'Tambah Data Orang Tua' }}
+        {{ $isEdit ? 'Edit Data Orang Tua / Wali' : 'Tambah Data Orang Tua / Wali' }}
     </h2>
 
     <form action="{{ $isEdit ? route($prefix.'orang-tua.update', $data->id) : route($prefix.'orang-tua.store') }}" method="POST">
         @csrf
         @if($isEdit) @method('PUT') @endif
 
+        <div class="mb-3">
+            <label>Peserta Didik</label>
+            <input type="text" class="form-control"
+                   value="{{ $data->siswa->nama_lengkap ?? '-' }}" readonly>
+            <input type="hidden" name="peserta_didik_id" value="{{ $data->peserta_didik_id }}">
+        </div>
+
         <div class="row">
-            {{-- ================================
-                 DATA AYAH
-            ================================= --}}
+
             <div class="col-md-6">
                 <h5 class="mb-3 text-primary">Data Ayah</h5>
 
@@ -91,9 +106,6 @@
                 </div>
             </div>
 
-            {{-- ================================
-                 DATA IBU
-            ================================= --}}
             <div class="col-md-6">
                 <h5 class="mb-3 text-primary">Data Ibu</h5>
 
@@ -158,79 +170,78 @@
                 </div>
             </div>
 
-            {{-- ================================
-                 DATA WALI
-            ================================= --}}
-            <div class="col-md-12 mt-4">
-                <h5 class="text-primary">Data Wali</h5>
-
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label>Nama Wali</label>
-                        <input type="text" name="nama_wali" class="form-control"
-                               value="{{ old('nama_wali', $data->nama_wali ?? '') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>NIK Wali</label>
-                        <input type="text" name="nik_wali" class="form-control"
-                               value="{{ old('nik_wali', $data->nik_wali ?? '') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>Tahun Lahir Wali</label>
-                        <input type="number" name="tahun_lahir_wali" class="form-control"
-                               value="{{ old('tahun_lahir_wali', $data->tahun_lahir_wali ?? '') }}">
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>Pendidikan Wali</label>
-                        <select name="pendidikan_wali" class="form-control">
-                            <option value="">Pilih Pendidikan</option>
-                            @foreach($pendidikanList as $p)
-                                <option value="{{ $p }}" {{ old('pendidikan_wali', $data->pendidikan_wali ?? '') == $p ? 'selected' : '' }}>
-                                    {{ $p }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>Pekerjaan Wali</label>
-                        <select name="pekerjaan_wali" class="form-control">
-                            <option value="">Pilih Pekerjaan</option>
-                            @foreach($pekerjaanList as $p)
-                                <option value="{{ $p }}" {{ old('pekerjaan_wali', $data->pekerjaan_wali ?? '') == $p ? 'selected' : '' }}>
-                                    {{ $p }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>Penghasilan Wali</label>
-                        <select name="penghasilan_wali" class="form-control">
-                            <option value="">Pilih Penghasilan</option>
-                            @foreach($penghasilanList as $p)
-                                <option value="{{ $p }}" {{ old('penghasilan_wali', $data->penghasilan_wali ?? '') == $p ? 'selected' : '' }}>
-                                    {{ $p }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        {{-- Tombol --}}
+        <hr class="my-4">
+
+        <h5 class="text-primary">Data Wali</h5>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Nama Wali</label>
+                <input type="text" name="nama_wali" class="form-control"
+                       value="{{ old('nama_wali', $data->nama_wali ?? '') }}">
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>NIK Wali</label>
+                <input type="text" name="nik_wali" class="form-control"
+                       value="{{ old('nik_wali', $data->nik_wali ?? '') }}">
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>Tahun Lahir Wali</label>
+                <input type="number" name="tahun_lahir_wali" class="form-control"
+                       value="{{ old('tahun_lahir_wali', $data->tahun_lahir_wali ?? '') }}">
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>Pendidikan Wali</label>
+                <select name="pendidikan_wali" class="form-control">
+                    <option value="">Pilih Pendidikan</option>
+                    @foreach($pendidikanList as $p)
+                        <option value="{{ $p }}" {{ old('pendidikan_wali', $data->pendidikan_wali ?? '') == $p ? 'selected' : '' }}>
+                            {{ $p }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>Pekerjaan Wali</label>
+                <select name="pekerjaan_wali" class="form-control">
+                    <option value="">Pilih Pekerjaan</option>
+                    @foreach($pekerjaanList as $p)
+                        <option value="{{ $p }}" {{ old('pekerjaan_wali', $data->pekerjaan_wali ?? '') == $p ? 'selected' : '' }}>
+                            {{ $p }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label>Penghasilan Wali</label>
+                <select name="penghasilan_wali" class="form-control">
+                    <option value="">Pilih Penghasilan</option>
+                    @foreach($penghasilanList as $p)
+                        <option value="{{ $p }}" {{ old('penghasilan_wali', $data->penghasilan_wali ?? '') == $p ? 'selected' : '' }}>
+                            {{ $p }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-start mt-3">
             <a href="{{ route($prefix.'orang-tua.index') }}" class="btn btn-secondary me-2">Kembali</a>
+
             <button type="submit" class="btn btn-success">
                 {{ $isEdit ? 'Perbarui' : 'Simpan' }}
             </button>
         </div>
+
     </form>
+
 </div>
 
 @endsection

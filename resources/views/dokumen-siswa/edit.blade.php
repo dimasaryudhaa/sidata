@@ -38,6 +38,7 @@
     <h3>{{ $dokumen->id ? 'Edit Dokumen Siswa' : 'Tambah Dokumen Siswa' }}</h3>
 
     @php
+        use Illuminate\Support\Str;
         $prefix = auth()->user()->role === 'admin' ? 'admin' : 'siswa';
     @endphp
 

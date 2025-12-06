@@ -14,6 +14,7 @@ class DokumenSiswaController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $role = $user->role;
 
         $query = DB::table('peserta_didik')
             ->leftJoin('dokumen_siswa', 'peserta_didik.id', '=', 'dokumen_siswa.peserta_didik_id')
@@ -27,27 +28,56 @@ class DokumenSiswaController extends Controller
             ->groupBy('peserta_didik.id', 'peserta_didik.nama_lengkap', 'peserta_didik.rombel_id')
             ->orderBy('peserta_didik.nama_lengkap', 'asc');
 
-        $isSiswa = $user->role === 'siswa';
 
-        if ($isSiswa) {
+        if ($role === 'siswa') {
+
             $query->where('akun_siswa.email', $user->email);
+            $dokumen = $query->paginate(12);
+
+            $siswa = null;
+            $dokumenSiswa = null;
+
+            if ($dokumen->first()) {
+                $siswa = DB::table('peserta_didik')->find($dokumen->first()->peserta_didik_id);
+                $dokumenSiswa = DB::table('dokumen_siswa')->where('peserta_didik_id', $siswa->id)->first();
+            }
+
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('dokumen-siswa.index', compact(
+                'dokumen', 'rombels', 'siswa', 'dokumenSiswa'
+            ))->with('isSiswa', true);
+        }
+
+        if ($role === 'ptk') {
+
+            $ptk = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->where('akun_ptk.email', $user->email)
+                ->select('ptk.*')
+                ->first();
+
+            $rayonIds = DB::table('rayon')
+                ->where('ptk_id', $ptk->id)
+                ->pluck('id');
+
+            $query->whereIn('peserta_didik.rayon_id', $rayonIds);
+
+            $dokumen = $query->paginate(12);
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('dokumen-siswa.index', compact('dokumen', 'rombels'))
+                ->with('isPtk', true);
         }
 
         $dokumen = $query->paginate(12);
 
         $rombels = DB::table('rombel')
-            ->select('id', 'nama_rombel')
             ->orderBy('nama_rombel')
             ->get();
 
-        $dokumenSiswa = null;
-        $siswa = null;
-        if ($isSiswa && $dokumen->first()) {
-            $siswa = DB::table('peserta_didik')->find($dokumen->first()->peserta_didik_id);
-            $dokumenSiswa = DB::table('dokumen_siswa')->where('peserta_didik_id', $siswa->id)->first();
-        }
-
-        return view('dokumen-siswa.index', compact('dokumen', 'rombels', 'isSiswa', 'dokumenSiswa', 'siswa'));
+        return view('dokumen-siswa.index', compact('dokumen', 'rombels'))
+            ->with('isAdmin', true);
     }
 
     public function create(Request $request)

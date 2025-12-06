@@ -89,7 +89,7 @@
                     alertBox.style.opacity = '0';
                     setTimeout(() => alertBox.remove(), 500);
                 }
-            }, 5000);
+            }, 2000);
         </script>
     @endif
 

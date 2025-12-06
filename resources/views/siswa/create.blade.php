@@ -26,7 +26,7 @@
 
                 <div class="mb-3">
                     <label>Jenis Kelamin</label>
-                    <select name="jenis_kelamin" class="form-control" required>
+                    <select name="jenis_kelamin" class="form-control">
                         <option value="">Pilih Jenis Kelamin</option>
                         <option value="L">Laki-laki</option>
                         <option value="P">Perempuan</option>
@@ -55,7 +55,7 @@
 
                 <div class="mb-3">
                     <label>Rombel</label>
-                    <select name="rombel_id" class="form-control" required>
+                    <select name="rombel_id" class="form-control">
                         <option value="">Pilih Rombel</option>
                         @foreach($rombels as $rombel)
                             <option value="{{ $rombel->id }}">{{ $rombel->nama_rombel }}</option>
@@ -90,7 +90,7 @@
 
                 <div class="mb-3">
                     <label>Rayon</label>
-                    <select name="rayon_id" class="form-control" required>
+                    <select name="rayon_id" class="form-control">
                         <option value="">Pilih Rayon</option>
                         @foreach($rayons as $rayon)
                             <option value="{{ $rayon->id }}">{{ $rayon->nama_rayon }}</option>

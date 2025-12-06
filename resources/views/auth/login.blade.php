@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Bicara Project</title>
+  <title>Login - sidata</title>
 
   @vite(['resources/sass/app.scss', 'resources/js/app.js'])
    <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">

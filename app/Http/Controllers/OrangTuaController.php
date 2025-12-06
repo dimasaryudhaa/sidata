@@ -14,8 +14,12 @@ class OrangTuaController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $isSiswa = $user->role === 'siswa';
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+        $role = $user->role;
+        $isSiswa = $role === 'siswa';
+        $isPtk   = $role === 'ptk';
+        $prefix = $role === 'admin'
+            ? 'admin.'
+            : ($role === 'ptk' ? 'ptk.' : 'siswa.');
 
         if ($isSiswa) {
             $data = DB::table('orang_tua')
@@ -26,19 +30,55 @@ class OrangTuaController extends Controller
                     'orang_tua.id as orang_tua_id',
                     'peserta_didik.id as siswa_id',
                     'peserta_didik.nama_lengkap',
-                    'orang_tua.nama_ayah', 'orang_tua.nik_ayah', 'orang_tua.tahun_lahir_ayah',
-                    'orang_tua.pendidikan_ayah', 'orang_tua.pekerjaan_ayah', 'orang_tua.penghasilan_ayah',
-                    'orang_tua.kebutuhan_khusus_ayah',
-                    'orang_tua.nama_ibu', 'orang_tua.nik_ibu', 'orang_tua.tahun_lahir_ibu',
-                    'orang_tua.pendidikan_ibu', 'orang_tua.pekerjaan_ibu', 'orang_tua.penghasilan_ibu',
-                    'orang_tua.kebutuhan_khusus_ibu',
-                    'orang_tua.nama_wali', 'orang_tua.nik_wali', 'orang_tua.tahun_lahir_wali',
-                    'orang_tua.pendidikan_wali', 'orang_tua.pekerjaan_wali', 'orang_tua.penghasilan_wali'
+                    'orang_tua.*'
                 )
                 ->orderBy('peserta_didik.nama_lengkap', 'asc')
                 ->paginate(12);
 
-            return view('orang-tua.index', compact('data', 'isSiswa', 'prefix'));
+            return view('orang-tua.index', compact('data', 'isSiswa', 'isPtk', 'prefix'));
+        }
+
+        if ($isPtk) {
+
+            $ptk = DB::table('akun_ptk')
+                ->join('ptk', 'akun_ptk.ptk_id', '=', 'ptk.id')
+                ->where('akun_ptk.email', $user->email)
+                ->select('ptk.*')
+                ->first();
+
+            $rayonIds = DB::table('rayon')
+                ->where('ptk_id', $ptk->id)
+                ->pluck('id');
+
+            $data = DB::table('peserta_didik')
+                ->leftJoin('orang_tua', 'peserta_didik.id', '=', 'orang_tua.peserta_didik_id')
+                ->leftJoin('rombel', 'peserta_didik.rombel_id', '=', 'rombel.id')
+                ->whereIn('peserta_didik.rayon_id', $rayonIds)
+                ->select(
+                    'peserta_didik.id as siswa_id',
+                    'peserta_didik.nama_lengkap',
+                    'orang_tua.id as orang_tua_id',
+                    'orang_tua.nama_ayah',
+                    'orang_tua.nik_ayah',
+                    'orang_tua.tahun_lahir_ayah',
+                    'orang_tua.pendidikan_ayah',
+                    'orang_tua.pekerjaan_ayah',
+                    'orang_tua.penghasilan_ayah',
+                    'orang_tua.nama_ibu',
+                    'orang_tua.nik_ibu',
+                    'orang_tua.tahun_lahir_ibu',
+                    'orang_tua.pendidikan_ibu',
+                    'orang_tua.pekerjaan_ibu',
+                    'orang_tua.penghasilan_ibu',
+                    'peserta_didik.rombel_id',
+                    'rombel.nama_rombel'
+                )
+                ->orderBy('peserta_didik.nama_lengkap', 'asc')
+                ->paginate(12);
+
+            $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
+
+            return view('orang-tua.index', compact('data', 'rombels', 'isSiswa', 'isPtk', 'prefix'));
         }
 
         $data = DB::table('peserta_didik')
@@ -49,8 +89,17 @@ class OrangTuaController extends Controller
                 'peserta_didik.nama_lengkap',
                 'orang_tua.id as orang_tua_id',
                 'orang_tua.nama_ayah',
+                'orang_tua.nik_ayah',
+                'orang_tua.tahun_lahir_ayah',
+                'orang_tua.pendidikan_ayah',
+                'orang_tua.pekerjaan_ayah',
+                'orang_tua.penghasilan_ayah',
                 'orang_tua.nama_ibu',
-                'orang_tua.nama_wali',
+                'orang_tua.nik_ibu',
+                'orang_tua.tahun_lahir_ibu',
+                'orang_tua.pendidikan_ibu',
+                'orang_tua.pekerjaan_ibu',
+                'orang_tua.penghasilan_ibu',
                 'peserta_didik.rombel_id',
                 'rombel.nama_rombel'
             )
@@ -59,13 +108,20 @@ class OrangTuaController extends Controller
 
         $rombels = DB::table('rombel')->orderBy('nama_rombel')->get();
 
-        return view('orang-tua.index', compact('data', 'rombels', 'isSiswa', 'prefix'));
+        return view('orang-tua.index', compact('data', 'rombels', 'isSiswa', 'isPtk', 'prefix'));
     }
 
     public function create()
     {
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         $siswa = Siswa::all();
         return view('orang-tua.create', compact('siswa', 'prefix'));
@@ -102,7 +158,15 @@ class OrangTuaController extends Controller
 
         OrangTua::create($request->all());
 
-        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         return redirect()->route($prefix.'orang-tua.index')
             ->with('success', 'Data orang tua berhasil ditambahkan!');
@@ -111,7 +175,14 @@ class OrangTuaController extends Controller
     public function edit($id)
     {
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         $orangTua = OrangTua::find($id);
 
@@ -171,7 +242,15 @@ class OrangTuaController extends Controller
 
         $orangTua->update($request->all());
 
-        $prefix = Auth::user()->role === 'admin' ? 'admin.' : 'siswa.';
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         return redirect()->route($prefix.'orang-tua.index')
             ->with('success', 'Data orang tua berhasil diperbarui!');
@@ -180,7 +259,14 @@ class OrangTuaController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
+
+        if ($user->role === 'admin') {
+            $prefix = 'admin.';
+        } elseif ($user->role === 'ptk') {
+            $prefix = 'ptk.';
+        } else {
+            $prefix = 'siswa.';
+        }
 
         $orangTua = OrangTua::findOrFail($id);
 

@@ -194,7 +194,9 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tunjangan', TunjanganController::class);
         Route::resource('profile', ProfileController::class);
 
+        Route::resource('siswa', SiswaController::class);
         Route::resource('dokumen-siswa', DokumenSiswaController::class);
+        Route::resource('orang-tua', OrangTuaController::class);
     });
 
     Route::prefix('siswa')->name('siswa.')->group(function () {
