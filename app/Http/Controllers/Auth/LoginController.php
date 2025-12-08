@@ -46,6 +46,6 @@ protected function authenticated(Request $request, $user)
 
     protected function loggedOut(Request $request)
     {
-        return redirect('/login');
+        return redirect('/');
     }
 }

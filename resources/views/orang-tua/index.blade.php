@@ -220,6 +220,7 @@
             <a href="{{ route('siswa.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
         </div>
         @php $detail = $data->first(); @endphp
+        @if ($detail)
         <div class="d-flex mb-3">
             <a href="{{ route('siswa.orang-tua.edit', $detail->siswa_id) }}"
                 class="btn btn-primary px-4"
@@ -227,6 +228,7 @@
                 <i class="bi bi-pencil-square me-2"></i> Edit
             </a>
         </div>
+        @endif
         <div class="table-responsive rounded-3 overflow-hidden mt-3">
             <table class="table table-bordered">
                 <thead class="text-white">

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>SiData</title>
 
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -285,6 +285,7 @@
                                 <li><a href="{{ route('admin.kompetensi-khusus-ptk.index') }}"><i class="bi bi-star me-2"></i>Kompetensi Khusus</a></li>
                             </ul>
                         </li> --}}
+                        <li><a href="{{ route('admin.pesan') }}"><i class="bi bi-chat-dots me-2"></i>Pesan</a></li>
                     @endif
 
                     @if (auth()->user()->role === 'ptk')

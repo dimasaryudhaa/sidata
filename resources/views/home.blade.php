@@ -559,7 +559,7 @@
             </a>
         </div>
     </div>
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-md-4 d-flex justify-content-center">
             <a href="{{ route('siswa.siswa.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="card mb-3 shadow hoverable"
@@ -672,19 +672,112 @@
         </div>
 
         <div class="col-md-4 d-flex justify-content-center">
-            <a href="{{ route('siswa.orang-tua.index') }}" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('siswa.dokumen-siswa.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="card mb-3 shadow hoverable"
-                    style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
-                    <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Data Orang Tua</p>
-                    <div style="background-color: {{ $sudahIsiOrangTua ? '#28a745' : '#dc3545' }}; color: white; font-size: 3rem; width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                        <i class="bi {{ $sudahIsiOrangTua ? 'bi-check2-circle' : 'bi-x-circle' }}"></i>
+                    style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;"
+                    data-id="{{ $siswa->id }}"
+                    data-filled="{{ $sudahMengunggahDokumen ? 'yes' : 'no' }}"
+                    id="card-dokumen">
+
+                    <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Dokumen</p>
+
+                    <div id="dokumen-circle"
+                        style="
+                            background-color: {{ $sudahMengunggahDokumen ? '#28a745' : '#dc3545' }};
+                            color: white;
+                            font-size: 3rem;
+                            width: 80px;
+                            height: 80px;
+                            border-radius: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        ">
+                        <i class="bi {{ $sudahMengunggahDokumen ? 'bi-check2-circle' : 'bi-x-circle' }}"></i>
                     </div>
-                    <h6 class="mb-0 fw-bold {{ $sudahIsiOrangTua ? 'text-success' : 'text-danger' }}" style="font-size: 1.2rem;">
-                        {{ $sudahIsiOrangTua ? 'Sudah Mengisi' : 'Belum Mengisi' }}
+
+                    <h6 id="dokumen-text" class="mb-0 fw-bold"
+                        style="font-size: 1.2rem; color: {{ $sudahMengunggahDokumen ? '#28a745' : '#dc3545' }};">
+                        {{ $sudahMengunggahDokumen ? 'Sudah Mengunggah' : 'Belum Mengunggah' }}
                     </h6>
+
                 </div>
             </a>
+
+            <div id="box-dokumen-{{ $siswa->id }}" class="d-none"></div>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    let card = document.getElementById("card-dokumen");
+                    if (!card) return;
+
+                    let id = card.dataset.id;
+                    let filled = card.dataset.filled === "yes";
+                    let saved = localStorage.getItem("validated-dokumen-" + id);
+
+                    if (saved === "valid") {
+                        setDokumenValidated(true);
+                    } else {
+                        setDokumenInitial(filled);
+                    }
+                });
+
+                function setDokumenInitial(filled) {
+                    let circle = document.getElementById("dokumen-circle");
+                    let text = document.getElementById("dokumen-text");
+
+                    if (filled) {
+                        circle.style.backgroundColor = "#28a745";
+                        circle.innerHTML = `<i class="bi bi-check2-circle"></i>`;
+                        text.innerText = "Sudah Mengunggah";
+                        text.style.color = "#28a745";
+                    } else {
+                        circle.style.backgroundColor = "#dc3545";
+                        circle.innerHTML = `<i class="bi bi-x-circle"></i>`;
+                        text.innerText = "Belum Mengunggah";
+                        text.style.color = "#dc3545";
+                    }
+
+                    document.getElementById("box-dokumen-" + document.getElementById("card-dokumen").dataset.id).innerHTML = "";
+                }
+
+                function setDokumenValidated(isValid) {
+                    let id = document.getElementById("card-dokumen").dataset.id;
+                    let circle = document.getElementById("dokumen-circle");
+                    let text = document.getElementById("dokumen-text");
+                    let box = document.getElementById("box-dokumen-" + id);
+
+                    if (isValid) {
+                        circle.style.backgroundColor = "#0d6efd";
+                        circle.innerHTML = `<i class="bi bi-check2-circle"></i>`;
+                        text.innerText = "Di Validasi";
+                        text.style.color = "#0d6efd";
+                        box.innerHTML = `<button class="btn btn-sm btn-warning" onclick="toggleDokumenStatus()">Batalkan Validasi</button>`;
+                    } else {
+                        let filled = document.getElementById("card-dokumen").dataset.filled === "yes";
+                        setDokumenInitial(filled);
+                        box.innerHTML = `<button class="btn btn-sm btn-primary" onclick="toggleDokumenStatus()">Validasi</button>`;
+                    }
+                }
+
+                function toggleDokumenStatus() {
+                    let id = document.getElementById("card-dokumen").dataset.id;
+
+                    if (localStorage.getItem("validated-dokumen-" + id) === "valid") {
+                        localStorage.removeItem("validated-dokumen-" + id);
+                        setDokumenValidated(false);
+                    } else {
+                        localStorage.setItem("validated-dokumen-" + id, "valid");
+                        setDokumenValidated(true);
+                    }
+
+                    document.getElementById("box-dokumen-" + id).classList.add("d-none");
+                }
+            </script>
+
         </div>
+
+
+
         <div class="col-md-4 d-flex justify-content-center">
             <a href="{{ route('siswa.orang-tua.index') }}" style="text-decoration: none; color: inherit;">
 
@@ -762,7 +855,7 @@
                 </div>
             </a>
         </div>
-    </div>
+    </div> --}}
     @endif
 </div>
 

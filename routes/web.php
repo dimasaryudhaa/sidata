@@ -45,10 +45,19 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\SertifikatPtkController;
 use App\Http\Controllers\TugasTambahanController;
 use App\Http\Controllers\TunjanganController;
+use App\Http\Controllers\BerandaController;
+use App\Http\Controllers\DataController;
+use App\Http\Controllers\KontakAlamatController;
+use App\Http\Controllers\PesanController;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect('/beranda');
 });
+
+Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
+Route::get('/data', [DataController::class, 'index'])->name('data');
+Route::get('/kontak-alamat', [KontakAlamatController::class, 'index'])->name('kontak-alamat');
+Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('kirim.pesan');
 
 Auth::routes();
 
@@ -65,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::resource('profile', ProfileController::class);
+        Route::get('/pesan', [PesanController::class, 'index'])->name('pesan');
 
         //siswa
         Route::resource('siswa', SiswaController::class);
