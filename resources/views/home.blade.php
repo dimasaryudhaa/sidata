@@ -672,112 +672,18 @@
         </div>
 
         <div class="col-md-4 d-flex justify-content-center">
-            <a href="{{ route('siswa.dokumen-siswa.index') }}" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('siswa.orang-tua.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="card mb-3 shadow hoverable"
                     style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
-
-                    <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Status Dokumen</p>
-
-                    <div class="status-card d-flex justify-content-center align-items-center"
-                        data-id="{{ $dokumenSiswa?->id ?? 0 }}"
-                        style="background-color:
-                                @if($dokumenSiswa?->status_validasi === 'valid') #0d6efd
-                                @elseif($sudahMengunggahDokumen) #28a745
-                                @else #dc3545
-                                @endif;
-                                color: white; font-size: 3rem; width: 80px; height: 80px; border-radius: 50%;
-                                display: flex; justify-content: center; align-items: center;">
-                        <i class="bi
-                            @if($dokumenSiswa?->status_validasi === 'valid') bi-check2-circle
-                            @elseif($sudahMengunggahDokumen) bi-check2-circle
-                            @else bi-x-circle
-                            @endif
-                        "></i>
+                    <p class="mb-0 fw-bold text-center" style="font-size: 1.2rem;">Data Orang Tua</p>
+                    <div style="background-color: {{ $sudahIsiOrangTua ? '#28a745' : '#dc3545' }}; color: white; font-size: 3rem; width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                        <i class="bi {{ $sudahIsiOrangTua ? 'bi-check2-circle' : 'bi-x-circle' }}"></i>
                     </div>
-
-                    <h6 class="mb-0 fw-bold"
-                        style="font-size: 1.2rem; color:
-                            @if($dokumenSiswa?->status_validasi === 'valid') #0d6efd
-                            @elseif($sudahMengunggahDokumen) #28a745
-                            @else #dc3545
-                            @endif;">
-                        @if($dokumenSiswa?->status_validasi === 'valid')
-                            Di Validasi
-                        @elseif($sudahMengunggahDokumen)
-                            Sudah Mengunggah
-                        @else
-                            Belum Mengunggah
-                        @endif
+                    <h6 class="mb-0 fw-bold {{ $sudahIsiOrangTua ? 'text-success' : 'text-danger' }}" style="font-size: 1.2rem;">
+                        {{ $sudahIsiOrangTua ? 'Sudah Mengisi' : 'Belum Mengisi' }}
                     </h6>
                 </div>
             </a>
-            <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                    document.querySelectorAll(".status-card").forEach(el => {
-                        let id = el.dataset.id;
-                        if(!id) return;
-
-                        let saved = localStorage.getItem("status-" + id);
-                        if(saved) setStatusCard(id, saved, false);
-
-                        el.addEventListener("click", () => {
-                            let box = document.getElementById("box-" + id);
-                            if(box) box.classList.toggle("d-none");
-                        });
-                    });
-                });
-
-                function setStatusCard(id, status, save = true) {
-                    let card = document.querySelector(`.status-card[data-id="${id}"]`);
-                    let box = document.getElementById("box-" + id);
-                    let teks = card.nextElementSibling;
-
-                    if(status === "valid") {
-                        card.style.backgroundColor = "#0d6efd";
-                        card.innerHTML = `<i class="bi bi-check2-circle"></i>`;
-                        if(teks) {
-                            teks.innerText = "Di Validasi";
-                            teks.classList.remove("text-success", "text-danger");
-                            teks.classList.add("text-primary");
-                        }
-
-                        if(box) box.innerHTML = `
-                            <button class="btn btn-sm btn-warning" onclick="toggleStatusCard(${id})">
-                                Batalkan Validasi
-                            </button>
-                        `;
-                    } else {
-                        card.style.backgroundColor = "#28a745";
-                        card.innerHTML = `<i class="bi bi-check2-circle"></i>`;
-                        if(teks) {
-                            teks.innerText = "Sudah Mengunggah";
-                            teks.classList.remove("text-primary", "text-danger");
-                            teks.classList.add("text-success");
-                        }
-
-                        if(box) box.innerHTML = `
-                            <button class="btn btn-sm btn-primary" onclick="toggleStatusCard(${id})">
-                                Validasi
-                            </button>
-                        `;
-                    }
-
-                    if(save) localStorage.setItem("status-" + id, status);
-                }
-
-                function toggleStatusCard(id) {
-                    let current = localStorage.getItem("status-" + id);
-                    if(current === "valid") setStatusCard(id, "mengumpulkan");
-                    else setStatusCard(id, "valid");
-
-                    let box = document.getElementById("box-" + id);
-                    if(box) box.classList.add("d-none");
-                }
-
-                function validateNow(id) {
-                    setStatusCard(id, "valid");
-                }
-            </script>
         </div>
         <div class="col-md-4 d-flex justify-content-center">
             <a href="{{ route('siswa.orang-tua.index') }}" style="text-decoration: none; color: inherit;">
