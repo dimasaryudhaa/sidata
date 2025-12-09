@@ -105,7 +105,6 @@
 
                 <div class="p-4 text-white" style="background:#060b4a;">
                     <h4 class="mb-2">Lokasi Kami</h4>
-                    <p class="mb-1">Cicurug, Sukabumi</p>
                     <div class="mt-3">
                         <a href="https://www.instagram.com/smkwikrama/" class="text-white me-3 fs-5"><i class="bi bi-instagram"></i></a>
                         <a href="https://www.tiktok.com/@smkwikrama" class="text-white me-3 fs-5"><i class="bi bi-tiktok"></i></a>

@@ -59,79 +59,68 @@
     </div>
 </nav>
 
-<!-- SPACER -->
-<div style="margin-top: 100px;"></div>
-
-<div class="page-content">
+<div class="page-content" style="margin-top: 100px;">
     <section class="row">
 
-        <!-- KOLOM KIRI -->
         <div class="col-12 col-lg-9">
-
             <div class="row px-3">
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body px-3 py-4-5">
-                            <div class="row">
-                            <div class="d-flex justify-content-center align-items-center w-25"
-                                 style="font-size: 2rem;">
+                <div class="d-flex flex-wrap px-3 gap-3">
+                    <div class="card flex-grow-1" style="min-width: 180px;">
+                        <div class="card-body d-flex align-items-center px-4 py-4">
+                            <div class="me-3" style="font-size: 2.5rem;">
                                 <i class="bi bi-people"></i>
                             </div>
-                                <div class="col-md-8">
-                                    <h6 class="text-muted font-semibold">Jumlah Siswa</h6>
-                                    <h6 class="font-extrabold mb-0">{{ $jumlahSiswa }}</h6>
-                                </div>
+                            <div>
+                                <h6 class="text-muted font-semibold"> Siswa</h6>
+                                <h4 class="font-extrabold mb-0">{{ $jumlahSiswa }}</h4>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body px-3 py-4-5">
-                            <div class="row">
-                            <div class="d-flex justify-content-center align-items-center w-25"
-                                 style="font-size: 2rem;">
+                    <div class="card flex-grow-1" style="min-width: 180px;">
+                        <div class="card-body d-flex align-items-center px-4 py-4">
+                            <div class="me-3" style="font-size: 2.5rem;">
                                 <i class="bi bi-geo"></i>
                             </div>
-                                <div class="col-md-8">
-                                    <h6 class="text-muted font-semibold">Jumlah Rayon</h6>
-                                    <h6 class="font-extrabold mb-0">{{ $jumlahRayon }}</h6>
-                                </div>
+                            <div>
+                                <h6 class="text-muted font-semibold"> Rayon</h6>
+                                <h4 class="font-extrabold mb-0">{{ $jumlahRayon }}</h4>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body px-3 py-4-5">
-                            <div class="row">
-                            <div class="d-flex justify-content-center align-items-center w-25"
-                                 style="font-size: 2rem;">
+                    <div class="card flex-grow-1" style="min-width: 180px;">
+                        <div class="card-body d-flex align-items-center px-4 py-4">
+                            <div class="me-3" style="font-size: 2.5rem;">
                                 <i class="bi bi-building"></i>
                             </div>
-                                <div class="col-md-8">
-                                    <h6 class="text-muted font-semibold">Jumlah Jurusan</h6>
-                                    <h6 class="font-extrabold mb-0">{{ $jumlahJurusan }}</h6>
-                                </div>
+                            <div>
+                                <h6 class="text-muted font-semibold"> Jurusan</h6>
+                                <h4 class="font-extrabold mb-0">{{ $jumlahJurusan }}</h4>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-6 col-lg-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body px-3 py-4-5">
-                            <div class="row">
-                            <div class="d-flex justify-content-center align-items-center w-25"
-                                 style="font-size: 2rem;">
+                    <div class="card flex-grow-1" style="min-width: 180px;">
+                        <div class="card-body d-flex align-items-center px-4 py-4">
+                            <div class="me-3" style="font-size: 2.5rem;">
                                 <i class="bi bi-people"></i>
                             </div>
-                                <div class="col-md-8">
-                                    <h6 class="text-muted font-semibold">Jumlah Rombel</h6>
-                                    <h6 class="font-extrabold mb-0">{{ $jumlahRombel }}</h6>
-                                </div>
+                            <div>
+                                <h6 class="text-muted font-semibold"> Rombel</h6>
+                                <h4 class="font-extrabold mb-0">{{ $jumlahRombel }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card flex-grow-1" style="min-width: 180px;">
+                        <div class="card-body d-flex align-items-center px-4 py-4">
+                            <div class="me-3" style="font-size: 2.5rem;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted font-semibold"> Ptk</h6>
+                                <h4 class="font-extrabold mb-0">{{ $jumlahPtk }}</h4>
                             </div>
                         </div>
                     </div>
@@ -150,27 +139,33 @@
         <div class="col-12 col-lg-3">
 
             <div class="card" style="width: 350px;">
-                <div class="card-header"><h4>Recent Messages</h4></div>
+                <div class="card-header"><h4>Role Login</h4></div>
                 <div class="card-content pb-4">
 
                     <div class="recent-message d-flex px-4 py-3">
-                        <div class="avatar avatar-lg"><img src="assets/images/faces/4.jpg"></div>
-                        <div class="ms-4"><h5>Hank Schrader</h5><h6 class="text-muted">@johnducky</h6></div>
+                        <div class="avatar avatar-lg d-flex justify-content-center align-items-center rounded-circle"
+                            style="width: 50px; height: 50px; font-size: 1.5rem; color: black;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div class="ms-4 mt-3"><h5>Admin</h5></div>
                     </div>
 
                     <div class="recent-message d-flex px-4 py-3">
-                        <div class="avatar avatar-lg"><img src="assets/images/faces/5.jpg"></div>
-                        <div class="ms-4"><h5>Dean Winchester</h5><h6 class="text-muted">@imdean</h6></div>
+                        <div class="avatar avatar-lg d-flex justify-content-center align-items-center rounded-circle"
+                            style="width: 50px; height: 50px; font-size: 1.5rem; color: black;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div class="ms-4 mt-3"><h5>Ptk</h5></div>
                     </div>
 
                     <div class="recent-message d-flex px-4 py-3">
-                        <div class="avatar avatar-lg"><img src="assets/images/faces/1.jpg"></div>
-                        <div class="ms-4"><h5>John Dodol</h5><h6 class="text-muted">@dodoljohn</h6></div>
+                        <div class="avatar avatar-lg d-flex justify-content-center align-items-center rounded-circle"
+                            style="width: 50px; height: 50px; font-size: 1.5rem; color: black;">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div class="ms-4 mt-3"><h5>Siswa</h5></div>
                     </div>
 
-                    <div class="px-4">
-                        <button class="btn btn-block btn-xl btn-light-primary font-bold mt-3">Start Conversation</button>
-                    </div>
 
                 </div>
             </div>
@@ -191,8 +186,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const bulan = @json(array_keys($statistikPrestasi));
-    const total = @json(array_values($statistikPrestasi));
+    const bulan = @json(array_keys($statistikPrestasi)); // [1,2,...,12]
+    const total = @json(array_values($statistikPrestasi)); // jumlah per bulan
 
     const namaBulan = ["","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
@@ -203,11 +198,23 @@
             datasets: [{
                 label: 'Jumlah Prestasi',
                 data: total,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderWidth: 1
             }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...total) + 10 // otomatis menyesuaikan skala
+                }
+            }
         }
     });
 </script>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
