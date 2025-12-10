@@ -49,6 +49,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\KontakAlamatController;
 use App\Http\Controllers\PesanController;
+use App\Http\Controllers\DataAkademikController;
 
 Route::get('/', function () {
     return redirect('/beranda');
@@ -56,6 +57,7 @@ Route::get('/', function () {
 
 Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
 Route::get('/data', [DataController::class, 'index'])->name('data');
+Route::get('/data-akademik', [DataAkademikController::class, 'index'])->name('data-akademik');
 Route::get('/kontak-alamat', [KontakAlamatController::class, 'index'])->name('kontak-alamat');
 Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('kirim.pesan');
 

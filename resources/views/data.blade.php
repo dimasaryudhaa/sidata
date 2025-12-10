@@ -54,7 +54,16 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}">Beranda</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('data') }}">Data</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Data
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="dataDropdown">
+                        <li><a class="dropdown-item" href="{{ route('data') }}">Data Master</a></li>
+                        <li><a class="dropdown-item" href="{{ route('data-akademik') }}">Data Akademik</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('kontak-alamat') }}">Kontak & Alamat</a></li>
             </ul>
 
@@ -182,8 +191,6 @@
                     <canvas id="chartRayon" height="100"></canvas>
                 </div>
             </div>
-
-
         </div>
 
         <div class="col-12 col-lg-3">
