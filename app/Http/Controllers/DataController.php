@@ -100,6 +100,10 @@ class DataController extends Controller
             'jumlahRombel' => Rombel::count(),
             'jumlahRayon' => Rayon::count(),
             'jumlahPtk' => Ptk::count(),
+            'jumlahGuru' => Ptk::where('jenis_ptk', 'Guru')->count(),
+            'jumlahStaf' => Ptk::where('jenis_ptk', 'Staf')->count(),
+            'jumlahLaboran' => Ptk::where('jenis_ptk', 'Laboran')->count(),
+
             'jumlahPrestasiSiswa' => PrestasiSiswa::count(),
 
             'statistikPrestasi' => $statistikPrestasi,

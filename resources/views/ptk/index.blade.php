@@ -116,8 +116,8 @@
                     @if(!$isPtk)
                         <th style="width:50px;">No</th>
                         <th>Nama Lengkap</th>
+                        <th>Jenis Ptk</th>
                         <th>Jenis Kelamin</th>
-                        <th>NIK</th>
                         <th>Tempat Lahir</th>
                         <th>Tanggal Lahir</th>
                         <th style="width:80px;">Aksi</th>
@@ -134,8 +134,8 @@
                         <tr>
                             <td>{{ $ptk->firstItem() + $index }}</td>
                             <td class="nama_ptk">{{ $p->nama_lengkap ?? '-' }}</td>
+                            <td>{{ $p->jenis_ptk ?? '-' }}</td>
                             <td>{{ $p->jenis_kelamin ?? '-' }}</td>
-                            <td>{{ $p->nik ?? '-' }}</td>
                             <td>{{ $p->tempat_lahir ?? '-' }}</td>
                             <td>{{ $p->tanggal_lahir ?? '-' }}</td>
                             @php
@@ -162,6 +162,7 @@
                             <td>Identitas Diri</td>
                             <td>
                                 <strong>Nama Lengkap:</strong> {{ $p->nama_lengkap ?? '-' }}<br>
+                                <strong>Jenis PTK:</strong> {{ $p->jenis_ptk ?? '-' }}<br>
                                 <strong>NIK:</strong> {{ $p->nik ?? '-' }}<br>
                                 <strong>Jenis Kelamin:</strong> {{ $p->jenis_kelamin ?? '-' }}
                             </td>

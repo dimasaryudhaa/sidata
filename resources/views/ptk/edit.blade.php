@@ -22,6 +22,16 @@
                 </div>
 
                 <div class="mb-3">
+                    <label>Jenis PTK</label>
+                    <select name="jenis_ptk" class="form-control" required>
+                        <option value="">Pilih Jenis PTK</option>
+                        <option value="Guru" {{ $ptk->jenis_ptk=='Guru' ? 'selected' : '' }}>Guru</option>
+                        <option value="Staf" {{ $ptk->jenis_ptk=='Staf' ? 'selected' : '' }}>Staf</option>
+                        <option value="Laboran" {{ $ptk->jenis_ptk=='Laboran' ? 'selected' : '' }}>Laboran</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label>NIK</label>
                     <input type="text" name="nik" class="form-control" value="{{ $ptk->nik }}">
                 </div>

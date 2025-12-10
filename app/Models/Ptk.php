@@ -12,6 +12,7 @@ class Ptk extends Model
     protected $table = 'ptk';
     protected $fillable = [
         'nama_lengkap',
+        'jenis_ptk',
         'nik',
         'jenis_kelamin',
         'tempat_lahir',

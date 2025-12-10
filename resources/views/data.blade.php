@@ -33,6 +33,12 @@
             padding: 30px 0;
             margin-top: 80px;
         }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
     </style>
 </head>
 
@@ -64,7 +70,7 @@
 
         <div class="col-12 col-lg-9">
             <div class="row px-3">
-                <div class="d-flex flex-wrap px-3 gap-3">
+                <div class="stat-cards px-3">
                     <div class="card flex-grow-1" style="min-width: 180px;">
                         <div class="card-body d-flex align-items-center px-4 py-4">
                             <div class="me-3" style="font-size: 2.5rem;">
@@ -119,11 +125,13 @@
                                 <i class="bi bi-people"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted font-semibold"> Ptk</h6>
-                                <h4 class="font-extrabold mb-0">{{ $jumlahPtk }}</h4>
+                                <h6 class="text-muted font-semibold"> Guru</h6>
+                                <h4 class="font-extrabold mb-0">{{ $jumlahGuru }}</h4>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
 
@@ -180,17 +188,42 @@
 
         <div class="col-12 col-lg-3">
 
-            <div class="card" style="width: 350px;">
-                <div class="card-header"><h4>Jumlah User</h4></div>
-                <div class="card-body d-flex justify-content-center">
-                    <canvas id="chartUserRole" width="300" height="300"></canvas>
+            <div class="stat-cards px-3 d-flex gap-3" style="margin-left: -40px;">
+                <div class="card flex-grow-1" style="min-width: 180px;">
+                    <div class="card-body d-flex align-items-center px-4 py-4">
+                        <div class="me-3" style="font-size: 2.5rem;">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold"> Staf</h6>
+                            <h4 class="font-extrabold mb-0">{{ $jumlahStaf }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="card flex-grow-1" style="min-width: 180px;">
+                    <div class="card-body d-flex align-items-center px-4 py-4">
+                        <div class="me-3" style="font-size: 2.5rem;">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold"> Laboran</h6>
+                            <h4 class="font-extrabold mb-0">{{ $jumlahLaboran }}</h4>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card" style="width: 350px; margin-top: 50px;">
+            <div class="card" style="width: 350px; margin-top: 20px; margin-left: -20px;">
+                <div class="card-header"><h4>Jumlah User</h4></div>
+                <div class="card-body d-flex justify-content-center">
+                    <canvas id="chartUserRole" width="250" height="250"></canvas>
+                </div>
+            </div>
+
+            <div class="card" style="width: 350px; margin-top: 50px; margin-left: -20px;">
                 <div class="card-header"><h4>Jumlah Siswa per Jurusan</h4></div>
                 <div class="card-body d-flex justify-content-center">
-                    <canvas id="chartJurusan" height="300" height="300"></canvas>
+                    <canvas id="chartJurusan" height="250" height="250"></canvas>
                 </div>
             </div>
 
@@ -331,6 +364,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom'
@@ -363,6 +397,7 @@
         options: {
             cutout: '70%',
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom'

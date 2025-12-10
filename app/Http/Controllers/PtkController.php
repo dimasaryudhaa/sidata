@@ -26,6 +26,7 @@ class PtkController extends Controller
                 ->select(
                     'ptk.id',
                     'ptk.nama_lengkap',
+                    'ptk.jenis_ptk',
                     'ptk.nik',
                     'ptk.jenis_kelamin',
                     'ptk.tempat_lahir',
@@ -45,7 +46,7 @@ class PtkController extends Controller
                 ->select(
                     'ptk.id',
                     'ptk.nama_lengkap',
-                    'ptk.nik',
+                    'ptk.jenis_ptk',
                     'ptk.jenis_kelamin',
                     'ptk.tempat_lahir',
                     'ptk.tanggal_lahir'
@@ -79,6 +80,7 @@ class PtkController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
+            'jenis_ptk' => 'required|in:Guru,Staf,Laboran',
             // 'nik' => 'required|string|size:16|unique:ptk,nik',
             // 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             // 'tempat_lahir' => 'required|string|max:100',
@@ -107,7 +109,7 @@ class PtkController extends Controller
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('PTK');
             $sheet->fromArray(
-                ['Nama Lengkap', 'NIK', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Nama Ibu Kandung'],
+                ['Nama Lengkap', 'Jenis PTK', 'NIK', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Nama Ibu Kandung'],
                 null,
                 'A1'
             );
@@ -117,6 +119,7 @@ class PtkController extends Controller
 
         $sheet->fromArray([
             $ptk->nama_lengkap,
+            $ptk->jenis_ptk,
             $ptk->nik,
             $ptk->jenis_kelamin,
             $ptk->tempat_lahir,
@@ -154,6 +157,7 @@ class PtkController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
+            'jenis_ptk' => 'required|in:Guru,Staf,Laboran',
         ]);
 
         $oldNama = $ptk->nama_lengkap;
@@ -175,6 +179,7 @@ class PtkController extends Controller
 
                         $sheet->fromArray([
                             $ptk->nama_lengkap,
+                            $ptk->jenis_ptk,
                             $ptk->nik,
                             $ptk->jenis_kelamin,
                             $ptk->tempat_lahir,
