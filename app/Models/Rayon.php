@@ -17,4 +17,9 @@ class Rayon extends Model
     {
         return $this->belongsTo(Ptk::class, 'ptk_id');
     }
+
+    public function siswa()
+    {
+        return $this->hasMany(Siswa::class, 'rayon_id');
+    }
 }

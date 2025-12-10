@@ -127,10 +127,51 @@
                 </div>
             </div>
 
+            <div class="row mx-3" style="margin-top: 20px;">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header"><h5 class="m-0">Prestasi Siswa</h5></div>
+                        <div class="card-body" style="height: 300px;">
+                            <canvas id="chartPrestasi"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header"><h5 class="m-0">Penghargaan PTK</h5></div>
+                        <div class="card-body" style="height: 300px;">
+                            <canvas id="chartPenghargaan"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mx-3" style="margin-top: 40px;">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header"><h5 class="m-0">Beasiswa Siswa</h5></div>
+                        <div class="card-body" style="height: 300px;">
+                            <canvas id="chartBeasiswa"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header"><h5 class="m-0">Beasiswa Ptk</h5></div>
+                        <div class="card-body" style="height: 300px;">
+                            <canvas id="chartBeasiswaPtk"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card mt-4 mx-3">
-                <div class="card-header"><h4>Statistik Prestasi</h4></div>
+                <div class="card-header">
+                    <h4>Jumlah Siswa per Rayon</h4>
+                </div>
                 <div class="card-body">
-                    <canvas id="chartPrestasi" height="120"></canvas>
+                    <canvas id="chartRayon" height="100"></canvas>
                 </div>
             </div>
 
@@ -139,34 +180,16 @@
         <div class="col-12 col-lg-3">
 
             <div class="card" style="width: 350px;">
-                <div class="card-header"><h4>Role Login</h4></div>
-                <div class="card-content pb-4">
+                <div class="card-header"><h4>Jumlah User</h4></div>
+                <div class="card-body d-flex justify-content-center">
+                    <canvas id="chartUserRole" width="300" height="300"></canvas>
+                </div>
+            </div>
 
-                    <div class="recent-message d-flex px-4 py-3">
-                        <div class="avatar avatar-lg d-flex justify-content-center align-items-center rounded-circle"
-                            style="width: 50px; height: 50px; font-size: 1.5rem; color: black;">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <div class="ms-4 mt-3"><h5>Admin</h5></div>
-                    </div>
-
-                    <div class="recent-message d-flex px-4 py-3">
-                        <div class="avatar avatar-lg d-flex justify-content-center align-items-center rounded-circle"
-                            style="width: 50px; height: 50px; font-size: 1.5rem; color: black;">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <div class="ms-4 mt-3"><h5>Ptk</h5></div>
-                    </div>
-
-                    <div class="recent-message d-flex px-4 py-3">
-                        <div class="avatar avatar-lg d-flex justify-content-center align-items-center rounded-circle"
-                            style="width: 50px; height: 50px; font-size: 1.5rem; color: black;">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <div class="ms-4 mt-3"><h5>Siswa</h5></div>
-                    </div>
-
-
+            <div class="card" style="width: 350px; margin-top: 50px;">
+                <div class="card-header"><h4>Jumlah Siswa per Jurusan</h4></div>
+                <div class="card-body d-flex justify-content-center">
+                    <canvas id="chartJurusan" height="300" height="300"></canvas>
                 </div>
             </div>
 
@@ -186,19 +209,21 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const bulan = @json(array_keys($statistikPrestasi)); // [1,2,...,12]
-    const total = @json(array_values($statistikPrestasi)); // jumlah per bulan
+    const namaBulan = [
+        "", "Januari","Februari","Maret","April","Mei",
+        "Juni","Juli","Agustus","September","Oktober","November","Desember"
+    ];
 
-    const namaBulan = ["","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+    const bulanPrestasi = @json(array_keys($statistikPrestasi));
+    const totalPrestasi = @json(array_values($statistikPrestasi));
 
     new Chart(document.getElementById('chartPrestasi'), {
         type: 'bar',
         data: {
-            labels: bulan.map(b => namaBulan[b]),
+            labels: bulanPrestasi.map(b => namaBulan[b]),
             datasets: [{
                 label: 'Jumlah Prestasi',
-                data: total,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                data: totalPrestasi,
                 backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 borderWidth: 1
             }]
@@ -207,14 +232,167 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...total) + 10 // otomatis menyesuaikan skala
+                    suggestedMax: Math.max(...totalPrestasi) + 50
+                }
+            }
+        }
+    });
+
+    const bulanPenghargaan = @json(array_keys($statistikPenghargaan));
+    const totalPenghargaan = @json(array_values($statistikPenghargaan));
+
+    new Chart(document.getElementById('chartPenghargaan'), {
+        type: 'bar',
+        data: {
+            labels: bulanPenghargaan.map(b => namaBulan[b]),
+            datasets: [{
+                label: 'Jumlah Penghargaan',
+                data: totalPenghargaan,
+                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...totalPenghargaan) + 50
+                }
+            }
+        }
+    });
+
+    const bulanBeasiswa = @json(array_keys($statistikBeasiswa));
+    const totalBeasiswa = @json(array_values($statistikBeasiswa));
+
+    new Chart(document.getElementById('chartBeasiswa'), {
+        type: 'bar',
+        data: {
+            labels: bulanBeasiswa.map(b => namaBulan[b]),
+            datasets: [{
+                label: 'Jumlah Beasiswa Siswa',
+                data: totalBeasiswa,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...totalBeasiswa) + 50
+                }
+            }
+        }
+    });
+
+    const bulanBeasiswaPtk = @json(array_keys($statistikBeasiswaPtk));
+    const totalBeasiswaPtk = @json(array_values($statistikBeasiswaPtk));
+
+    new Chart(document.getElementById('chartBeasiswaPtk'), {
+        type: 'bar',
+        data: {
+            labels: bulanBeasiswaPtk.map(b => namaBulan[b]),
+            datasets: [{
+                label: 'Jumlah Beasiswa PTK',
+                data: totalBeasiswaPtk,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...totalBeasiswaPtk) + 20
+                }
+            }
+        }
+    });
+
+    const admin = @json($jumlahAdmin);
+    const siswa = @json($jumlahSiswa);
+    const ptk   = @json($jumlahPtk);
+
+    new Chart(document.getElementById('chartUserRole'), {
+        type: 'pie',
+        data: {
+            labels: ['Admin', 'Siswa', 'PTK'],
+            datasets: [{
+                data: [admin, siswa, ptk],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(75, 192, 75, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    const jurusanLabels = @json($dataJurusan);
+    const jurusanJumlah = @json($jumlahSiswaJurusan);
+
+    new Chart(document.getElementById('chartJurusan'), {
+        type: 'doughnut',
+        data: {
+            labels: jurusanLabels,
+            datasets: [{
+                data: jurusanJumlah,
+                backgroundColor: [
+                    'rgba(75, 192, 75, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 205, 86, 0.7)',
+                    'rgba(201, 203, 207, 0.7)',
+                    'rgba(255, 99, 132, 0.7)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            cutout: '70%',
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('chartRayon'), {
+        type: 'bar',
+        data: {
+            labels: @json($namaRayon),
+            datasets: [{
+                label: 'Jumlah Siswa',
+                data: @json($jumlahSiswaRayon),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...totalBeasiswaPtk) + 20
                 }
             }
         }
     });
 </script>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
