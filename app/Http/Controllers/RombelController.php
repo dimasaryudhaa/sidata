@@ -14,7 +14,7 @@ class RombelController extends Controller
 {
     public function index()
     {
-        $rombel = Rombel::with('jurusan')->orderBy('nama_rombel', 'asc')->paginate(10);
+        $rombel = Rombel::with('jurusan')->orderBy('nama_rombel', 'asc')->paginate(20);
         return view('rombel.index', compact('rombel'));
     }
 
