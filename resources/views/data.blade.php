@@ -166,7 +166,7 @@
                 </div>
             </div>
 
-            <div class="card mt-4 mx-3">
+            <div class="card mt-5" style="margin-left: 20px; width: 1480px; ">
                 <div class="card-header">
                     <h4>Jumlah Siswa per Rayon</h4>
                 </div>
@@ -174,6 +174,7 @@
                     <canvas id="chartRayon" height="100"></canvas>
                 </div>
             </div>
+
 
         </div>
 
@@ -304,7 +305,7 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...totalBeasiswaPtk) + 20
+                    suggestedMax: Math.max(...totalBeasiswaPtk) + 50
                 }
             }
         }
@@ -387,7 +388,7 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...totalBeasiswaPtk) + 20
+                    suggestedMax: Math.max(...totalBeasiswaPtk) + 50
                 }
             }
         }
