@@ -80,6 +80,7 @@
                 <tr>
                     <th style="width: 50px;">No</th>
                     <th>Nama Rombel</th>
+                    <th>Tingkat</th>
                     <th>Jurusan</th>
                     <th style="width: 80px;">Aksi</th>
                 </tr>
@@ -89,6 +90,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td class="nama_rombel">{{ $r->nama_rombel }}</td>
+                        <td>{{ $r->tingkat }}</td>
                         <td>{{ $r->jurusan->nama_jurusan ?? '-' }}</td>
                         <td>
                             <a href="{{ route('admin.rombel.edit', $r->id) }}" class="btn btn-sm btn-no-border">

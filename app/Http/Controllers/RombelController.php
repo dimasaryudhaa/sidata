@@ -53,7 +53,7 @@ class RombelController extends Controller
         if (!$sheet) {
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('Rombel');
-            $sheet->fromArray(['Nama Jurusan', 'Nama Rombel'], null, 'A1');
+            $sheet->fromArray(['Nama Jurusan', 'Nama Rombel', 'Tingkat'], null, 'A1');
         }
 
         $lastRow = $sheet->getHighestRow() + 1;
@@ -80,12 +80,17 @@ class RombelController extends Controller
         $request->validate([
             'jurusan_id' => 'required|integer|exists:jurusan,id',
             'nama_rombel' => 'required|string|max:100',
+            'tingkat' => 'nullable|in:X,XI,XII',
         ]);
 
         $oldNamaJurusan = Jurusan::find($rombel->jurusan_id)->nama_jurusan;
         $oldNamaRombel = $rombel->nama_rombel;
 
-        $rombel->update($request->all());
+        $rombel->update([
+            'jurusan_id' => $request->jurusan_id,
+            'nama_rombel' => $request->nama_rombel,
+            'tingkat' => $request->tingkat,
+        ]);
 
         $newNamaJurusan = Jurusan::find($request->jurusan_id)->nama_jurusan;
         $newNamaRombel = $request->nama_rombel;
@@ -107,6 +112,8 @@ class RombelController extends Controller
                     ) {
                         $sheet->setCellValue("A{$row}", $newNamaJurusan);
                         $sheet->setCellValue("B{$row}", $newNamaRombel);
+                        $sheet->setCellValue("C{$row}", $request->tingkat);
+
                         break;
                     }
                 }

@@ -10,7 +10,7 @@ class Rombel extends Model
     use HasFactory;
 
     protected $table = 'rombel';
-    protected $fillable = ['jurusan_id', 'nama_rombel'];
+    protected $fillable = ['jurusan_id', 'nama_rombel', 'tingkat'];
 
     public function jurusan()
     {

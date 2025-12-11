@@ -18,6 +18,15 @@
             <label>Nama Rombel</label>
             <input type="text" name="nama_rombel" class="form-control" required>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Tingkat</label>
+            <select name="tingkat" class="form-control">
+                <option value="">Pilih Tingkat</option>
+                <option value="X">X</option>
+                <option value="XI">XI</option>
+                <option value="XII">XII</option>
+            </select>
+        </div>
         <div class="d-flex justify-content-start mt-3">
             <a href="{{ route('admin.rombel.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>

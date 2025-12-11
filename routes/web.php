@@ -50,6 +50,9 @@ use App\Http\Controllers\DashboardUtamaController;
 use App\Http\Controllers\KontakAlamatController;
 use App\Http\Controllers\PesanController;
 use App\Http\Controllers\DashboardAkademikController;
+use App\Http\Controllers\DashboardKehadiranController;
+use App\Http\Controllers\DashboardKeuanganController;
+use App\Http\Controllers\DashboardSarprasController;
 
 Route::get('/', function () {
     return redirect('/beranda');
@@ -58,6 +61,9 @@ Route::get('/', function () {
 Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
 Route::get('/dashboard-utama', [DashboardUtamaController::class, 'index'])->name('dashboard-utama');
 Route::get('/dashboard-akademik', [DashboardAkademikController::class, 'index'])->name('dashboard-akademik');
+Route::get('/dashboard-kehadiran', [DashboardKehadiranController::class, 'index'])->name('dashboard-kehadiran');
+Route::get('/dashboard-keuangan', [DashboardKeuanganController::class, 'index'])->name('dashboard-keuangan');
+Route::get('/dashboard-sarpras', [DashboardSarprasController::class, 'index'])->name('dashboard-sarpras');
 Route::get('/kontak-alamat', [KontakAlamatController::class, 'index'])->name('kontak-alamat');
 Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('kirim.pesan');
 

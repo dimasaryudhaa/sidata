@@ -33,6 +33,14 @@
             margin: 0;
             font-size: 14px;
         }
+
+        .scroll-body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-body {
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -174,6 +182,71 @@
 
     </div>
 
+    <div class="d-flex gap-4 mt-4">
+
+        <div class="card" style="width: 480px; margin-left: 30px; ">
+            <div class="card-header">
+                <h4>Rata-Rata Nilai per Rayon per Bulan</h4>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 200px;">Nama Rombel</th>
+                            <th style="width: 120px;">Bulan</th>
+                            <th style="width: 150px;">Rata-Rata Nilai</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 220px; overflow-y: auto;">
+
+                        @foreach($dataRataRata as $item)
+                        <tr>
+                            <td style="width: 200px;">{{ $item->rombel }}</td>
+                            <td style="width: 120px;">{{ $item->bulan }}</td>
+                            <td style="width: 150px;"></td>
+                        </tr>
+                        @endforeach
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="width: 950px;">
+            <div class="card-header">
+                <h5 class="m-0">Ketuntasan Belajar per 9 Minggu</h5>
+            </div>
+            <div class="card-body" style="height: 300px; width: 900px;">
+                <canvas id="chartKetuntasan"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="d-flex gap-4 mt-4" style="margin-left: 25px;">
+        <div class="card" style="width: 720px;">
+            <div class="card-header">
+                <h5 class="m-0">Nilai Semester per Rombel</h5>
+            </div>
+            <div class="card-body" style="height: 300px; width: 700px;">
+                <canvas id="chartNilaiSemester"></canvas>
+            </div>
+        </div>
+
+        <div class="card" style="width: 720px;">
+            <div class="card-header">
+                <h5 class="m-0">Masalah Siswa per Rombel</h5>
+            </div>
+            <div class="card-body" style="height: 300px; width: 700px;">
+                <canvas id="chartMasalah"></canvas>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 <footer class="footer text-center">
@@ -308,6 +381,110 @@
             maintainAspectRatio: false,
         }
     });
+
+    const dataGrafik = @json($dataGrafik);
+    const labelKetuntasan = dataGrafik.map(item =>
+        `${item.jurusan}-${item.tingkat}-M${item.minggu}`
+    );
+    const nilaiKetuntasan = dataGrafik.map(item => item.nilai ?? 0);
+
+    new Chart(document.getElementById('chartKetuntasan'), {
+        type: 'bar',
+        data: {
+            labels: labelKetuntasan,
+            datasets: [{
+                label: 'Nilai Ketuntasan',
+                data: nilaiKetuntasan,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...nilaiKetuntasan) + 10
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `Nilai: ${context.raw}`
+                    }
+                }
+            }
+        }
+    });
+
+    const labels = @json($chartLabels);
+    const datasetsRaw = @json($datasets);
+
+    const generateColor = () => {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        return `rgba(${r}, ${g}, ${b}, 0.6)`;
+    };
+
+    const datasets = datasetsRaw.map(ds => ({
+        label: ds.label,
+        data: ds.data,
+        backgroundColor: generateColor(),
+        borderWidth: 1
+    }));
+
+    new Chart(document.getElementById('chartNilaiSemester'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: datasets,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 10
+                    }
+                }
+            }
+        }
+    });
+
+    const labelsMasalah = @json($labelsMasalah);
+    const dataMasalah = @json($dataMasalah);
+
+    new Chart(document.getElementById('chartMasalah'), {
+        type: 'bar',
+        data: {
+            labels: labelsMasalah,
+            datasets: [{
+                label: 'Jumlah Peserta Didik Bermasalah',
+                data: dataMasalah,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 50,
+                    ticks: {
+                        stepSize: 5
+                    }
+                }
+            }
+        }
+    });
+
+
 </script>
 
 </html>
