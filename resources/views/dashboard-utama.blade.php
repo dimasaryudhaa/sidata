@@ -39,6 +39,16 @@
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
         }
+
+        .scroll-body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hilangkan scrollbar Firefox */
+        .scroll-body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
     </style>
 </head>
 
@@ -230,14 +240,16 @@
 
                 <div class="card-body" style="padding: 0;">
                     <table class="table table-bordered" style="margin: 0;">
-                        <thead class="table-primary" style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <thead class="table-primary"
+                            style="display: block; position: sticky; top: 0; z-index: 10;">
                             <tr>
                                 <th style="width: 300px;">Nama Rayon</th>
                                 <th style="width: 150px;">Jumlah Siswa</th>
                             </tr>
                         </thead>
 
-                        <tbody style="display: block; max-height: 220px; overflow-y: auto;">
+                        <tbody class="scroll-body"
+                            style="display: block; max-height: 220px; overflow-y: auto;">
                             @foreach($namaRayon as $index => $rayon)
                             <tr>
                                 <td style="width: 300px;">{{ $rayon }}</td>
