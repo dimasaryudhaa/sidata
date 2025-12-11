@@ -228,20 +228,20 @@
                     <h4>Jumlah Siswa per Rayon</h4>
                 </div>
 
-                <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
-                    <table class="table table-bordered" style="background: white;">
-                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5; background: #cfe2ff;">
+                <div class="card-body" style="padding: 0;">
+                    <table class="table table-bordered" style="margin: 0;">
+                        <thead class="table-primary" style="display: block; position: sticky; top: 0; z-index: 10;">
                             <tr>
-                                <th style="width: 70%">Nama Rayon</th>
-                                <th style="width: 30%">Jumlah Siswa</th>
+                                <th style="width: 300px;">Nama Rayon</th>
+                                <th style="width: 150px;">Jumlah Siswa</th>
                             </tr>
                         </thead>
 
-                        <tbody style="background: white;">
+                        <tbody style="display: block; max-height: 220px; overflow-y: auto;">
                             @foreach($namaRayon as $index => $rayon)
                             <tr>
-                                <td>{{ $rayon }}</td>
-                                <td>{{ $jumlahSiswaRayon[$index] }}</td>
+                                <td style="width: 300px;">{{ $rayon }}</td>
+                                <td style="width: 150px;">{{ $jumlahSiswaRayon[$index] }}</td>
                             </tr>
                             @endforeach
                         </tbody>
