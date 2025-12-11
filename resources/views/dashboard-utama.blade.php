@@ -229,15 +229,15 @@
                 </div>
 
                 <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
-                    <table class="table table-bordered">
-                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5;">
+                    <table class="table table-bordered" style="background: white;">
+                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5; background: #cfe2ff;">
                             <tr>
                                 <th style="width: 70%">Nama Rayon</th>
                                 <th style="width: 30%">Jumlah Siswa</th>
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody style="background: white;">
                             @foreach($namaRayon as $index => $rayon)
                             <tr>
                                 <td>{{ $rayon }}</td>
