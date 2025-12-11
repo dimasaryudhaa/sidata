@@ -51,12 +51,12 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Data
+                            Dashboard
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dataDropdown">
-                            <li><a class="dropdown-item" href="{{ route('data') }}">Data Master</a></li>
-                            <li><a class="dropdown-item" href="{{ route('data-akademik') }}">Data Akademik</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard-utama') }}">Dashboard Utama</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard-akademik') }}">Dashboard Akademik</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

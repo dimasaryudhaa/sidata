@@ -13,7 +13,7 @@ use App\Models\BeasiswaPtk;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class DataController extends Controller
+class DashboardUtamaController extends Controller
 {
     public function index()
     {
@@ -94,7 +94,13 @@ class DataController extends Controller
         $namaRayon = $rayon->pluck('nama_rayon');
         $jumlahSiswaRayon = $rayon->pluck('siswa_count');
 
-        return view('data', [
+        $rombel = Rombel::withCount('pesertaDidik')->get();
+
+        $namaRombel = $rombel->pluck('nama_rombel');
+        $jumlahSiswaRombel = $rombel->pluck('peserta_didik_count');
+
+
+        return view('dashboard-utama', [
             'jumlahSiswa' => Siswa::count(),
             'jumlahJurusan' => Jurusan::count(),
             'jumlahRombel' => Rombel::count(),
@@ -117,6 +123,8 @@ class DataController extends Controller
             'jumlahSiswaJurusan' => $jumlahSiswaJurusan,
             'namaRayon' => $namaRayon,
             'jumlahSiswaRayon' => $jumlahSiswaRayon,
+            'namaRombel' => $namaRombel,
+            'jumlahSiswaRombel' => $jumlahSiswaRombel,
 
         ]);
     }

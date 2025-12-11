@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class PesanController extends Controller
 {
+    public function index()
+    {
+        $pesans = Pesan::latest()->paginate(10);
+        return view('pesan', compact('pesans'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -22,11 +28,5 @@ class PesanController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Pesan berhasil dikirim!');
-    }
-
-    public function index()
-    {
-        $pesans = Pesan::latest()->paginate(10);
-        return view('pesan', compact('pesans'));
     }
 }

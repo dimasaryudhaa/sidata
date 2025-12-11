@@ -46,18 +46,18 @@ use App\Http\Controllers\SertifikatPtkController;
 use App\Http\Controllers\TugasTambahanController;
 use App\Http\Controllers\TunjanganController;
 use App\Http\Controllers\BerandaController;
-use App\Http\Controllers\DataController;
+use App\Http\Controllers\DashboardUtamaController;
 use App\Http\Controllers\KontakAlamatController;
 use App\Http\Controllers\PesanController;
-use App\Http\Controllers\DataAkademikController;
+use App\Http\Controllers\DashboardAkademikController;
 
 Route::get('/', function () {
     return redirect('/beranda');
 });
 
 Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
-Route::get('/data', [DataController::class, 'index'])->name('data');
-Route::get('/data-akademik', [DataAkademikController::class, 'index'])->name('data-akademik');
+Route::get('/dashboard-utama', [DashboardUtamaController::class, 'index'])->name('dashboard-utama');
+Route::get('/dashboard-akademik', [DashboardAkademikController::class, 'index'])->name('dashboard-akademik');
 Route::get('/kontak-alamat', [KontakAlamatController::class, 'index'])->name('kontak-alamat');
 Route::post('/kirim-pesan', [PesanController::class, 'store'])->name('kirim.pesan');
 

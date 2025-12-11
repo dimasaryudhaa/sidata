@@ -52,12 +52,12 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Data
+                            Dashboard
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dataDropdown">
-                            <li><a class="dropdown-item" href="{{ route('data') }}">Data Master</a></li>
-                            <li><a class="dropdown-item" href="{{ route('data-akademik') }}">Data Akademik</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard-utama') }}">Dashboard Utama</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard-akademik') }}">Dashboard Akademik</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -73,55 +73,55 @@
         </div>
     </nav>
 
-    <div style="display: flex; gap: 20px; margin-left: 30px; margin-top: 80px;">
-        <div class="card" style="width: 400px; margin: 30px;">
-            <div class="card-header">
-                <h5 class="m-0">Tingkat Prestasi</h5>
+    <div style="display: flex; gap: 20px; margin-top: 120px; align-items: flex-start;">
+
+        <div style="display: flex; flex-direction: column; gap: 20px; width: 300px; margin-left: 30px;">
+
+            <div class="card">
+                <div class="card-header"><h5 class="m-0">Tingkat Prestasi</h5></div>
+                <div class="card-body">
+                    <canvas id="chartTingkatPrestasi" height="223"></canvas>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="chartTingkatPrestasi" height="250"></canvas>
+
+            <div class="card">
+                <div class="card-header"><h5 class="m-0">Jenis Prestasi</h5></div>
+                <div class="card-body">
+                    <canvas id="chartJenisPrestasi" height="223"></canvas>
+                </div>
             </div>
+
+            <div class="card">
+                <div class="card-header"><h5 class="m-0">Jenis Beasiswa</h5></div>
+                <div class="card-body">
+                    <canvas id="chartBeasiswa" height="223"></canvas>
+                </div>
+            </div>
+
         </div>
 
-        <div class="card" style="width: 400px; margin: 30px;">
-            <div class="card-header">
-                <h5 class="m-0">Jenis Prestasi</h5>
+        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%; margin-right: 30px;">
+
+            <div class="card" style="width: 100%;">
+                <div class="card-header">
+                    <h4>Jumlah Siswa Berprestasi per Rombel</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartPrestasiRombel" height="100"></canvas>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="chartJenisPrestasi" height="250"></canvas>
+
+            <div class="card" style="width: 100%;">
+                <div class="card-header">
+                    <h4>Jumlah Siswa Berprestasi per Rayon</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartPrestasiRayon" height="100"></canvas>
+                </div>
             </div>
+
         </div>
 
-        <div class="card" style="width: 400px; margin: 30px;">
-            <div class="card-header">
-                <h5 class="m-0">Jenis Beasiswa</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="chartBeasiswa" height="250"></canvas>
-            </div>
-        </div>
-
-    </div>
-
-    <div style="display: flex; gap: 20px; margin-left: 30px; margin-top: 50px;">
-
-        <div class="card" style="width: 720px;">
-            <div class="card-header">
-                <h4>Jumlah Siswa Berprestasi per Rombel</h4>
-            </div>
-            <div class="card-body">
-                <canvas id="chartPrestasiRombel" height="100"></canvas>
-            </div>
-        </div>
-
-        <div class="card" style="width: 720px;">
-            <div class="card-header">
-                <h4>Jumlah Siswa Berprestasi per Rayon</h4>
-            </div>
-            <div class="card-body">
-                <canvas id="chartPrestasiRayon" height="100"></canvas>
-            </div>
-        </div>
     </div>
 
 </body>
@@ -208,6 +208,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
         }
     });
 
@@ -232,6 +233,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
         }
     });
 
@@ -253,6 +255,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
         }
     });
 </script>

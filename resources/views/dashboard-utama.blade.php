@@ -56,12 +56,12 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}">Beranda</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Data
+                        Dashboard
                     </a>
 
                     <ul class="dropdown-menu" aria-labelledby="dataDropdown">
-                        <li><a class="dropdown-item" href="{{ route('data') }}">Data Master</a></li>
-                        <li><a class="dropdown-item" href="{{ route('data-akademik') }}">Data Akademik</a></li>
+                        <li><a class="dropdown-item" href="{{ route('dashboard-utama') }}">Dashboard Utama</a></li>
+                        <li><a class="dropdown-item" href="{{ route('dashboard-akademik') }}">Dashboard Akademik</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('kontak-alamat') }}">Kontak & Alamat</a></li>
@@ -164,33 +164,6 @@
                 </div>
             </div>
 
-            <div class="row mx-3" style="margin-top: 40px;">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header"><h5 class="m-0">Beasiswa Siswa</h5></div>
-                        <div class="card-body" style="height: 300px;">
-                            <canvas id="chartBeasiswa"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header"><h5 class="m-0">Beasiswa Ptk</h5></div>
-                        <div class="card-body" style="height: 300px;">
-                            <canvas id="chartBeasiswaPtk"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mt-5" style="margin-left: 20px; width: 1480px; ">
-                <div class="card-header">
-                    <h4>Jumlah Siswa per Rayon</h4>
-                </div>
-                <div class="card-body">
-                    <canvas id="chartRayon" height="100"></canvas>
-                </div>
-            </div>
         </div>
 
         <div class="col-12 col-lg-3">
@@ -227,10 +200,104 @@
                 </div>
             </div>
 
-            <div class="card" style="width: 350px; margin-top: 50px; margin-left: -20px;">
-                <div class="card-header"><h4>Jumlah Siswa per Jurusan</h4></div>
-                <div class="card-body d-flex justify-content-center">
-                    <canvas id="chartJurusan" height="250" height="250"></canvas>
+        </div>
+
+        <div class="row mx-3" style="margin-top: 40px; width: 1500px;">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><h5 class="m-0">Beasiswa Siswa</h5></div>
+                    <div class="card-body" style="height: 350px; margin-left: 10px;">
+                        <canvas id="chartBeasiswa"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><h5 class="m-0">Beasiswa Ptk</h5></div>
+                    <div class="card-body" style="height: 350px; margin-left: 10px;">
+                        <canvas id="chartBeasiswaPtk"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 20px; margin-left: 20px; margin-top: 10px;">
+
+            <div class="card mt-5" style="width: 480px;">
+                <div class="card-header">
+                    <h4>Jumlah Siswa per Rayon</h4>
+                </div>
+
+                <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+                    <table class="table table-bordered">
+                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5;">
+                            <tr>
+                                <th style="width: 70%">Nama Rayon</th>
+                                <th style="width: 30%">Jumlah Siswa</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach($namaRayon as $index => $rayon)
+                            <tr>
+                                <td>{{ $rayon }}</td>
+                                <td>{{ $jumlahSiswaRayon[$index] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mt-5" style="width: 480px;">
+                <div class="card-header">
+                    <h4>Jumlah Siswa per Rombel</h4>
+                </div>
+
+                <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+                    <table class="table table-bordered">
+                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5;">
+                            <tr>
+                                <th style="width: 70%">Nama Rombel</th>
+                                <th style="width: 30%">Jumlah Siswa</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach($namaRombel as $index => $rombel)
+                            <tr>
+                                <td>{{ $rombel }}</td>
+                                <td>{{ $jumlahSiswaRombel[$index] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mt-5" style="width: 480px;">
+                <div class="card-header">
+                    <h4>Jumlah Siswa per Jurusan</h4>
+                </div>
+
+                <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+                    <table class="table table-bordered">
+                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5;">
+                            <tr>
+                                <th style="width: 70%">Nama Jurusan</th>
+                                <th style="width: 30%">Jumlah Siswa</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach($dataJurusan as $index => $jurusan)
+                            <tr>
+                                <td>{{ $jurusan }}</td>
+                                <td>{{ $jumlahSiswaJurusan[$index] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -380,61 +447,61 @@
         }
     });
 
-    const jurusanLabels = @json($dataJurusan);
-    const jurusanJumlah = @json($jumlahSiswaJurusan);
+    // const jurusanLabels = @json($dataJurusan);
+    // const jurusanJumlah = @json($jumlahSiswaJurusan);
 
-    new Chart(document.getElementById('chartJurusan'), {
-        type: 'doughnut',
-        data: {
-            labels: jurusanLabels,
-            datasets: [{
-                data: jurusanJumlah,
-                backgroundColor: [
-                    'rgba(75, 192, 75, 0.7)',
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(255, 159, 64, 0.7)',
-                    'rgba(153, 102, 255, 0.7)',
-                    'rgba(255, 205, 86, 0.7)',
-                    'rgba(201, 203, 207, 0.7)',
-                    'rgba(255, 99, 132, 0.7)',
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            cutout: '70%',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+    // new Chart(document.getElementById('chartJurusan'), {
+    //     type: 'doughnut',
+    //     data: {
+    //         labels: jurusanLabels,
+    //         datasets: [{
+    //             data: jurusanJumlah,
+    //             backgroundColor: [
+    //                 'rgba(75, 192, 75, 0.7)',
+    //                 'rgba(54, 162, 235, 0.7)',
+    //                 'rgba(255, 159, 64, 0.7)',
+    //                 'rgba(153, 102, 255, 0.7)',
+    //                 'rgba(255, 205, 86, 0.7)',
+    //                 'rgba(201, 203, 207, 0.7)',
+    //                 'rgba(255, 99, 132, 0.7)',
+    //             ],
+    //             borderWidth: 1
+    //         }]
+    //     },
+    //     options: {
+    //         cutout: '70%',
+    //         responsive: true,
+    //         maintainAspectRatio: false,
+    //         plugins: {
+    //             legend: {
+    //                 position: 'bottom'
+    //             }
+    //         }
+    //     }
+    // });
 
-    new Chart(document.getElementById('chartRayon'), {
-        type: 'bar',
-        data: {
-            labels: @json($namaRayon),
-            datasets: [{
-                label: 'Jumlah Siswa',
-                data: @json($jumlahSiswaRayon),
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: Math.max(...totalBeasiswaPtk) + 50
-                }
-            }
-        }
-    });
+    // new Chart(document.getElementById('chartRayon'), {
+    //     type: 'bar',
+    //     data: {
+    //         labels: @json($namaRayon),
+    //         datasets: [{
+    //             label: 'Jumlah Siswa',
+    //             data: @json($jumlahSiswaRayon),
+    //             backgroundColor: 'rgba(54, 162, 235, 0.6)',
+    //             borderColor: 'rgba(54, 162, 235, 1)',
+    //             borderWidth: 1
+    //         }]
+    //     },
+    //     options: {
+    //         responsive: true,
+    //         scales: {
+    //             y: {
+    //                 beginAtZero: true,
+    //                 suggestedMax: Math.max(...totalBeasiswaPtk) + 50
+    //             }
+    //         }
+    //     }
+    // });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

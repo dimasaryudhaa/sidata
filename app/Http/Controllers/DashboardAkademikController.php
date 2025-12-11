@@ -8,7 +8,7 @@ use App\Models\Rayon;
 use App\Models\BeasiswaSiswa;
 use App\Models\PrestasiSiswa;
 
-class DataAkademikController extends Controller
+class DashboardAkademikController extends Controller
 {
     public function index() {
         $rombel = Rombel::all();
@@ -44,7 +44,7 @@ class DataAkademikController extends Controller
         ->groupBy('jenis_beasiswa')
         ->get();
 
-        return view('data-akademik', [
+        return view('dashboard-akademik', [
             'rombelLabels' => $labels,
             'rombelPrestasi' => $data,
             'prestasiPerRayon' => $prestasiPerRayon,
