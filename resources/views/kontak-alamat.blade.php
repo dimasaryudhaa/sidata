@@ -46,22 +46,9 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('beranda') }}">Beranda</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dashboard
-                        </a>
-
-                        <ul class="dropdown-menu" aria-labelledby="dataDropdown">
-                            <li><a class="dropdown-item" href="{{ route('dashboard-utama') }}">Dashboard Utama</a></li>
-                            <li><a class="dropdown-item" href="{{ route('dashboard-akademik') }}">Dashboard Akademik</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('kontak-alamat') }}">Kontak & Alamat</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('dashboard-utama') }}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('kontak-alamat') }}">Kontak & Alamat</a></li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">

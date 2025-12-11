@@ -62,16 +62,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}">Beranda</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dashboard
-                    </a>
-
-                    <ul class="dropdown-menu" aria-labelledby="dataDropdown">
-                        <li><a class="dropdown-item" href="{{ route('dashboard-utama') }}">Dashboard Utama</a></li>
-                        <li><a class="dropdown-item" href="{{ route('dashboard-akademik') }}">Dashboard Akademik</a></li>
-                    </ul>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('dashboard-utama') }}">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('kontak-alamat') }}">Kontak & Alamat</a></li>
             </ul>
 
@@ -85,8 +76,70 @@
 <div class="page-content" style="margin-top: 100px;">
     <section class="row">
 
+        <div class="d-flex flex-wrap gap-4" style="margin-top: -20px; margin-left: 20px; ">
+
+            <a href="{{ url('dashboard-akademik') }}" class="text-decoration-none">
+                <div class="card shadow-sm"
+                    style="width: 350px; cursor: pointer; transition: 0.2s;">
+                    <div class="card-body d-flex flex-column align-items-center py-4">
+                        <div class="rounded-circle d-flex justify-content-center align-items-center mb-3"
+                            style="width: 70px; height: 70px; background-color: #0d6efd20;">
+                            <i class="bi bi-mortarboard-fill" style="font-size: 2rem; color: #0d6efd;"></i>
+                        </div>
+                        <h5 class="text-dark">Dashboard Akademik</h5>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ url('dashboard-keuangan') }}" class="text-decoration-none">
+                <div class="card shadow-sm"
+                    style="width: 350px; cursor: pointer; transition: 0.2s;">
+                    <div class="card-body d-flex flex-column align-items-center py-4">
+
+                        <div class="rounded-circle d-flex justify-content-center align-items-center mb-3"
+                            style="width: 70px; height: 70px; background-color: #19875420;">
+                            <i class="bi bi-cash-stack" style="font-size: 2rem; color: #198754;"></i>
+                        </div>
+
+                        <h5 class="text-dark">Dashboard Keuangan</h5>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ url('dashboard-kehadiran') }}" class="text-decoration-none">
+                <div class="card shadow-sm"
+                    style="width: 350px; cursor: pointer; transition: 0.2s;">
+                    <div class="card-body d-flex flex-column align-items-center py-4">
+
+                        <div class="rounded-circle d-flex justify-content-center align-items-center mb-3"
+                            style="width: 70px; height: 70px; background-color: #ffc10720;">
+                            <i class="bi bi-clipboard-check-fill" style="font-size: 2rem; color: #ffc107;"></i>
+                        </div>
+
+                        <h5 class="text-dark">Dashboard Kehadiran</h5>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ url('dashboard-sarpras') }}" class="text-decoration-none">
+                <div class="card shadow-sm"
+                    style="width: 350px; cursor: pointer; transition: 0.2s;">
+                    <div class="card-body d-flex flex-column align-items-center py-4">
+
+                        <div class="rounded-circle d-flex justify-content-center align-items-center mb-3"
+                            style="width: 70px; height: 70px; background-color: #28a74520;">
+                            <i class="bi bi-tools" style="font-size: 2rem; color: #28a745;"></i>
+                        </div>
+
+                        <h5 class="text-dark">Dashboard Sarpras</h5>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
         <div class="col-12 col-lg-9">
-            <div class="row px-3">
+            <div class="row px-3" style="margin-top: 20px;">
                 <div class="stat-cards px-3">
                     <div class="card flex-grow-1" style="min-width: 180px;">
                         <div class="card-body d-flex align-items-center px-4 py-4">
@@ -176,7 +229,7 @@
 
         <div class="col-12 col-lg-3">
 
-            <div class="stat-cards px-3 d-flex gap-3" style="margin-left: -40px;">
+            <div class="stat-cards px-3 d-flex gap-3" style="margin-left: -40px; margin-top: 20px;">
                 <div class="card flex-grow-1" style="min-width: 180px;">
                     <div class="card-body d-flex align-items-center px-4 py-4">
                         <div class="me-3" style="font-size: 2.5rem;">
