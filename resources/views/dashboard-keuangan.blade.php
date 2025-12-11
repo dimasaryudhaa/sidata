@@ -32,6 +32,14 @@
             margin: 0;
             font-size: 14px;
         }
+
+        .scroll-body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-body {
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -121,15 +129,291 @@
 
     </div>
 
+    <div class="d-flex flex-wrap gap-4" style="margin-left: 20px; margin-top: 30px;">
+        <div class="card" style="width: 450px; margin-left: 20px; margin-top: 30px;">
+            <div class="card-header">
+                <h4>Realisasi Anggaran</h4>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 300px;">Kegiatan / Program</th>
+                            <th style="width: 180px;">Anggaran (Rp)</th>
+                            <th style="width: 180px;">Realisasi (Rp)</th>
+                            <th style="width: 150px;">Persentase</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 220px; overflow-y: auto;">
+
+                        <tr>
+                            <td style="width: 300px;">Pengadaan ATK</td>
+                            <td style="width: 180px;">10.000.000</td>
+                            <td style="width: 180px;">8.500.000</td>
+                            <td style="width: 150px;">85%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Perawatan Gedung</td>
+                            <td style="width: 180px;">25.000.000</td>
+                            <td style="width: 180px;">20.000.000</td>
+                            <td style="width: 150px;">80%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pelatihan Guru</td>
+                            <td style="width: 180px;">15.000.000</td>
+                            <td style="width: 180px;">13.500.000</td>
+                            <td style="width: 150px;">90%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pemeliharaan Komputer</td>
+                            <td style="width: 180px;">12.000.000</td>
+                            <td style="width: 180px;">9.000.000</td>
+                            <td style="width: 150px;">75%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Kegiatan MPLS</td>
+                            <td style="width: 180px;">8.000.000</td>
+                            <td style="width: 180px;">7.200.000</td>
+                            <td style="width: 150px;">90%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Program Kesiswaan</td>
+                            <td style="width: 180px;">20.000.000</td>
+                            <td style="width: 180px;">18.000.000</td>
+                            <td style="width: 150px;">90%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Perawatan Listrik</td>
+                            <td style="width: 180px;">5.000.000</td>
+                            <td style="width: 180px;">3.500.000</td>
+                            <td style="width: 150px;">70%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Buku Perpustakaan</td>
+                            <td style="width: 180px;">30.000.000</td>
+                            <td style="width: 180px;">25.000.000</td>
+                            <td style="width: 150px;">83%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Ekstrakurikuler</td>
+                            <td style="width: 180px;">18.000.000</td>
+                            <td style="width: 180px;">14.000.000</td>
+                            <td style="width: 150px;">78%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pengembangan Sistem IT</td>
+                            <td style="width: 180px;">40.000.000</td>
+                            <td style="width: 180px;">35.000.000</td>
+                            <td style="width: 150px;">88%</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="width: 450px; margin-left: 20px; margin-top: 30px;">
+            <div class="card-header">
+                <h4>Serapan Dana BOS</h4>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 300px;">Kegiatan / Program</th>
+                            <th style="width: 180px;">Anggaran (Rp)</th>
+                            <th style="width: 180px;">Realisasi (Rp)</th>
+                            <th style="width: 150px;">Serapan</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 220px; overflow-y: auto;">
+
+                        <tr>
+                            <td style="width: 300px;">Administrasi Sekolah</td>
+                            <td style="width: 180px;">12.000.000</td>
+                            <td style="width: 180px;">10.000.000</td>
+                            <td style="width: 150px;">83%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Kegiatan Pembelajaran</td>
+                            <td style="width: 180px;">20.000.000</td>
+                            <td style="width: 180px;">17.000.000</td>
+                            <td style="width: 150px;">85%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pengembangan Perpustakaan</td>
+                            <td style="width: 180px;">18.000.000</td>
+                            <td style="width: 180px;">14.000.000</td>
+                            <td style="width: 150px;">78%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Kegiatan Ekstrakurikuler</td>
+                            <td style="width: 180px;">10.000.000</td>
+                            <td style="width: 180px;">8.000.000</td>
+                            <td style="width: 150px;">80%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pembelian Alat Penunjang</td>
+                            <td style="width: 180px;">25.000.000</td>
+                            <td style="width: 180px;">20.000.000</td>
+                            <td style="width: 150px;">80%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pengelolaan Sarpras</td>
+                            <td style="width: 180px;">15.000.000</td>
+                            <td style="width: 180px;">12.500.000</td>
+                            <td style="width: 150px;">83%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Kegiatan Evaluasi & Assessment</td>
+                            <td style="width: 180px;">8.000.000</td>
+                            <td style="width: 180px;">7.000.000</td>
+                            <td style="width: 150px;">87%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pelatihan Guru</td>
+                            <td style="width: 180px;">14.000.000</td>
+                            <td style="width: 180px;">11.000.000</td>
+                            <td style="width: 150px;">78%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pengadaan Media Pembelajaran</td>
+                            <td style="width: 180px;">22.000.000</td>
+                            <td style="width: 180px;">18.000.000</td>
+                            <td style="width: 150px;">82%</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Operasional Sekolah</td>
+                            <td style="width: 180px;">30.000.000</td>
+                            <td style="width: 180px;">25.000.000</td>
+                            <td style="width: 150px;">83%</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="width: 450px; margin-left: 20px; margin-top: 30px;">
+            <div class="card-header">
+                <h4>Pengeluaran per Program</h4>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 300px;">Kegiatan / Program</th>
+                            <th style="width: 200px;">Kategori</th>
+                            <th style="width: 200px;">Pengeluaran (Rp)</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 220px; overflow-y: auto;">
+
+                        <tr>
+                            <td style="width: 300px;">Administrasi Sekolah</td>
+                            <td style="width: 200px;">Operasional</td>
+                            <td style="width: 200px;">7.500.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pengembangan Perpustakaan</td>
+                            <td style="width: 200px;">Sarana Prasarana</td>
+                            <td style="width: 200px;">12.000.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Ekstrakurikuler</td>
+                            <td style="width: 200px;">Kegiatan Siswa</td>
+                            <td style="width: 200px;">6.000.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pelatihan Guru</td>
+                            <td style="width: 200px;">SDM</td>
+                            <td style="width: 200px;">9.000.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pembelian Media Pembelajaran</td>
+                            <td style="width: 200px;">Pembelajaran</td>
+                            <td style="width: 200px;">15.000.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pemeliharaan Komputer</td>
+                            <td style="width: 200px;">IT & Teknologi</td>
+                            <td style="width: 200px;">8.000.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Operasional Kebersihan</td>
+                            <td style="width: 200px;">Operasional</td>
+                            <td style="width: 200px;">4.500.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pengadaan ATK</td>
+                            <td style="width: 200px;">Operasional</td>
+                            <td style="width: 200px;">5.000.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Sosialisasi & Publikasi Sekolah</td>
+                            <td style="width: 200px;">Humas</td>
+                            <td style="width: 200px;">3.500.000</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 300px;">Pemeliharaan Gedung</td>
+                            <td style="width: 200px;">Sarana Prasarana</td>
+                            <td style="width: 200px;">11.000.000</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
-{{-- <footer class="footer text-center">
+<footer class="footer text-center">
     <div class="container">
         <p>&copy; 2025 SiData — Sistem Informasi Data SMK Wikrama Bogor</p>
     </div>
-</footer> --}}
+</footer>
 
 </html>

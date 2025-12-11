@@ -32,6 +32,14 @@
             margin: 0;
             font-size: 14px;
         }
+
+        .scroll-body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-body {
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -121,15 +129,168 @@
 
     </div>
 
+    <div style="display: flex; gap: 20px; align-items: flex-start; margin-top: 30px;">
+        <div class="card" style="width: 720px; margin-left: 20px; margin-top: 30px;">
+            <div class="card-header">
+                <h4>Inventaris per Ruang</h4>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin-left: 20px; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 250px;">Nama Ruang</th>
+                            <th style="width: 250px;">Nama Barang</th>
+                            <th style="width: 150px;">Jumlah</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 220px; overflow-y: auto;">
+
+                        <tr>
+                            <td style="width: 250px;">Ruang Kelas X RPL 1</td>
+                            <td style="width: 250px;">Kursi Siswa</td>
+                            <td style="width: 150px;">36</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Ruang Kelas X RPL 1</td>
+                            <td style="width: 250px;">Meja Siswa</td>
+                            <td style="width: 150px;">36</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Laboratorium Komputer</td>
+                            <td style="width: 250px;">PC Komputer</td>
+                            <td style="width: 150px;">25</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Laboratorium Komputer</td>
+                            <td style="width: 250px;">Proyektor</td>
+                            <td style="width: 150px;">1</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Ruang Perpustakaan</td>
+                            <td style="width: 250px;">Rak Buku</td>
+                            <td style="width: 150px;">12</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Ruang Perpustakaan</td>
+                            <td style="width: 250px;">Meja Baca</td>
+                            <td style="width: 150px;">20</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Aula</td>
+                            <td style="width: 250px;">Kursi Lipat</td>
+                            <td style="width: 150px;">100</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Aula</td>
+                            <td style="width: 250px;">Sound System</td>
+                            <td style="width: 150px;">2</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Ruang Kesiswaan</td>
+                            <td style="width: 250px;">Lemari Arsip</td>
+                            <td style="width: 150px;">3</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Ruang Guru</td>
+                            <td style="width: 250px;">Meja Guru</td>
+                            <td style="width: 150px;">20</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="width: 720px; margin-left: 20px; margin-top: 30px;">
+            <div class="card-header">
+                <h4>Kondisi Barang</h4>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin-left: 20px; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 250px;">Nama Barang</th>
+                            <th style="width: 250px;">Kondisi</th>
+                            <th style="width: 150px;">Jumlah</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 220px; overflow-y: auto;">
+
+                        <tr>
+                            <td style="width: 250px;">Kursi Lipat</td>
+                            <td style="width: 250px;">Baik</td>
+                            <td style="width: 150px;">35</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Meja Belajar</td>
+                            <td style="width: 250px;">Layak</td>
+                            <td style="width: 150px;">20</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Proyektor</td>
+                            <td style="width: 250px;">Rusak Ringan</td>
+                            <td style="width: 150px;">3</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Papan Tulis</td>
+                            <td style="width: 250px;">Baik</td>
+                            <td style="width: 150px;">12</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Kipas Angin</td>
+                            <td style="width: 250px;">Rusak</td>
+                            <td style="width: 150px;">5</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Komputer</td>
+                            <td style="width: 250px;">Baik</td>
+                            <td style="width: 150px;">10</td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 250px;">Speaker</td>
+                            <td style="width: 250px;">Rusak Ringan</td>
+                            <td style="width: 150px;">4</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
-{{-- <footer class="footer text-center">
+<footer class="footer text-center">
     <div class="container">
         <p>&copy; 2025 SiData — Sistem Informasi Data SMK Wikrama Bogor</p>
     </div>
-</footer> --}}
+</footer>
 
 </html>
