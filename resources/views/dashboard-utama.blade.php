@@ -44,7 +44,6 @@
             display: none;
         }
 
-        /* Hilangkan scrollbar Firefox */
         .scroll-body {
             scrollbar-width: none;
         }
@@ -264,26 +263,27 @@
                 </div>
             </div>
 
-
             <div class="card mt-5" style="width: 480px;">
                 <div class="card-header">
                     <h4>Jumlah Siswa per Rombel</h4>
                 </div>
 
-                <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
-                    <table class="table table-bordered">
-                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5;">
+                <div class="card-body" style="padding: 16px;">
+                    <table class="table table-bordered" style="margin: 0; width: 100%;">
+                        <thead class="table-primary"
+                            style="display: block; position: sticky; top: 0; z-index: 10;">
                             <tr>
-                                <th style="width: 70%">Nama Rombel</th>
-                                <th style="width: 30%">Jumlah Siswa</th>
+                                <th style="width: 300px;">Nama Rombel</th>
+                                <th style="width: 150px;">Jumlah Siswa</th>
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody class="scroll-body"
+                            style="display: block; max-height: 220px; overflow-y: auto;">
                             @foreach($namaRombel as $index => $rombel)
                             <tr>
-                                <td>{{ $rombel }}</td>
-                                <td>{{ $jumlahSiswaRombel[$index] }}</td>
+                                <td style="width: 300px;">{{ $rombel }}</td>
+                                <td style="width: 150px;">{{ $jumlahSiswaRombel[$index] }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -296,20 +296,22 @@
                     <h4>Jumlah Siswa per Jurusan</h4>
                 </div>
 
-                <div class="card-body" style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
-                    <table class="table table-bordered">
-                        <thead class="table-primary" style="position: sticky; top: 0; z-index: 5;">
+                <div class="card-body" style="padding: 16px;">
+                    <table class="table table-bordered" style="margin: 0; width: 100%;">
+                        <thead class="table-primary"
+                            style="display: block; position: sticky; top: 0; z-index: 10;">
                             <tr>
-                                <th style="width: 70%">Nama Jurusan</th>
-                                <th style="width: 30%">Jumlah Siswa</th>
+                                <th style="width: 300px;">Nama Jurusan</th>
+                                <th style="width: 150px;">Jumlah Siswa</th>
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody class="scroll-body"
+                            style="display: block; max-height: 220px; overflow-y: auto;">
                             @foreach($dataJurusan as $index => $jurusan)
                             <tr>
-                                <td>{{ $jurusan }}</td>
-                                <td>{{ $jumlahSiswaJurusan[$index] }}</td>
+                                <td style="width: 300px;">{{ $jurusan }}</td>
+                                <td style="width: 150px;">{{ $jumlahSiswaJurusan[$index] }}</td>
                             </tr>
                             @endforeach
                         </tbody>
