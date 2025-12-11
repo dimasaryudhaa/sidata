@@ -47,7 +47,6 @@
         /* Hilangkan scrollbar Firefox */
         .scroll-body {
             scrollbar-width: none;
-            -ms-overflow-style: none;
         }
     </style>
 </head>
@@ -238,8 +237,8 @@
                     <h4>Jumlah Siswa per Rayon</h4>
                 </div>
 
-                <div class="card-body" style="padding: 0;">
-                    <table class="table table-bordered" style="margin: 0;">
+                <div class="card-body" style="padding: 16px;">
+                    <table class="table table-bordered" style="margin: 0; width: 100%;">
                         <thead class="table-primary"
                             style="display: block; position: sticky; top: 0; z-index: 10;">
                             <tr>
@@ -249,7 +248,11 @@
                         </thead>
 
                         <tbody class="scroll-body"
-                            style="display: block; max-height: 220px; overflow-y: auto;">
+                            style="
+                                display: block;
+                                max-height: 220px;
+                                overflow-y: auto;
+                            ">
                             @foreach($namaRayon as $index => $rayon)
                             <tr>
                                 <td style="width: 300px;">{{ $rayon }}</td>
@@ -260,6 +263,7 @@
                     </table>
                 </div>
             </div>
+
 
             <div class="card mt-5" style="width: 480px;">
                 <div class="card-header">
