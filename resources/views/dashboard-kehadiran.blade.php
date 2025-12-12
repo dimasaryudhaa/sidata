@@ -129,8 +129,8 @@
 
     </div>
 
-    <div class="d-flex gap-4" style="margin-left: 25px; margin-top: 60px;">
-        <div class="card" style="width: 680px; margin-left: 30px;">
+    <div style="display: flex; gap: 20px; align-items: flex-start; margin-top: 30px;">
+        <div class="card" style="width: 720px; margin-left: 20px; margin-top: 30px;">
             <div class="card-header">
                 <h4>Absen Harian Rombel per Bulan</h4>
             </div>
@@ -162,7 +162,7 @@
             </div>
         </div>
 
-        <div class="card" style="width: 680px; margin-left: 20px;">
+        <div class="card" style="width: 720px; margin-left: 20px; margin-top: 30px;">
             <div class="card-header">
                 <h4>Kehadiran Guru per Bulan</h4>
             </div>

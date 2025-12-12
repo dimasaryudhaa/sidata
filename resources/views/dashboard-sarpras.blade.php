@@ -136,11 +136,11 @@
             </div>
 
             <div class="card-body">
-                <table class="table table-bordered" style="margin-left: 20px; width: 100%;">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
                     <thead class="table-primary"
                         style="display: block; position: sticky; top: 0; z-index: 10;">
                         <tr>
-                            <th style="width: 250px;">Nama Ruang</th>
+                            <th style="width: 400px;">Nama Ruang</th>
                             <th style="width: 250px;">Nama Barang</th>
                             <th style="width: 150px;">Jumlah</th>
                         </tr>
@@ -150,7 +150,7 @@
                         style="display: block; max-height: 220px; overflow-y: auto;">
 
                         <tr>
-                            <td style="width: 250px;">Ruang Kelas X RPL 1</td>
+                            <td style="width: 400px;">Ruang Kelas X RPL 1</td>
                             <td style="width: 250px;">Kursi Siswa</td>
                             <td style="width: 150px;">36</td>
                         </tr>
@@ -220,11 +220,11 @@
             </div>
 
             <div class="card-body">
-                <table class="table table-bordered" style="margin-left: 20px; width: 100%;">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
                     <thead class="table-primary"
                         style="display: block; position: sticky; top: 0; z-index: 10;">
                         <tr>
-                            <th style="width: 250px;">Nama Barang</th>
+                            <th style="width: 400px;">Nama Barang</th>
                             <th style="width: 250px;">Kondisi</th>
                             <th style="width: 150px;">Jumlah</th>
                         </tr>
@@ -234,7 +234,7 @@
                         style="display: block; max-height: 220px; overflow-y: auto;">
 
                         <tr>
-                            <td style="width: 250px;">Kursi Lipat</td>
+                            <td style="width: 400px;">Kursi Lipat</td>
                             <td style="width: 250px;">Baik</td>
                             <td style="width: 150px;">35</td>
                         </tr>
