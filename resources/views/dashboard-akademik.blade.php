@@ -290,7 +290,7 @@
             </div>
         </div>
 
-        <div class="card" style="width: 720px; margin-left: 30px;">
+        <div class="card" style="width: 700px; margin-left: 30px;">
             <div class="card-header">
                 <h5 class="m-0">Masalah Siswa per Rombel</h5>
             </div>
