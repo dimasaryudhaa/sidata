@@ -184,7 +184,7 @@
 
     <div class="d-flex gap-4 mt-4">
 
-        <div class="card" style="width: 480px; margin-left: 30px; ">
+        <div class="card" style="width: 700px; margin-left: 30px; ">
             <div class="card-header">
                 <h4>Rata-Rata Nilai per Rayon per Bulan</h4>
             </div>
@@ -194,20 +194,20 @@
                     <thead class="table-primary"
                         style="display: block; position: sticky; top: 0; z-index: 10;">
                         <tr>
-                            <th style="width: 200px;">Nama Rombel</th>
-                            <th style="width: 120px;">Bulan</th>
-                            <th style="width: 150px;">Rata-Rata Nilai</th>
+                            <th style="width: 400px;">Nama Rombel</th>
+                            <th style="width: 320px;">Bulan</th>
+                            <th style="width: 350px;">Rata-Rata Nilai</th>
                         </tr>
                     </thead>
 
                     <tbody class="scroll-body"
-                        style="display: block; max-height: 220px; overflow-y: auto;">
+                        style="display: block; max-height: 250px; overflow-y: auto;">
 
                         @foreach($dataRataRata as $item)
                         <tr>
-                            <td style="width: 200px;">{{ $item->rombel }}</td>
-                            <td style="width: 120px;">{{ $item->bulan }}</td>
-                            <td style="width: 150px;"></td>
+                            <td style="width: 400px;">{{ $item->rombel }}</td>
+                            <td style="width: 320px;">{{ $item->bulan }}</td>
+                            <td style="width: 350px;"></td>
                         </tr>
                         @endforeach
 
@@ -216,35 +216,110 @@
             </div>
         </div>
 
-        <div class="card" style="width: 950px;">
+        <div class="card" style="width: 700px; margin-left: 30px;">
             <div class="card-header">
-                <h5 class="m-0">Ketuntasan Belajar per 9 Minggu</h5>
+                <h4>Ketuntasan Belajar per 9 Minggu</h4>
             </div>
-            <div class="card-body" style="height: 300px; width: 900px;">
-                <canvas id="chartKetuntasan"></canvas>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 250px;">Jurusan</th>
+                            <th style="width: 80px;">Tingkat</th>
+                            <th style="width: 90px;">Minggu</th>
+                            <th style="width: 150px;">Nilai</th>
+                            <th style="width: 150px;">Ketuntasan</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 250px; overflow-y: auto;">
+
+                        @foreach($dataGrafik as $item)
+                        <tr>
+                            <td style="width: 250px;">{{ $item->jurusan }}</td>
+                            <td style="width: 80px;">{{ $item->tingkat }}</td>
+                            <td style="width: 90px;">M{{ $item->minggu }}</td>
+                            <td style="width: 150px;">{{ $item->nilai ?? '-' }}</td>
+                            <td style="width: 150px;">{{ $item->ketuntasan ?? '-' }}</td>
+                        </tr>
+                        @endforeach
+
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </div>
 
-    <div class="d-flex gap-4 mt-4" style="margin-left: 25px;">
-        <div class="card" style="width: 720px;">
+    <div class="d-flex gap-4 mt-4">
+        <div class="card" style="width: 700px; margin-left: 30px;">
             <div class="card-header">
                 <h5 class="m-0">Nilai Semester per Rombel</h5>
             </div>
-            <div class="card-body" style="height: 300px; width: 700px;">
-                <canvas id="chartNilaiSemester"></canvas>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 400px;">Rombel</th>
+
+                            @foreach ($chartLabels as $label)
+                                <th style="width: 320px;">{{ $label }}</th>
+                            @endforeach
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 250px; overflow-y: auto;">
+
+                        @foreach ($datasets as $ds)
+                            <tr>
+                                <td style="width: 400px;">{{ $ds['label'] }}</td>
+
+                                @foreach ($ds['data'] as $nilai)
+                                    <td style="width: 320px;">{{ $nilai ?? '-' }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="card" style="width: 720px;">
+        <div class="card" style="width: 720px; margin-left: 30px;">
             <div class="card-header">
                 <h5 class="m-0">Masalah Siswa per Rombel</h5>
             </div>
-            <div class="card-body" style="height: 300px; width: 700px;">
-                <canvas id="chartMasalah"></canvas>
+
+            <div class="card-body">
+                <table class="table table-bordered" style="margin: 0; width: 100%;">
+                    <thead class="table-primary"
+                        style="display: block; position: sticky; top: 0; z-index: 10;">
+                        <tr>
+                            <th style="width: 400px;">Rombel</th>
+                            <th style="width: 300px;">Jumlah Masalah</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="scroll-body"
+                        style="display: block; max-height: 250px; overflow-y: auto;">
+
+                        @foreach ($labelsMasalah as $i => $rombel)
+                        <tr>
+                            <td style="width: 400px;">{{ $rombel }}</td>
+                            <td style="width: 300px;">{{ $dataMasalah[$i] ?? 0 }}</td>
+                        </tr>
+                        @endforeach
+
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </div>
 
 </body>
@@ -379,79 +454,6 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-        }
-    });
-
-    const dataGrafik = @json($dataGrafik);
-    const labelKetuntasan = dataGrafik.map(item =>
-        `${item.jurusan}-${item.tingkat}-M${item.minggu}`
-    );
-    const nilaiKetuntasan = dataGrafik.map(item => item.nilai ?? 0);
-
-    new Chart(document.getElementById('chartKetuntasan'), {
-        type: 'bar',
-        data: {
-            labels: labelKetuntasan,
-            datasets: [{
-                label: 'Nilai Ketuntasan',
-                data: nilaiKetuntasan,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: Math.max(...nilaiKetuntasan) + 10
-                }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: (context) => `Nilai: ${context.raw}`
-                    }
-                }
-            }
-        }
-    });
-
-    const labels = @json($chartLabels);
-    const datasetsRaw = @json($datasets);
-
-    const generateColor = () => {
-        const r = Math.floor(Math.random() * 255);
-        const g = Math.floor(Math.random() * 255);
-        const b = Math.floor(Math.random() * 255);
-        return `rgba(${r}, ${g}, ${b}, 0.6)`;
-    };
-
-    const datasets = datasetsRaw.map(ds => ({
-        label: ds.label,
-        data: ds.data,
-        backgroundColor: generateColor(),
-        borderWidth: 1
-    }));
-
-    new Chart(document.getElementById('chartNilaiSemester'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: datasets,
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        stepSize: 10
-                    }
-                }
-            }
         }
     });
 
