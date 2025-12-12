@@ -149,6 +149,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tunjangan', TunjanganController::class);
 
         //akademik
+        Route::get('/rayon/search', [RayonController::class, 'search'])->name('rayon.search');
         Route::resource('rayon', RayonController::class);
         Route::resource('jurusan', JurusanController::class);
         Route::resource('rombel', RombelController::class);

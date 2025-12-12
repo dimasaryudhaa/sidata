@@ -21,6 +21,17 @@ class RayonController extends Controller
         return view('rayon.index', compact('rayon'));
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->q;
+
+        $rayon = Rayon::with('ptk')
+            ->where('nama_rayon', 'like', "%$query%")
+            ->get();
+
+        return response()->json($rayon);
+    }
+
     public function create()
     {
         $ptks = Ptk::orderBy('nama_lengkap', 'asc')->get();

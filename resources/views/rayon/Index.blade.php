@@ -114,14 +114,46 @@
 </div>
 
 <script>
-document.getElementById('search').addEventListener('keyup', function() {
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll('#rayonTable tbody tr');
+const searchInput = document.getElementById('search');
+const tbody = document.querySelector('#rayonTable tbody');
 
-    rows.forEach(row => {
-        let nama = row.querySelector('.nama_rayon').textContent.toLowerCase();
-        row.style.display = nama.includes(filter) ? '' : 'none';
-    });
+searchInput.addEventListener('keyup', function() {
+    let query = this.value;
+
+    if (query.length === 0) {
+        location.reload();
+        return;
+    }
+
+    fetch(`/admin/rayon/search?q=` + query)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.nama_rayon ?? '-'}</td>
+                        <td>${item.ptk?.nama_lengkap ?? '-'}</td>
+                        <td>
+                            <a href="/admin/rayon/${item.id}/edit" class="btn btn-sm btn-no-border">
+                                <img src="/images/edit.png" style="width:20px;">
+                            </a>
+
+                            <form action="/admin/rayon/${item.id}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-no-border"
+                                    onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    <img src="/images/delete.png" style="width:20px;">
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
 });
 </script>
 
