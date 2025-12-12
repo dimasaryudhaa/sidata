@@ -334,15 +334,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    const rombelLabels = @json($rombelLabels);
+    const rombelPrestasi = @json($rombelPrestasi);
+
     const ctxRombel = document.getElementById('chartPrestasiRombel');
 
     new Chart(ctxRombel, {
         type: 'bar',
         data: {
-            labels: @json($rombelLabels),
+            labels: rombelLabels,
             datasets: [{
                 label: 'Jumlah Prestasi',
-                data: @json($rombelPrestasi),
+                data: rombelPrestasi,
                 backgroundColor: 'rgba(54, 162, 235, 0.7)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
@@ -353,7 +356,7 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { stepSize: 1 }
+                    suggestedMax: Math.max(...rombelPrestasi) + 50,
                 }
             }
         }
@@ -381,11 +384,12 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { stepSize: 1 }
+                    suggestedMax: Math.max(...rayonData) + 50,
                 }
             }
         }
     });
+
 
     const ctxJenis = document.getElementById('chartJenisPrestasi').getContext('2d');
 
@@ -456,36 +460,6 @@
             maintainAspectRatio: false,
         }
     });
-
-    const labelsMasalah = @json($labelsMasalah);
-    const dataMasalah = @json($dataMasalah);
-
-    new Chart(document.getElementById('chartMasalah'), {
-        type: 'bar',
-        data: {
-            labels: labelsMasalah,
-            datasets: [{
-                label: 'Jumlah Peserta Didik Bermasalah',
-                data: dataMasalah,
-                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 50,
-                    ticks: {
-                        stepSize: 5
-                    }
-                }
-            }
-        }
-    });
-
 
 </script>
 
