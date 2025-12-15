@@ -4,12 +4,16 @@
 
 <style>
     ::-webkit-scrollbar {
-        width: 0px;
-        height: 0px;
+        display: none;
     }
 
-    html {
+    {
         scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html, body {
+        overflow: hidden;
     }
 
     .table thead th {
