@@ -3,6 +3,15 @@
 @section('content')
 
 <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+
+    html {
+        scrollbar-width: none;
+    }
+
     .table thead th {
         background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
         color: white !important;

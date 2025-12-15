@@ -3,9 +3,27 @@
 @section('content')
 
 <style>
-    .table { border: 1px solid #dee2e6; width: 100%; }
-    .table th, .table td { padding: 8px 12px; }
-    .table th { font-weight: 600; width: 35%; }
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+
+    html {
+        scrollbar-width: none;
+    }
+
+    .table {
+        border: 1px solid #dee2e6;
+        width: 100%;
+    }
+    
+    .table th, .table td {
+        padding: 8px 12px;
+    }
+
+    .table th { font-weight: 600;
+     width: 35%;
+     }
 </style>
 
 <div class="container">

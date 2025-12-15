@@ -71,7 +71,7 @@
 <div class="container" style="margin-top: 120px;">
     @if(session('success'))
         <div id="successAlert"
-            class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded shadow-lg border"
+            class="position-fixed top-50 start-50 translate-middle bg-white text-center p-4 rounded-4 shadow-lg border"
             style="z-index:1050; min-width:320px;">
             <div class="d-flex justify-content-center mb-3">
                 <div class="d-flex justify-content-center align-items-center"
@@ -95,62 +95,68 @@
         </script>
     @endif
 
-    <div class="row g-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="row g-0">
 
-                <div class="w-100">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0139230514087!2d106.84130407499401!3d-6.645191993349406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c89505b4c37d%3A0x307fc4a38e65fa2b!2sSMK%20Wikrama%20Bogor!5e0!3m2!1sid!2sid!4v1765171894003!5m2!1sid!2sid"
-                 width="600" height="370" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                    <div class="col-lg-5">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0139230514087!2d106.84130407499401!3d-6.645191993349406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c89505b4c37d%3A0x307fc4a38e65fa2b!2sSMK%20Wikrama%20Bogor!5e0!3m2!1sid!2sid!4v1765171894003!5m2!1sid!2sid"
+                            style="border:0; width:100%; height:100%; min-height:450px; filter:grayscale(10%);"
+                            allowfullscreen loading="lazy">
+                        </iframe>
+                    </div>
+
+                    <div class="col-lg-7 p-4 p-lg-5">
+
+                        <form action="{{ route('kirim.pesan') }}" method="POST">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label class="form-label">Nama</label>
+                                <input type="text" class="form-control form-control-lg rounded-3"
+                                    name="name">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control form-control-lg rounded-3"
+                                    name="email">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Pesan</label>
+                                <textarea class="form-control form-control-lg rounded-3" rows="4" name="message"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-start align-items-center">
+                                <button type="submit" class="btn btn-primary px-5 py-2 rounded-3">
+                                    Kirim Pesan
+                                </button>
+                            </div>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex gap-3">
+                            <a href="https://www.instagram.com/smkwikrama/" class="text-decoration-none fs-5 text-primary">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="https://www.tiktok.com/@smkwikrama" class="text-decoration-none fs-5 text-primary">
+                                <i class="bi bi-tiktok"></i>
+                            </a>
+                            <a href="https://www.youtube.com/@multimediawikrama7482" class="text-decoration-none fs-5 text-primary">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="p-4 text-white" style="background:#060b4a;">
-                    <h4 class="mb-2">Lokasi Kami</h4>
-                    <div class="mt-3">
-                        <a href="https://www.instagram.com/smkwikrama/" class="text-white me-3 fs-5"><i class="bi bi-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@smkwikrama" class="text-white me-3 fs-5"><i class="bi bi-tiktok"></i></a>
-                        <a href="https://www.youtube.com/@multimediawikrama7482" class="text-white fs-5"><i class="bi bi-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-lg-7">
-            <div class="card shadow-sm p-4" style="height: 430px;">
-                <h3 class="mb-4 fw-bold">Kirim Pesan</h3>
-
-                <form action="{{ route('kirim.pesan') }}" method="POST">
-                    @csrf
-                    <div class="row g-3">
-
-                        <div class="col-md-12">
-                            <input type="text" class="form-control" name="name" placeholder="Nama Anda" id="name">
-                            <small class="text-danger d-none" id="error-name">Nama wajib diisi.</small>
-                        </div>
-
-                        <div class="col-md-12">
-                            <input type="email" class="form-control" name="email" placeholder="Email" id="email">
-                            <small class="text-danger d-none" id="error-email">Email wajib diisi.</small>
-                        </div>
-
-                        <div class="col-12">
-                            <textarea class="form-control" rows="5" name="message" id="message"
-                                placeholder="Pesan Anda"></textarea>
-                            <small class="text-danger d-none" id="error-message">Pesan wajib diisi.</small>
-                        </div>
-
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-primary px-4">Kirim</button>
-                        </div>
-
-                    </div>
-                </form>
             </div>
         </div>
-
     </div>
 </div>
 

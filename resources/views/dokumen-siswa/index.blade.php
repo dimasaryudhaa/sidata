@@ -23,38 +23,47 @@
 @endphp
 
 <style>
-.table thead th {
-    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-    color: white !important;
-    border: none !important;
-    vertical-align: middle !important;
-    font-weight: 600;
-}
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
 
-.btn-no-border {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    padding: 0;
-    cursor: pointer;
-}
+    html {
+        scrollbar-width: none;
+    }
 
-.btn-no-border.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-}
+    .table thead th {
+        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+        color: white !important;
+        border: none !important;
+        vertical-align: middle !important;
+        font-weight: 600;
+    }
 
-.modal-lg {
-    max-width: 800px;
-}
+    .btn-no-border {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0;
+        cursor: pointer;
+    }
 
-.modal-body img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
+    .btn-no-border.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .modal-lg {
+        max-width: 800px;
+    }
+
+    .modal-body img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
 </style>
 
 

@@ -2,6 +2,15 @@
 
 @section('content')
 <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+
+    html {
+        scrollbar-width: none;
+    }
+
     .table {
         border: 1px solid #dee2e6;
         width: 100%;

@@ -12,26 +12,35 @@
 @endphp
 
 <style>
-.table thead th {
-    background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
-    color: white !important;
-    border: none !important;
-    vertical-align: middle !important;
-    font-weight: 600;
-}
-.btn-no-border {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    padding: 0;
-}
-.btn-no-border:focus,
-.btn-no-border:active,
-.btn-no-border:hover {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-}
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+
+    html {
+        scrollbar-width: none;
+    }
+
+    .table thead th {
+        background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
+        color: white !important;
+        border: none !important;
+        vertical-align: middle !important;
+        font-weight: 600;
+    }
+    .btn-no-border {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0;
+    }
+    .btn-no-border:focus,
+    .btn-no-border:active,
+    .btn-no-border:hover {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
 </style>
 
 <div class="container">
