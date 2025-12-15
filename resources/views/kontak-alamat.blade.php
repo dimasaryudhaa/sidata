@@ -97,7 +97,7 @@
 
     <div class="row justify-content-center">
         <div class="col-lg-11">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card border-1 shadow-lg rounded-4 overflow-hidden">
 
                 <div class="row g-0">
 
