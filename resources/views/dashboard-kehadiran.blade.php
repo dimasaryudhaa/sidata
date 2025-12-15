@@ -8,6 +8,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        html {
+            scrollbar-width: none;
+        }
+
         .navbar-custom {
             background-color: #ffffff;
             position: fixed;

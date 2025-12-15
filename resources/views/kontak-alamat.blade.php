@@ -8,6 +8,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        html {
+            scrollbar-width: none;
+        }
+
         .navbar-custom {
             background-color: #ffffff;
             position: fixed;
@@ -93,7 +102,7 @@
 
                 <div class="w-100">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0139230514087!2d106.84130407499401!3d-6.645191993349406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c89505b4c37d%3A0x307fc4a38e65fa2b!2sSMK%20Wikrama%20Bogor!5e0!3m2!1sid!2sid!4v1765171894003!5m2!1sid!2sid"
-                 width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                 width="600" height="370" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
                 </div>
 
@@ -110,19 +119,19 @@
         </div>
 
         <div class="col-lg-7">
-            <div class="card shadow-sm p-4">
+            <div class="card shadow-sm p-4" style="height: 430px;">
                 <h3 class="mb-4 fw-bold">Kirim Pesan</h3>
 
                 <form action="{{ route('kirim.pesan') }}" method="POST">
                     @csrf
                     <div class="row g-3">
 
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <input type="text" class="form-control" name="name" placeholder="Nama Anda" id="name">
                             <small class="text-danger d-none" id="error-name">Nama wajib diisi.</small>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <input type="email" class="form-control" name="email" placeholder="Email" id="email">
                             <small class="text-danger d-none" id="error-email">Email wajib diisi.</small>
                         </div>
