@@ -43,7 +43,7 @@
             <a href="{{ route('admin.jurusan.index') }}" class="btn btn-primary">Jurusan</a>
             <a href="{{ route('admin.rayon.index') }}" class="btn btn-primary">Rayon</a>
             <a href="{{ route('admin.rombel.index') }}" class="btn btn-primary">Rombel</a>
-            <a href="{{ route('admin.semester.index') }}" class="btn btn-primary">Semeseter</a>
+            <a href="{{ route('admin.semester.index') }}" class="btn btn-primary">Semester</a>
         </div>
     @endif
 
