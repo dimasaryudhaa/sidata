@@ -80,7 +80,7 @@ class PtkController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'jenis_ptk' => 'required|in:Guru,Staf,Laboran',
+            // 'jenis_ptk' => 'required|in:Guru,Staf,Laboran',
             // 'nik' => 'required|string|size:16|unique:ptk,nik',
             // 'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             // 'tempat_lahir' => 'required|string|max:100',
