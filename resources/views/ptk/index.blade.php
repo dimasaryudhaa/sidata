@@ -3,20 +3,6 @@
 @section('content')
 
 <style>
-    *::-webkit-scrollbar {
-        display: none;
-    }
-
-    * {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .table-responsive {
-        overflow-x: hidden !important;
-    }
-
-
     .table thead th {
         background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8) !important;
         color: white !important;
