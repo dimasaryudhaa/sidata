@@ -230,6 +230,7 @@ searchInput.addEventListener('keyup', function() {
                     <tr>
                         <td>${index + 1}</td>
                         <td>${item.nama_lengkap ?? '-'}</td>
+                        <td>${item.jenis_ptk ?? '-'}</td>
                         <td>${item.jenis_kelamin ?? '-'}</td>
                         <td>${item.nik ?? '-'}</td>
                         <td>${item.tempat_lahir ?? '-'}</td>
