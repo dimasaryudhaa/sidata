@@ -23,7 +23,7 @@
 
                 <div class="mb-3">
                     <label>Jenis PTK</label>
-                    <select name="jenis_ptk" class="form-control">
+                    <select name="jenis_ptk" class="form-control" required>
                         <option value="">Pilih Jenis PTK</option>
                         <option value="Guru" {{ $ptk->jenis_ptk=='Guru' ? 'selected' : '' }}>Guru</option>
                         <option value="Staf" {{ $ptk->jenis_ptk=='Staf' ? 'selected' : '' }}>Staf</option>
