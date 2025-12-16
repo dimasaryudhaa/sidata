@@ -18,7 +18,7 @@
 
                 <div class="mb-3">
                     <label>Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" class="form-control" value="{{ $ptk->nama_lengkap }}" required>
+                    <input type="text" name="nama_lengkap" class="form-control" value="{{ $ptk->nama_lengkap }}" readonly>
                 </div>
 
                 <div class="mb-3">
