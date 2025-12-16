@@ -32,7 +32,7 @@
                     <label>Nama Lengkap</label>
                     <input type="text" name="nama_lengkap"
                         value="{{ old('nama_lengkap', $siswa->nama_lengkap ?? '') }}"
-                        class="form-control" readonly>
+                        class="form-control" required>
                 </div>
 
                 <div class="mb-3">
