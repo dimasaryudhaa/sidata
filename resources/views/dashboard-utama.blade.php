@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiData</title>
+    <link rel="icon" type="" href="images/database.png">
 
     <link rel="stylesheet" href="assets/vendors/iconly/bold.css">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
