@@ -148,9 +148,38 @@
 
                 <div class="mb-3">
                     <label>Berkebutuhan Khusus</label>
-                    <input type="text" name="berkebutuhan_khusus"
-                        value="{{ old('berkebutuhan_khusus', $siswa->berkebutuhan_khusus ?? '') }}"
-                        class="form-control">
+                    <select name="berkebutuhan_khusus" class="form-control">
+                        <option value="">Pilih</option>
+
+                        @php
+                            $opsiBerkebutuhan = [
+                                'Tidak',
+                                'Netra (A)',
+                                'Rungu (B)',
+                                'Grahita Ringan (C)',
+                                'Grahita Sedang (C1)',
+                                'Daksa Ringan (D)',
+                                'Daksa Sedang (D1)',
+                                'Wicara (F)',
+                                'Tuna Ganda (G)',
+                                'Hiper Aktif (H)',
+                                'Cerdas Istimewa (I)',
+                                'Bakat Istimewa (J)',
+                                'Kesulitan Belajar (K)',
+                                'Narkoba (N)',
+                                'Indigo (O)',
+                                'Down Syndrome (P)',
+                                'Autis (Q)',
+                            ];
+                        @endphp
+
+                        @foreach($opsiBerkebutuhan as $opsi)
+                            <option value="{{ $opsi }}"
+                                {{ old('berkebutuhan_khusus', $siswa->berkebutuhan_khusus ?? '') == $opsi ? 'selected' : '' }}>
+                                {{ $opsi }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
             </div>
