@@ -37,7 +37,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Password Baru</label>
-                    <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ingin diubah">
+                    <input type="password" name="password" class="form-control">
                 </div>
             </div>
         </div>

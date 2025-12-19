@@ -8,13 +8,14 @@
     $user = Auth::user();
     $role = $user->role;
     $prefix = $role === 'admin' ? 'admin.' : ($role === 'ptk' ? 'ptk.' : 'siswa.');
-    $isEdit = isset($siswa->id);
+    $isEdit = isset($siswa) && isset($siswa->id);
 @endphp
 
 <div class="container">
     <h1 class="mb-4">{{ $isEdit ? 'Edit Peserta Didik' : 'Tambah Peserta Didik' }}</h1>
 
-    <form action="{{ $isEdit
+    <form
+        action="{{ $isEdit
             ? route($prefix.'siswa.update', $siswa->id)
             : route($prefix.'siswa.store')
         }}"
@@ -39,8 +40,8 @@
                     <label>Jenis Kelamin</label>
                     <select name="jenis_kelamin" class="form-control">
                         <option value="">Pilih Jenis Kelamin</option>
-                        <option value="L" {{ (old('jenis_kelamin', $siswa->jenis_kelamin ?? '') == 'L') ? 'selected' : '' }}>Laki-laki</option>
-                        <option value="P" {{ (old('jenis_kelamin', $siswa->jenis_kelamin ?? '') == 'P') ? 'selected' : '' }}>Perempuan</option>
+                        <option value="L" {{ old('jenis_kelamin', $siswa->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="P" {{ old('jenis_kelamin', $siswa->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
                     </select>
                 </div>
 
@@ -107,10 +108,10 @@
                     <label>Agama</label>
                     <select name="agama" class="form-control">
                         <option value="">Pilih Agama</option>
-                        @foreach(['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu'] as $ag)
-                            <option value="{{ $ag }}"
-                                {{ old('agama', $siswa->agama ?? '') == $ag ? 'selected' : '' }}>
-                                {{ $ag }}
+                        @foreach(['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu'] as $agama)
+                            <option value="{{ $agama }}"
+                                {{ old('agama', $siswa->agama ?? '') == $agama ? 'selected' : '' }}>
+                                {{ $agama }}
                             </option>
                         @endforeach
                     </select>
@@ -131,16 +132,16 @@
 
                 <div class="mb-3">
                     <label>Kewarganegaraan</label>
-                    <select name="kewarganegaraan" class="form-control">
+                    <select name="kewarganegaraan" id="kewarganegaraan" class="form-control">
                         <option value="">Pilih Kewarganegaraan</option>
                         <option value="WNI" {{ old('kewarganegaraan', $siswa->kewarganegaraan ?? '') == 'WNI' ? 'selected' : '' }}>WNI</option>
                         <option value="WNA" {{ old('kewarganegaraan', $siswa->kewarganegaraan ?? '') == 'WNA' ? 'selected' : '' }}>WNA</option>
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="negaraAsalWrapper" style="display: none;">
                     <label>Negara Asal</label>
-                    <input type="text" name="negara_asal"
+                    <input type="text" name="negara_asal" id="negara_asal"
                         value="{{ old('negara_asal', $siswa->negara_asal ?? '') }}"
                         class="form-control">
                 </div>
@@ -164,4 +165,27 @@
 
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const kewarganegaraan = document.getElementById('kewarganegaraan');
+        const negaraAsalWrapper = document.getElementById('negaraAsalWrapper');
+        const negaraAsalInput = document.getElementById('negara_asal');
+
+        function toggleNegaraAsal() {
+            if (kewarganegaraan.value === 'WNA') {
+                negaraAsalWrapper.style.display = 'block';
+                negaraAsalInput.required = true;
+            } else {
+                negaraAsalWrapper.style.display = 'none';
+                negaraAsalInput.required = false;
+                negaraAsalInput.value = '';
+            }
+        }
+
+        kewarganegaraan.addEventListener('change', toggleNegaraAsal);
+        toggleNegaraAsal();
+    });
+</script>
+
 @endsection

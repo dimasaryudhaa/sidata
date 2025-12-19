@@ -3,10 +3,7 @@
 @section('content')
 
 <style>
-    body {
-        overflow: hidden;
-    }
-    html {
+    body, html {
         overflow: hidden;
     }
 </style>
@@ -100,22 +97,42 @@
 
                 <div class="mb-3">
                     <label>Kewarganegaraan</label>
-                    <select name="kewarganegaraan" class="form-control">
+                    <select name="kewarganegaraan" id="kewarganegaraan" class="form-control">
                         <option value="">Pilih Kewarganegaraan</option>
                         <option value="WNI">WNI</option>
                         <option value="WNA">WNA</option>
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="negaraAsalWrapper" style="display: none;">
                     <label>Negara Asal</label>
-                    <input type="text" name="negara_asal" class="form-control">
+                    <input type="text" name="negara_asal" id="negara_asal" class="form-control">
                 </div>
 
                 <div class="mb-3">
                     <label>Berkebutuhan Khusus</label>
-                    <input type="text" name="berkebutuhan_khusus" class="form-control">
+                    <select name="berkebutuhan_khusus" class="form-control">
+                        <option value="">Pilih</option>
+                        <option value="Tidak">Tidak</option>
+                        <option value="Netra (A)">Netra (A)</option>
+                        <option value="Rungu (B)">Rungu (B)</option>
+                        <option value="Grahita Ringan (C)">Grahita Ringan (C)</option>
+                        <option value="Grahita Sedang (C1)">Grahita Sedang (C1)</option>
+                        <option value="Daksa Ringan (D)">Daksa Ringan (D)</option>
+                        <option value="Daksa Sedang (D1)">Daksa Sedang (D1)</option>
+                        <option value="Wicara (F)">Wicara (F)</option>
+                        <option value="Tuna Ganda (G)">Tuna Ganda (G)</option>
+                        <option value="Hiper Aktif (H)">Hiper Aktif (H)</option>
+                        <option value="Cerdas Istimewa (I)">Cerdas Istimewa (I)</option>
+                        <option value="Bakat Istimewa (J)">Bakat Istimewa (J)</option>
+                        <option value="Kesulitan Belajar (K)">Kesulitan Belajar (K)</option>
+                        <option value="Narkoba (N)">Narkoba (N)</option>
+                        <option value="Indigo (O)">Indigo (O)</option>
+                        <option value="Down Syndrome (P)">Down Syndrome (P)</option>
+                        <option value="Autis (Q)">Autis (Q)</option>
+                    </select>
                 </div>
+
             </div>
         </div>
 
@@ -125,5 +142,27 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const kewarganegaraan = document.getElementById('kewarganegaraan');
+        const negaraAsalWrapper = document.getElementById('negaraAsalWrapper');
+        const negaraAsalInput = document.getElementById('negara_asal');
+
+        function toggleNegaraAsal() {
+            if (kewarganegaraan.value === 'WNA') {
+                negaraAsalWrapper.style.display = 'block';
+                negaraAsalInput.required = true;
+            } else {
+                negaraAsalWrapper.style.display = 'none';
+                negaraAsalInput.required = false;
+                negaraAsalInput.value = '';
+            }
+        }
+
+        kewarganegaraan.addEventListener('change', toggleNegaraAsal);
+        toggleNegaraAsal();
+    });
+</script>
 
 @endsection
