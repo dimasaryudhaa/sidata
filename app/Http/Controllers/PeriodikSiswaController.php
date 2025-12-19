@@ -66,12 +66,31 @@ class PeriodikSiswaController extends Controller
 
     public function create()
     {
-        $siswas = Siswa::all();
-
         $user = Auth::user();
+        $isSiswa = $user->role === 'siswa';
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
-        return view('periodik.create', compact('siswas', 'prefix'));
+        if ($isSiswa) {
+            $siswaLogin = DB::table('akun_siswa')
+                ->join('peserta_didik', 'akun_siswa.peserta_didik_id', '=', 'peserta_didik.id')
+                ->where('akun_siswa.email', $user->email)
+                ->select('peserta_didik.id', 'peserta_didik.nama_lengkap')
+                ->first();
+
+            return view('periodik.create', [
+                'siswaLogin' => $siswaLogin,
+                'isSiswa' => true,
+                'prefix' => $prefix
+            ]);
+        }
+
+        $siswas = Siswa::all();
+
+        return view('periodik.create', [
+            'siswas' => $siswas,
+            'isSiswa' => false,
+            'prefix' => $prefix
+        ]);
     }
 
     public function store(Request $request)

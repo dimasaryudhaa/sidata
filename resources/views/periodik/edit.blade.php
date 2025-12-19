@@ -27,7 +27,6 @@
 
         <div class="row">
 
-            {{-- KOLOM KIRI --}}
             <div class="col-md-6">
 
                 <div class="mb-3">
@@ -65,7 +64,6 @@
 
             </div>
 
-            {{-- KOLOM KANAN --}}
             <div class="col-md-6">
 
                 <div class="mb-3">

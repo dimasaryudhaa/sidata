@@ -92,13 +92,24 @@
 
     @if($isSiswa)
         <div class="d-flex justify-content-start mb-3">
-            <a href="{{ route($prefix.'periodik.edit', $periodik->first()->id ?? 0) }}"
-               class="btn btn-primary px-4"
-               style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color:white;">
-                <i class="bi bi-pencil-square me-2"></i> Edit
-            </a>
+
+            @if($periodik->isNotEmpty())
+                <a href="{{ route($prefix.'periodik.edit', $periodik->first()->id) }}"
+                class="btn btn-primary px-4"
+                style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color:white;">
+                    <i class="bi bi-pencil-square me-2"></i> Edit
+                </a>
+            @else
+                <a href="{{ route($prefix.'periodik.create') }}"
+                class="btn btn-success px-4"
+                style="background: linear-gradient(180deg, #0770d3, #007efd, #55a6f8); color:white;">
+                    <i class="bi bi-plus-circle me-2"></i> Tambah
+                </a>
+            @endif
+
         </div>
     @endif
+
 
     @if(session('success'))
         <div id="successAlert"

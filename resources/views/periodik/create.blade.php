@@ -4,20 +4,32 @@
 <div class="container">
     <h1>Tambah Data Periodik Siswa</h1>
 
-    <form action="{{ route('periodik.store') }}" method="POST">
+    <form action="{{ route($prefix.'periodik.store') }}" method="POST">
         @csrf
         <div class="row">
-            <!-- Kolom Kiri: Data Fisik -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Nama Siswa</label>
-                    <select name="peserta_didik_id" class="form-control" required>
-                        <option value="">Pilih Siswa</option>
-                        @foreach($siswa as $s)
-                            <option value="{{ $s->id }}">{{ $s->nama_lengkap }}</option>
-                        @endforeach
-                    </select>
+
+                    @if($isSiswa)
+                        <input type="text" class="form-control"
+                            value="{{ $siswaLogin->nama_lengkap }}"
+                            readonly>
+
+                        <input type="hidden" name="peserta_didik_id"
+                            value="{{ $siswaLogin->id }}">
+                    @else
+                        <select name="peserta_didik_id" class="form-control" required>
+                            <option value="">Pilih Siswa</option>
+                            @foreach($siswas as $s)
+                                <option value="{{ $s->id }}">
+                                    {{ $s->nama_lengkap }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
                 </div>
+
                 <div class="mb-3">
                     <label>Tinggi Badan (cm)</label>
                     <input type="number" step="0.01" name="tinggi_badan_cm" class="form-control">
@@ -36,7 +48,6 @@
                 </div>
             </div>
 
-            <!-- Kolom Kanan: Data Jarak dan Waktu -->
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Jarak ke Sekolah</label>
@@ -62,7 +73,7 @@
         </div>
 
         <div class="d-flex justify-content-end mt-3">
-            <a href="{{ route('periodik.index') }}" class="btn btn-secondary me-2">Kembali</a>
+            <a href="{{ route($prefix.'periodik.index') }}" class="btn btn-secondary me-2">Kembali</a>
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>
