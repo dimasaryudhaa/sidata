@@ -138,20 +138,18 @@ setTimeout(() => {
                             <td>{{ $dokumen->firstItem() + $index }}</td>
                             <td class="nama_siswa">{{ $d->nama_lengkap ?? '-' }}</td>
                             <td>
-                                <span class="badge bg-{{ $d->jumlah_dokumen > 0 ? 'success' : 'danger' }} status-label"
-                                    style="cursor:pointer;"
-                                    data-id="{{ $d->peserta_didik_id }}">
+                                <span class="badge status-label"
+                                    data-id="{{ $d->peserta_didik_id }}"
+                                    data-filled="{{ $d->jumlah_dokumen > 0 ? 'yes' : 'no' }}">
                                     {{ $d->jumlah_dokumen > 0 ? 'Sudah Mengumpulkan' : 'Belum Mengumpulkan' }}
                                 </span>
 
-                                @if($d->jumlah_dokumen > 0)
-                                    <div class="mt-2 d-none validate-box" id="box-{{ $d->peserta_didik_id }}">
-                                        <button class="btn btn-sm btn-primary"
-                                                onclick="validateNow({{ $d->peserta_didik_id }})">
-                                            Validasi
-                                        </button>
-                                    </div>
-                                @endif
+                                <div class="mt-2 d-none validate-box" id="box-{{ $d->peserta_didik_id }}">
+                                    <button class="btn btn-sm btn-primary"
+                                        onclick="toggleStatus({{ $d->peserta_didik_id }})">
+                                        Validasi
+                                    </button>
+                                </div>
                             </td>
                             <td>
                                 <a href="{{ route($prefix . 'dokumen-siswa.show', $d->peserta_didik_id) }}"
@@ -169,61 +167,85 @@ setTimeout(() => {
 
                     document.querySelectorAll(".status-label").forEach(el => {
                         let id = el.dataset.id;
-                        let saved = localStorage.getItem("status-" + id);
+                        let saved = localStorage.getItem("validated-doc-" + id);
 
-                        if (saved) {
-                            setStatus(id, saved, false);
+                        if (saved === "valid") {
+                            setValidated(id, true);
+                        } else {
+                            let filled = el.dataset.filled === "yes";
+                            setInitialStatus(id, filled);
                         }
                     });
 
-                });
+                    document.querySelectorAll(".status-label").forEach(el => {
+                        el.addEventListener("click", function () {
+                            let id = this.dataset.id;
 
-                document.querySelectorAll(".status-label").forEach(el => {
-                    el.addEventListener("click", function () {
-                        let id = this.dataset.id;
-                        let box = document.getElementById("box-" + id);
-                        box.classList.toggle("d-none");
+                            // ❌ belum mengumpulkan & belum divalidasi
+                            if (this.dataset.filled === "no" &&
+                                localStorage.getItem("validated-doc-" + id) !== "valid") {
+                                return;
+                            }
+
+                            let box = document.getElementById("box-" + id);
+                            if (box) box.classList.toggle("d-none");
+                        });
                     });
+
                 });
 
-                function setStatus(id, status, save = true) {
+                function setInitialStatus(id, filled) {
+                    let badge = document.querySelector(`[data-id="${id}"]`);
+                    badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+
+                    if (filled) {
+                        badge.innerText = "Sudah Mengumpulkan";
+                        badge.classList.add("bg-success");
+                        badge.style.cursor = "pointer";
+                    } else {
+                        badge.innerText = "Belum Mengumpulkan";
+                        badge.classList.add("bg-danger");
+                        badge.style.cursor = "default";
+                    }
+                }
+
+                function setValidated(id, isValid) {
                     let badge = document.querySelector(`[data-id="${id}"]`);
                     let box = document.getElementById("box-" + id);
 
-                    badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+                    badge.classList.remove("bg-danger", "bg-success", "bg-primary");
 
-                    if (status === "valid") {
+                    if (isValid) {
                         badge.innerText = "Di Validasi";
                         badge.classList.add("bg-primary");
+                        badge.style.cursor = "pointer";
 
                         box.innerHTML = `
-                            <button class="btn btn-sm btn-warning" onclick="toggleStatus(${id})">
+                            <button class="btn btn-sm btn-warning"
+                                onclick="toggleStatus(${id})">
                                 Batalkan Validasi
-                            </button>
-                        `;
+                            </button>`;
                     } else {
-                        badge.innerText = "Sudah Mengumpulkan";
-                        badge.classList.add("bg-success");
+                        let filled = badge.dataset.filled === "yes";
+                        setInitialStatus(id, filled);
 
                         box.innerHTML = `
-                            <button class="btn btn-sm btn-primary" onclick="toggleStatus(${id})">
+                            <button class="btn btn-sm btn-primary"
+                                onclick="toggleStatus(${id})">
                                 Validasi
-                            </button>
-                        `;
-                    }
-
-                    if (save) {
-                        localStorage.setItem("status-" + id, status);
+                            </button>`;
                     }
                 }
 
                 function toggleStatus(id) {
-                    let current = localStorage.getItem("status-" + id);
+                    let current = localStorage.getItem("validated-doc-" + id);
 
                     if (current === "valid") {
-                        setStatus(id, "mengumpulkan");
+                        localStorage.removeItem("validated-doc-" + id);
+                        setValidated(id, false);
                     } else {
-                        setStatus(id, "valid");
+                        localStorage.setItem("validated-doc-" + id, "valid");
+                        setValidated(id, true);
                     }
 
                     document.getElementById("box-" + id).classList.add("d-none");
@@ -355,20 +377,22 @@ setTimeout(() => {
                             <td>{{ $dokumen->firstItem() + $index }}</td>
                             <td class="nama_siswa">{{ $d->nama_lengkap ?? '-' }}</td>
                             <td>
-                                <span class="badge bg-{{ $d->jumlah_dokumen > 0 ? 'success' : 'danger' }} status-label"
-                                    style="cursor:pointer;"
-                                    data-id="{{ $d->peserta_didik_id }}">
+                                <span class="badge status-label
+                                    bg-{{ $d->jumlah_dokumen > 0 ? 'success' : 'danger' }}"
+                                    data-id="{{ $d->peserta_didik_id }}"
+                                    data-filled="{{ $d->jumlah_dokumen > 0 ? 'yes' : 'no' }}">
                                     {{ $d->jumlah_dokumen > 0 ? 'Sudah Mengumpulkan' : 'Belum Mengumpulkan' }}
                                 </span>
 
                                 @if($d->jumlah_dokumen > 0)
                                     <div class="mt-2 d-none validate-box" id="box-{{ $d->peserta_didik_id }}">
                                         <button class="btn btn-sm btn-primary"
-                                                onclick="validateNow({{ $d->peserta_didik_id }})">
+                                                onclick="toggleStatus({{ $d->peserta_didik_id }})">
                                             Validasi
                                         </button>
                                     </div>
                                 @endif
+
                             </td>
                             <td>
                                 <a href="{{ route($prefix . 'dokumen-siswa.show', $d->peserta_didik_id) }}"
@@ -386,65 +410,92 @@ setTimeout(() => {
 
                     document.querySelectorAll(".status-label").forEach(el => {
                         let id = el.dataset.id;
-                        let saved = localStorage.getItem("status-" + id);
+                        let saved = localStorage.getItem("validated-doc-" + id);
 
-                        if (saved) {
-                            setStatus(id, saved, false);
+                        if (saved === "valid") {
+                            setValidated(id, true);
+                        } else {
+                            let filled = el.dataset.filled === "yes";
+                            setInitialStatus(id, filled);
                         }
                     });
 
-                });
+                    document.querySelectorAll(".status-label").forEach(el => {
+                        el.addEventListener("click", function () {
+                            let id = this.dataset.id;
+                            let filled = this.dataset.filled === "yes";
+                            let validated = localStorage.getItem("validated-doc-" + id) === "valid";
 
-                document.querySelectorAll(".status-label").forEach(el => {
-                    el.addEventListener("click", function () {
-                        let id = this.dataset.id;
-                        let box = document.getElementById("box-" + id);
-                        box.classList.toggle("d-none");
+                            // ❌ Belum mengumpulkan & belum divalidasi → tidak bisa diklik
+                            if (!filled && !validated) return;
+
+                            let box = document.getElementById("box-" + id);
+                            if (box) box.classList.toggle("d-none");
+                        });
                     });
+
                 });
 
-                function setStatus(id, status, save = true) {
+                function setInitialStatus(id, filled) {
+                    let badge = document.querySelector(`[data-id="${id}"]`);
+                    badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+
+                    if (filled) {
+                        badge.innerText = "Sudah Mengumpulkan";
+                        badge.classList.add("bg-success");
+                        badge.style.cursor = "pointer";
+                    } else {
+                        badge.innerText = "Belum Mengumpulkan";
+                        badge.classList.add("bg-danger");
+                        badge.style.cursor = "default";
+                    }
+                }
+
+                function setValidated(id, isValid) {
                     let badge = document.querySelector(`[data-id="${id}"]`);
                     let box = document.getElementById("box-" + id);
 
                     badge.classList.remove("bg-success", "bg-danger", "bg-primary");
 
-                    if (status === "valid") {
+                    if (isValid) {
                         badge.innerText = "Di Validasi";
                         badge.classList.add("bg-primary");
+                        badge.style.cursor = "pointer";
 
-                        box.innerHTML = `
-                            <button class="btn btn-sm btn-warning" onclick="toggleStatus(${id})">
-                                Batalkan Validasi
-                            </button>
-                        `;
+                        if (box) {
+                            box.innerHTML = `
+                                <button class="btn btn-sm btn-warning" onclick="toggleStatus(${id})">
+                                    Batalkan Validasi
+                                </button>`;
+                        }
                     } else {
-                        badge.innerText = "Sudah Mengumpulkan";
-                        badge.classList.add("bg-success");
+                        let filled = badge.dataset.filled === "yes";
+                        setInitialStatus(id, filled);
 
-                        box.innerHTML = `
-                            <button class="btn btn-sm btn-primary" onclick="toggleStatus(${id})">
-                                Validasi
-                            </button>
-                        `;
-                    }
-
-                    if (save) {
-                        localStorage.setItem("status-" + id, status);
+                        if (box && filled) {
+                            box.innerHTML = `
+                                <button class="btn btn-sm btn-primary" onclick="toggleStatus(${id})">
+                                    Validasi
+                                </button>`;
+                        }
                     }
                 }
 
                 function toggleStatus(id) {
-                    let current = localStorage.getItem("status-" + id);
+                    let current = localStorage.getItem("validated-doc-" + id);
 
                     if (current === "valid") {
-                        setStatus(id, "mengumpulkan");
+                        localStorage.removeItem("validated-doc-" + id);
+                        setValidated(id, false);
                     } else {
-                        setStatus(id, "valid");
+                        localStorage.setItem("validated-doc-" + id, "valid");
+                        setValidated(id, true);
                     }
 
-                    document.getElementById("box-" + id).classList.add("d-none");
+                    let box = document.getElementById("box-" + id);
+                    if (box) box.classList.add("d-none");
                 }
+
             </script>
 
         </div>
