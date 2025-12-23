@@ -128,6 +128,7 @@ setTimeout(() => {
                         <th style="width: 50px">No</th>
                         <th>Nama Siswa</th>
                         <th>Status</th>
+                        <th>Validasi</th>
                         <th style="width: 80px;">Aksi</th>
                     </tr>
                 </thead>
@@ -143,12 +144,11 @@ setTimeout(() => {
                                     data-filled="{{ $d->jumlah_dokumen > 0 ? 'yes' : 'no' }}">
                                     {{ $d->jumlah_dokumen > 0 ? 'Sudah Mengumpulkan' : 'Belum Mengumpulkan' }}
                                 </span>
-
-                                <div class="mt-2 d-none validate-box" id="box-{{ $d->peserta_didik_id }}">
-                                    <button class="btn btn-sm btn-primary"
-                                        onclick="toggleStatus({{ $d->peserta_didik_id }})">
-                                        Validasi
-                                    </button>
+                            </td>
+                            <td>
+                                <div class="validate-container"
+                                    data-id="{{ $d->peserta_didik_id }}"
+                                    data-filled="{{ $d->jumlah_dokumen > 0 ? 'yes' : 'no' }}">
                                 </div>
                             </td>
                             <td>
@@ -165,75 +165,61 @@ setTimeout(() => {
             <script>
                 document.addEventListener("DOMContentLoaded", () => {
 
-                    document.querySelectorAll(".status-label").forEach(el => {
-                        let id = el.dataset.id;
+                    document.querySelectorAll(".validate-container").forEach(box => {
+                        let id = box.dataset.id;
+                        let filled = box.dataset.filled === "yes";
                         let saved = localStorage.getItem("validated-doc-" + id);
 
                         if (saved === "valid") {
                             setValidated(id, true);
                         } else {
-                            let filled = el.dataset.filled === "yes";
                             setInitialStatus(id, filled);
                         }
-                    });
-
-                    document.querySelectorAll(".status-label").forEach(el => {
-                        el.addEventListener("click", function () {
-                            let id = this.dataset.id;
-
-                            // ❌ belum mengumpulkan & belum divalidasi
-                            if (this.dataset.filled === "no" &&
-                                localStorage.getItem("validated-doc-" + id) !== "valid") {
-                                return;
-                            }
-
-                            let box = document.getElementById("box-" + id);
-                            if (box) box.classList.toggle("d-none");
-                        });
                     });
 
                 });
 
                 function setInitialStatus(id, filled) {
-                    let badge = document.querySelector(`[data-id="${id}"]`);
+                    let badge = document.querySelector(`.status-label[data-id="${id}"]`);
+                    let box   = document.querySelector(`.validate-container[data-id="${id}"]`);
+
                     badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+                    box.innerHTML = "";
 
                     if (filled) {
                         badge.innerText = "Sudah Mengumpulkan";
                         badge.classList.add("bg-success");
-                        badge.style.cursor = "pointer";
-                    } else {
-                        badge.innerText = "Belum Mengumpulkan";
-                        badge.classList.add("bg-danger");
-                        badge.style.cursor = "default";
-                    }
-                }
-
-                function setValidated(id, isValid) {
-                    let badge = document.querySelector(`[data-id="${id}"]`);
-                    let box = document.getElementById("box-" + id);
-
-                    badge.classList.remove("bg-danger", "bg-success", "bg-primary");
-
-                    if (isValid) {
-                        badge.innerText = "Di Validasi";
-                        badge.classList.add("bg-primary");
-                        badge.style.cursor = "pointer";
-
-                        box.innerHTML = `
-                            <button class="btn btn-sm btn-warning"
-                                onclick="toggleStatus(${id})">
-                                Batalkan Validasi
-                            </button>`;
-                    } else {
-                        let filled = badge.dataset.filled === "yes";
-                        setInitialStatus(id, filled);
 
                         box.innerHTML = `
                             <button class="btn btn-sm btn-primary"
                                 onclick="toggleStatus(${id})">
                                 Validasi
                             </button>`;
+                    } else {
+                        badge.innerText = "Belum Mengumpulkan";
+                        badge.classList.add("bg-danger");
+                    }
+                }
+
+                function setValidated(id, isValid) {
+                    let badge = document.querySelector(`.status-label[data-id="${id}"]`);
+                    let box   = document.querySelector(`.validate-container[data-id="${id}"]`);
+
+                    badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+                    box.innerHTML = "";
+
+                    if (isValid) {
+                        badge.innerText = "Di Validasi";
+                        badge.classList.add("bg-primary");
+
+                        box.innerHTML = `
+                            <button class="btn btn-sm btn-warning"
+                                onclick="toggleStatus(${id})">
+                                Batalkan
+                            </button>`;
+                    } else {
+                        let filled = badge.dataset.filled === "yes";
+                        setInitialStatus(id, filled);
                     }
                 }
 
@@ -247,8 +233,6 @@ setTimeout(() => {
                         localStorage.setItem("validated-doc-" + id, "valid");
                         setValidated(id, true);
                     }
-
-                    document.getElementById("box-" + id).classList.add("d-none");
                 }
             </script>
 
@@ -367,6 +351,7 @@ setTimeout(() => {
                         <th style="width: 50px">No</th>
                         <th>Nama Siswa</th>
                         <th>Status</th>
+                        <th>Validasi</th>
                         <th style="width: 80px;">Aksi</th>
                     </tr>
                 </thead>
@@ -377,22 +362,18 @@ setTimeout(() => {
                             <td>{{ $dokumen->firstItem() + $index }}</td>
                             <td class="nama_siswa">{{ $d->nama_lengkap ?? '-' }}</td>
                             <td>
-                                <span class="badge status-label
-                                    bg-{{ $d->jumlah_dokumen > 0 ? 'success' : 'danger' }}"
+                                <span class="badge status-label"
                                     data-id="{{ $d->peserta_didik_id }}"
                                     data-filled="{{ $d->jumlah_dokumen > 0 ? 'yes' : 'no' }}">
                                     {{ $d->jumlah_dokumen > 0 ? 'Sudah Mengumpulkan' : 'Belum Mengumpulkan' }}
                                 </span>
+                            </td>
 
-                                @if($d->jumlah_dokumen > 0)
-                                    <div class="mt-2 d-none validate-box" id="box-{{ $d->peserta_didik_id }}">
-                                        <button class="btn btn-sm btn-primary"
-                                                onclick="toggleStatus({{ $d->peserta_didik_id }})">
-                                            Validasi
-                                        </button>
-                                    </div>
-                                @endif
-
+                            <td>
+                                <div class="validate-container"
+                                    data-id="{{ $d->peserta_didik_id }}"
+                                    data-filled="{{ $d->jumlah_dokumen > 0 ? 'yes' : 'no' }}">
+                                </div>
                             </td>
                             <td>
                                 <a href="{{ route($prefix . 'dokumen-siswa.show', $d->peserta_didik_id) }}"
@@ -408,76 +389,61 @@ setTimeout(() => {
             <script>
                 document.addEventListener("DOMContentLoaded", () => {
 
-                    document.querySelectorAll(".status-label").forEach(el => {
-                        let id = el.dataset.id;
+                    document.querySelectorAll(".validate-container").forEach(box => {
+                        let id = box.dataset.id;
+                        let filled = box.dataset.filled === "yes";
                         let saved = localStorage.getItem("validated-doc-" + id);
 
                         if (saved === "valid") {
                             setValidated(id, true);
                         } else {
-                            let filled = el.dataset.filled === "yes";
                             setInitialStatus(id, filled);
                         }
-                    });
-
-                    document.querySelectorAll(".status-label").forEach(el => {
-                        el.addEventListener("click", function () {
-                            let id = this.dataset.id;
-                            let filled = this.dataset.filled === "yes";
-                            let validated = localStorage.getItem("validated-doc-" + id) === "valid";
-
-                            // ❌ Belum mengumpulkan & belum divalidasi → tidak bisa diklik
-                            if (!filled && !validated) return;
-
-                            let box = document.getElementById("box-" + id);
-                            if (box) box.classList.toggle("d-none");
-                        });
                     });
 
                 });
 
                 function setInitialStatus(id, filled) {
-                    let badge = document.querySelector(`[data-id="${id}"]`);
+                    let badge = document.querySelector(`.status-label[data-id="${id}"]`);
+                    let box   = document.querySelector(`.validate-container[data-id="${id}"]`);
+
                     badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+                    box.innerHTML = "";
 
                     if (filled) {
                         badge.innerText = "Sudah Mengumpulkan";
                         badge.classList.add("bg-success");
-                        badge.style.cursor = "pointer";
+
+                        box.innerHTML = `
+                            <button class="btn btn-sm btn-primary"
+                                onclick="toggleStatus(${id})">
+                                Validasi
+                            </button>`;
                     } else {
                         badge.innerText = "Belum Mengumpulkan";
                         badge.classList.add("bg-danger");
-                        badge.style.cursor = "default";
                     }
                 }
 
                 function setValidated(id, isValid) {
-                    let badge = document.querySelector(`[data-id="${id}"]`);
-                    let box = document.getElementById("box-" + id);
+                    let badge = document.querySelector(`.status-label[data-id="${id}"]`);
+                    let box   = document.querySelector(`.validate-container[data-id="${id}"]`);
 
                     badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+                    box.innerHTML = "";
 
                     if (isValid) {
                         badge.innerText = "Di Validasi";
                         badge.classList.add("bg-primary");
-                        badge.style.cursor = "pointer";
 
-                        if (box) {
-                            box.innerHTML = `
-                                <button class="btn btn-sm btn-warning" onclick="toggleStatus(${id})">
-                                    Batalkan Validasi
-                                </button>`;
-                        }
+                        box.innerHTML = `
+                            <button class="btn btn-sm btn-warning"
+                                onclick="toggleStatus(${id})">
+                                Batalkan
+                            </button>`;
                     } else {
                         let filled = badge.dataset.filled === "yes";
                         setInitialStatus(id, filled);
-
-                        if (box && filled) {
-                            box.innerHTML = `
-                                <button class="btn btn-sm btn-primary" onclick="toggleStatus(${id})">
-                                    Validasi
-                                </button>`;
-                        }
                     }
                 }
 
@@ -491,11 +457,7 @@ setTimeout(() => {
                         localStorage.setItem("validated-doc-" + id, "valid");
                         setValidated(id, true);
                     }
-
-                    let box = document.getElementById("box-" + id);
-                    if (box) box.classList.add("d-none");
                 }
-
             </script>
 
         </div>

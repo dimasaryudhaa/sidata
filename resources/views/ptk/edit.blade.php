@@ -6,7 +6,7 @@
     <h1 class="mb-4">Edit PTK</h1>
 
     @php
-        $prefix = $isAdmin ? 'admin' : 'ptk';
+        $prefix = auth()->user()->role === 'admin' ? 'admin' : 'ptk';
     @endphp
 
     <form action="{{ route($prefix . '.ptk.update', $ptk->id) }}" method="POST">

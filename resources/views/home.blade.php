@@ -134,7 +134,7 @@
     @elseif($isPtk)
         <div class="row">
             <div class="col-md-3">
-                <a href="{{ route('admin.anak-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.anak-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -152,7 +152,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.tunjangan.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.tunjangan.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -170,7 +170,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.kesejahteraan-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.kesejahteraan-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -188,7 +188,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.tugas-tambahan.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.tugas-tambahan.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -206,7 +206,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.riwayat-gaji.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.riwayat-gaji.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -224,7 +224,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.riwayat-karir.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.riwayat-karir.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -242,7 +242,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.riwayat-jabatan.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.riwayat-jabatan.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -260,7 +260,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.riwayat-kepangkatan.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.riwayat-kepangkatan.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -278,7 +278,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.riwayat-jabatan-fungsional.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.riwayat-jabatan-fungsional.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -296,7 +296,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.diklat.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.diklat.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -314,7 +314,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.nilai-test.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.nilai-test.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -332,7 +332,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.pendidikan-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.pendidikan-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -350,7 +350,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.sertifikat-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.sertifikat-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -368,7 +368,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.sertifikat-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.sertifikat-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -386,7 +386,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.penghargaan.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.penghargaan.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -404,7 +404,7 @@
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="{{ route('admin.kompetensi-ptk.index') }}" style="text-decoration: none; color: inherit;">
+                <a href="{{ route('ptk.kompetensi-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                          style="height: 100px; border-radius: 12px; overflow: hidden;">
                         <div class="d-flex h-100">
@@ -451,7 +451,7 @@
                     </div>
                 </a>
             </div> --}}
-            <div class="col-md-4 d-flex justify-content-center">
+            {{-- <div class="col-md-4 d-flex justify-content-center">
                 <a href="{{ route('ptk.keluarga-ptk.index') }}" style="text-decoration: none; color: inherit;">
                     <div class="card mb-3 shadow hoverable"
                         style="width: 250px; height: 250px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px;">
@@ -495,7 +495,7 @@
                         </h6>
                     </div>
                 </a>
-            </div>
+            </div> --}}
         </div>
         <div class="row">
 
