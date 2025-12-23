@@ -73,6 +73,8 @@ class AkunSiswaController extends Controller
             'password' => 'required|min:6',
         ]);
 
+        $plainPassword = $validated['password'];
+
         $validated['password'] = Hash::make($validated['password']);
 
         $akun = AkunSiswa::create($validated);
@@ -105,14 +107,14 @@ class AkunSiswaController extends Controller
         if (!$sheet) {
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('AkunSISWA');
-            $sheet->fromArray(['Nama Siswa', 'Email', 'Password (Hash)'], null, 'A1');
+            $sheet->fromArray(['Nama Siswa', 'Email', 'Password'], null, 'A1');
         }
 
         $lastRow = $sheet->getHighestRow() + 1;
         $sheet->fromArray([
             $siswa->nama_lengkap,
             $validated['email'],
-            $validated['password'],
+            $plainPassword,
         ], null, "A{$lastRow}");
 
         (new Xlsx($spreadsheet))->save($path);
@@ -121,7 +123,7 @@ class AkunSiswaController extends Controller
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
         return redirect()->route($prefix.'akun-siswa.index')
-                        ->with('success', 'Akun siswa berhasil ditambahkan.');
+            ->with('success', 'Akun siswa berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -165,7 +167,10 @@ class AkunSiswaController extends Controller
             'password' => 'nullable|min:6',
         ]);
 
+        $plainPassword = null;
+
         if ($request->filled('password')) {
+            $plainPassword = $request->password;
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
@@ -201,9 +206,11 @@ class AkunSiswaController extends Controller
                     if ($sheet->getCell("B{$row}")->getValue() == $oldEmail) {
                         $sheet->setCellValue("A{$row}", $siswa->nama_lengkap);
                         $sheet->setCellValue("B{$row}", $validated['email']);
-                        if (isset($validated['password'])) {
-                            $sheet->setCellValue("C{$row}", $validated['password']);
+
+                        if ($plainPassword !== null) {
+                            $sheet->setCellValue("C{$row}", $plainPassword);
                         }
+
                         break;
                     }
                 }

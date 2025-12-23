@@ -178,12 +178,13 @@ class AkunPtkController extends Controller
             'password' => 'nullable|min:6',
         ]);
 
+        $plainPassword = null;
+
         if ($request->filled('password')) {
             $plainPassword = $request->password;
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
-            $plainPassword = null;
         }
 
         $akun_ptk->update($validated);
@@ -191,8 +192,8 @@ class AkunPtkController extends Controller
         $ptk = Ptk::find($validated['ptk_id']);
 
         $updateData = [
-            'name' => $ptk->nama_lengkap,
-            'email' => $validated['email'],
+            'name'       => $ptk->nama_lengkap,
+            'email'      => $validated['email'],
             'updated_at' => now(),
         ];
 
@@ -216,9 +217,11 @@ class AkunPtkController extends Controller
                     if ($sheet->getCell("B{$row}")->getValue() == $oldEmail) {
                         $sheet->setCellValue("A{$row}", $ptk->nama_lengkap);
                         $sheet->setCellValue("B{$row}", $validated['email']);
-                        if ($plainPassword) { 
+
+                        if ($plainPassword !== null) {
                             $sheet->setCellValue("C{$row}", $plainPassword);
                         }
+
                         break;
                     }
                 }
@@ -231,7 +234,7 @@ class AkunPtkController extends Controller
 
         return redirect()
             ->route($prefix.'akun-ptk.index')
-            ->with('success', 'Akun PTK dan user berhasil diperbarui.');
+            ->with('success', 'Akun PTK berhasil diperbarui.');
     }
 
     public function destroy($id)
