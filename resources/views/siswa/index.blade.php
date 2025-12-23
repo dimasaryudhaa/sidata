@@ -246,15 +246,34 @@
             <a href="{{ route('siswa.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
         </div>
 
-        @php $detail = $siswa->first(); @endphp
+        @php
+            $detail = $siswa->first();
+            $lengkap = $detail
+                && $detail->nama_lengkap
+                && $detail->jenis_kelamin
+                && $detail->nis
+                && $detail->nisn
+                && $detail->nik
+                && $detail->tempat_lahir
+                && $detail->tanggal_lahir
+                && $detail->agama
+                && $detail->nama_rayon
+                && $detail->nama_rombel
+                && $detail->kewarganegaraan;
+        @endphp
 
-
-        <div class="d-flex mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <a href="{{ route('siswa.siswa.edit', $detail->id) }}"
+                id="btn-edit-siswa"
                 class="btn btn-primary px-4"
                 style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border-radius:6px;">
                 <i class="bi bi-pencil-square me-2"></i> Edit
             </a>
+            <span class="badge status-label"
+                data-id="{{ $detail->id }}"
+                data-filled="{{ $lengkap ? 'yes' : 'no' }}">
+                {{ $lengkap ? 'Sudah Mengisi' : 'Belum Mengisi' }}
+            </span>
         </div>
 
         <div class="table-responsive rounded-3 overflow-hidden">
@@ -309,6 +328,41 @@
                     </tr>
                 </tbody>
             </table>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+
+                    document.querySelectorAll(".status-label").forEach(badge => {
+                        let id     = badge.dataset.id;
+                        let filled = badge.dataset.filled === "yes";
+                        let saved  = localStorage.getItem("validated-doc-" + id);
+
+                        let btnEdit = document.getElementById("btn-edit-siswa");
+
+                        badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+
+                        if (saved === "valid") {
+                            badge.innerText = "Di Validasi";
+                            badge.classList.add("bg-primary");
+
+                            if (btnEdit) btnEdit.classList.remove("d-none");
+                        }
+
+                        else if (filled) {
+                            badge.innerText = "Sudah Mengisi";
+                            badge.classList.add("bg-success");
+
+                            if (btnEdit) btnEdit.classList.add("d-none");
+                        }
+
+                        else {
+                            badge.innerText = "Belum Mengisi";
+                            badge.classList.add("bg-danger");
+
+                            if (btnEdit) btnEdit.classList.remove("d-none");
+                        }
+                    });
+                });
+            </script>
         </div>
     @endif
 

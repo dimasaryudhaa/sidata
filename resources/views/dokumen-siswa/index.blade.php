@@ -253,19 +253,42 @@ setTimeout(() => {
             <a href="{{ route('siswa.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
         </div>
 
-        <div class="mb-3">
+        @php
+            $isAdmin = auth()->user()->role === 'admin';
+            $isPTK   = auth()->user()->role === 'ptk';
+
+            $lengkapDokumen = $dokumenSiswa
+                && !empty($dokumenSiswa->akte_kelahiran)
+                && !empty($dokumenSiswa->kartu_keluarga)
+                && !empty($dokumenSiswa->ktp_ayah)
+                && !empty($dokumenSiswa->ktp_ibu)
+                && !empty($dokumenSiswa->ijazah_sd)
+                && !empty($dokumenSiswa->ijazah_smp);
+        @endphp
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+
             @if($dokumenSiswa)
                 <a href="{{ route($prefix . 'dokumen-siswa.edit', $siswa->id) }}"
-                   class="btn btn-primary px-4"
-                   style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); color:white;">
+                id="btn-edit-dokumen"
+                class="btn btn-primary px-4 d-none"
+                style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); color:white;">
                     <i class="bi bi-pencil-square me-2"></i> Edit
                 </a>
             @else
                 <a href="{{ route($prefix . 'dokumen-siswa.create', ['peserta_didik_id' => $siswa->id]) }}"
-                   class="btn btn-success px-4">
+                id="btn-upload-dokumen"
+                class="btn btn-success px-4 d-none">
                     <i class="bi bi-upload me-2"></i> Upload
                 </a>
             @endif
+
+            <span class="badge status-label-siswa-dokumen"
+                data-id="{{ $siswa->id }}"
+                data-filled="{{ $lengkapDokumen ? 'yes' : 'no' }}">
+                {{ $lengkapDokumen ? 'Sudah Mengumpulkan' : 'Belum Mengumpulkan' }}
+            </span>
+
         </div>
 
         <div class="table-responsive rounded-3">
@@ -319,9 +342,46 @@ setTimeout(() => {
                             </td>
                         </tr>
                     @endforeach
-
                 </tbody>
             </table>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+
+                    document.querySelectorAll(".status-label-siswa-dokumen").forEach(badge => {
+                        let id     = badge.dataset.id;
+                        let filled = badge.dataset.filled === "yes";
+                        let saved  = localStorage.getItem("validated-doc-" + id);
+
+                        let btnEdit   = document.getElementById("btn-edit-dokumen");
+                        let btnUpload = document.getElementById("btn-upload-dokumen");
+
+                        badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+
+                        if (saved === "valid") {
+                            badge.innerText = "Di Validasi";
+                            badge.classList.add("bg-primary");
+
+                            if (btnEdit) btnEdit.classList.remove("d-none");
+                            if (btnUpload) btnUpload.classList.add("d-none");
+
+                        } else if (filled) {
+                            badge.innerText = "Sudah Mengumpulkan";
+                            badge.classList.add("bg-success");
+
+                            if (btnEdit) btnEdit.classList.add("d-none");
+                            if (btnUpload) btnUpload.classList.add("d-none");
+
+                        } else {
+                            badge.innerText = "Belum Mengumpulkan";
+                            badge.classList.add("bg-danger");
+
+                            if (btnUpload) btnUpload.classList.remove("d-none");
+                            if (btnEdit) btnEdit.classList.add("d-none");
+                        }
+                    });
+
+                });
+            </script>
         </div>
     @endif
 

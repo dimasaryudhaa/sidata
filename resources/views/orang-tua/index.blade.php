@@ -233,15 +233,31 @@
             <a href="{{ route('siswa.kesejahteraan-siswa.index') }}" class="btn btn-primary">Kesejahteraan</a>
             <a href="{{ route('siswa.kontak-siswa.index') }}" class="btn btn-primary">Kontak & Alamat</a>
         </div>
-        @php $detail = $data->first(); @endphp
+
+        @php
+            $detail = $data->first();
+
+            $lengkapOrtu = $detail &&
+                $detail->nama_ayah && $detail->nik_ayah && $detail->tahun_lahir_ayah && $detail->pendidikan_ayah && $detail->pekerjaan_ayah && $detail->penghasilan_ayah
+                &&
+                $detail->nama_ibu && $detail->nik_ibu && $detail->tahun_lahir_ibu && $detail->pendidikan_ibu && $detail->pekerjaan_ibu && $detail->penghasilan_ibu;
+        @endphp
+
         @if ($detail)
-        <div class="d-flex mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <a href="{{ route('siswa.orang-tua.edit', $detail->siswa_id) }}"
-                class="btn btn-primary px-4"
+                id="btn-edit-siswa"
+                class="btn btn-primary px-4 d-none"
                 style="background: linear-gradient(180deg,#0770d3,#007efd,#55a6f8); border-radius:6px;">
                 <i class="bi bi-pencil-square me-2"></i> Edit
             </a>
+            <span class="badge status-label-siswa"
+                data-id="{{ $detail->siswa_id }}"
+                data-filled="{{ $lengkapOrtu ? 'yes' : 'no' }}">
+                {{ $lengkapOrtu ? 'Sudah Lengkap' : 'Belum Lengkap' }}
+            </span>
         </div>
+
         @endif
         <div class="table-responsive rounded-3 overflow-hidden mt-3">
             <table class="table table-bordered">
@@ -251,7 +267,6 @@
                         <th>Keterangan</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @foreach($data as $item)
                         <tr>
@@ -293,6 +308,38 @@
                 </tbody>
             </table>
         </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".status-label-siswa").forEach(badge => {
+            let id     = badge.dataset.id;
+            let filled = badge.dataset.filled === "yes";
+            let saved  = localStorage.getItem("validated-doc-" + id);
+            let btnEdit = document.getElementById("btn-edit-siswa");
+
+            badge.classList.remove("bg-success", "bg-danger", "bg-primary");
+
+            if (saved === "valid") {
+                badge.innerText = "Di Validasi";
+                badge.classList.add("bg-primary");
+
+                if (btnEdit) btnEdit.classList.remove("d-none");
+
+            } else if (filled) {
+                badge.innerText = "Sudah Lengkap";
+                badge.classList.add("bg-success");
+
+                if (btnEdit) btnEdit.classList.add("d-none");
+
+            } else {
+                badge.innerText = "Belum Lengkap";
+                badge.classList.add("bg-danger");
+
+                if (btnEdit) btnEdit.classList.add("d-none");
+            }
+        });
+    });
+    </script>
 
     @endif
 
@@ -412,7 +459,6 @@
                     } else {
                         badge.innerText = "Belum Lengkap";
                         badge.classList.add("bg-danger");
-                        // validasi benar-benar kosong
                     }
                 }
 
