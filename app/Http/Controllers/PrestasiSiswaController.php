@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PrestasiSiswa;
 use App\Models\Siswa;
+use App\Models\AkunSiswa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -80,7 +81,6 @@ class PrestasiSiswaController extends Controller
         return view('prestasi.show', compact('prestasi', 'siswa', 'prefix'));
     }
 
-
     public function create(Request $request)
     {
         $user = Auth::user();
@@ -88,13 +88,21 @@ class PrestasiSiswaController extends Controller
 
         $siswaId = $request->query('siswa_id');
 
-        if ($siswaId) {
-            $siswa = Siswa::findOrFail($siswaId);
-            return view('prestasi.create', compact('siswaId', 'siswa', 'prefix'));
+        if ($user->role === 'siswa') {
+
+            $akunSiswa = AkunSiswa::where('email', $user->email)->firstOrFail();
+            $siswa = $akunSiswa->siswa;
+
+            return view('prestasi.create', compact('siswa', 'prefix'));
         }
 
-        $siswa = Siswa::orderBy('nama_lengkap')->get();
-        return view('prestasi.create', compact('siswa', 'prefix'));
+        if ($siswaId) {
+            $siswa = Siswa::findOrFail($siswaId);
+            return view('prestasi.create', compact('siswa', 'siswaId', 'prefix'));
+        }
+
+        $siswas = Siswa::orderBy('nama_lengkap')->get();
+        return view('prestasi.create', compact('siswas', 'prefix'));
     }
 
     public function store(Request $request)

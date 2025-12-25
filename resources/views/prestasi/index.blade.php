@@ -117,6 +117,13 @@
     </div>
     @endif
 
+    @if ($isSiswa)
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ route($prefix.'prestasi.create') }}" class="btn btn-primary">
+                + Tambah Prestasi
+            </a>
+        </div>
+    @endif
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
         <table class="table table-bordered" id="prestasiTable">
             <thead class="text-white">

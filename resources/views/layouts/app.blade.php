@@ -186,7 +186,7 @@
                         <li><a href="{{ route('register') }}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
                     @endif
                 @else
-                    <li class="brand-item">Sidata</li>
+                    <li class="brand-item">SiData</li>
 
                     <li style="margin-top: 1rem;">
                         <a href="{{

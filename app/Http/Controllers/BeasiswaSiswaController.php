@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BeasiswaSiswa;
 use App\Models\Siswa;
-use App\Models\Rombel;
+use App\Models\AkunSiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -68,21 +68,28 @@ class BeasiswaSiswaController extends Controller
         return view('beasiswa.show', compact('beasiswa', 'siswa', 'prefix'));
     }
 
-
     public function create(Request $request)
     {
         $user = Auth::user();
         $prefix = $user->role === 'admin' ? 'admin.' : 'siswa.';
 
-        $siswaId = $request->query('siswa_id');
+        if ($user->role === 'siswa') {
 
-        if ($siswaId) {
-            $siswa = Siswa::findOrFail($siswaId);
-            return view('beasiswa.create', compact('siswaId', 'siswa', 'prefix'));
+            $akunSiswa = AkunSiswa::where('email', $user->email)->firstOrFail();
+
+            $siswa = $akunSiswa->siswa;
+
+            return view('beasiswa.create', compact('siswa', 'prefix'));
         }
 
-        $siswa = Siswa::orderBy('nama_lengkap')->get();
-        return view('beasiswa.create', compact('siswa', 'prefix'));
+        $siswaId = $request->query('siswa_id');
+        if ($siswaId) {
+            $siswa = Siswa::findOrFail($siswaId);
+            return view('beasiswa.create', compact('siswa', 'siswaId', 'prefix'));
+        }
+
+        $siswas = Siswa::orderBy('nama_lengkap')->get();
+        return view('beasiswa.create', compact('siswas', 'prefix'));
     }
 
     public function store(Request $request)

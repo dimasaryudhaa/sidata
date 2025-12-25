@@ -21,21 +21,23 @@
                 <div class="mb-3">
                     <label>Nama Siswa</label>
 
-                    @if(isset($siswaId))
-                        <input type="text" class="form-control" value="{{ $siswa->nama_lengkap }}" readonly>
-                        <input type="hidden" name="peserta_didik_id" value="{{ $siswaId }}">
-                    @else
-                        @if($isAdmin)
+                    @if($isAdmin)
+                        @if(isset($siswa))
+                            <input type="text" class="form-control"
+                                value="{{ $siswa->nama_lengkap }}" readonly>
+                            <input type="hidden" name="peserta_didik_id" value="{{ $siswa->id }}">
+                        @else
                             <select name="peserta_didik_id" class="form-control" required>
                                 <option value="">-- Pilih Siswa --</option>
                                 @foreach($siswas as $s)
                                     <option value="{{ $s->id }}">{{ $s->nama_lengkap }}</option>
                                 @endforeach
                             </select>
-                        @else
-                            <input type="text" class="form-control" value="{{ $user->nama_lengkap }}" readonly>
-                            <input type="hidden" name="peserta_didik_id" value="{{ $user->id }}">
                         @endif
+                    @else
+                        <input type="text" class="form-control"
+                            value="{{ $siswa->nama_lengkap }}" readonly>
+                        <input type="hidden" name="peserta_didik_id" value="{{ $siswa->id }}">
                     @endif
                 </div>
 

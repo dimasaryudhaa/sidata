@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\KesejahteraanSiswa;
 use App\Models\Siswa;
+use App\Models\AkunSiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -81,14 +82,16 @@ class KesejahteraanSiswaController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
+
         $isAdmin = $user->role === 'admin';
         $isSiswa = $user->role === 'siswa';
-        $prefix = $isAdmin ? 'admin.' : 'siswa.';
+        $prefix  = $isAdmin ? 'admin.' : 'siswa.';
 
         $siswaId = $request->query('siswa_id');
 
         if ($siswaId) {
             $siswa = Siswa::findOrFail($siswaId);
+
             return view('kesejahteraan-siswa.create', compact(
                 'siswaId',
                 'siswa',
@@ -97,6 +100,19 @@ class KesejahteraanSiswaController extends Controller
                 'prefix'
             ));
         }
+
+        if ($isSiswa) {
+            $akunSiswa = AkunSiswa::where('email', $user->email)->firstOrFail();
+            $siswa = $akunSiswa->siswa;
+
+            return view('kesejahteraan-siswa.create', compact(
+                'siswa',
+                'isAdmin',
+                'isSiswa',
+                'prefix'
+            ));
+        }
+
         $siswa = Siswa::orderBy('nama_lengkap')->get();
 
         return view('kesejahteraan-siswa.create', compact(

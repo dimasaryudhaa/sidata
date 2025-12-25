@@ -117,6 +117,13 @@
     </div>
     @endif
 
+    @if ($isSiswa)
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ route($prefix.'kesejahteraan-siswa.create') }}" class="btn btn-primary">
+                + Tambah Kesejahteraan
+            </a>
+        </div>
+    @endif
     <div class="table-responsive rounded-3 overflow-hidden mt-3">
         <table class="table table-bordered" id="kesejahteraanTable">
             <thead class="text-white">
